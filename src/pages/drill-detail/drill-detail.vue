@@ -53,6 +53,207 @@
             </view>
           </view>
         </template>
+        <template v-else-if="currentBusinessType === 'start-check'">
+          <view class="start-check-container">
+            <!-- TAB切换 -->
+            <view class="tab-header">
+              <view 
+                class="tab-item" 
+                :class="{ active: startCheckActiveTab === 'form' }" 
+                @click="switchStartCheckTab('form')"
+              >
+                <view class="tab-icon">📋</view>
+                <text class="tab-text">表单信息</text>
+              </view>
+              <view 
+                class="tab-item" 
+                :class="{ active: startCheckActiveTab === 'process' }" 
+                @click="switchStartCheckTab('process')"
+              >
+                <view class="tab-icon">🔄</view>
+                <text class="tab-text">流程信息</text>
+              </view>
+            </view>
+            
+            <!-- 表单信息内容 -->
+            <scroll-view 
+              v-if="startCheckActiveTab === 'form'" 
+              class="tab-content form-content" 
+              scroll-y="true"
+            >
+              <!-- 基本信息 -->
+              <view class="form-section">
+                <view class="section-title">基本信息</view>
+                <view class="basic-info-list">
+                  <view class="basic-info-item">
+                    <text class="info-label">标段</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.section }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">工点</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.workPoint }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">编号</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.number }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">工程项目</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.project }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻孔编号</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.drillNo }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">机长</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.machineLeader }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">机台编号</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.machineNo }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">机台型号</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.machineModel }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">总体单位检查人</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.inspector }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">检查时间</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.inspectionTime }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">备注</text>
+                    <text class="info-value">{{ startCheckData.basicInfo.remarks }}</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 相关业务 -->
+              <view class="form-section">
+                <view class="section-title">相关业务</view>
+                
+                <!-- 围岩类型 -->
+                <view class="business-group">
+                  <view class="business-title">围岩类型</view>
+                  <view class="readonly-checkbox-group">
+                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.rockTypes" :key="'rock-'+index">
+                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
+                        <text v-if="item.checked" class="check-icon">✓</text>
+                      </view>
+                      <text class="readonly-checkbox-label">{{ item.label }}</text>
+                    </view>
+                  </view>
+                </view>
+                
+                <!-- 技术准备 -->
+                <view class="business-group">
+                  <view class="business-title">技术准备</view>
+                  <view class="readonly-checkbox-group">
+                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.techPreparation" :key="'tech-'+index">
+                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
+                        <text v-if="item.checked" class="check-icon">✓</text>
+                      </view>
+                      <text class="readonly-checkbox-label">{{ item.label }}</text>
+                    </view>
+                  </view>
+                </view>
+                
+                <!-- 管线排查 -->
+                <view class="business-group">
+                  <view class="business-title">管线排查</view>
+                  <view class="readonly-checkbox-group">
+                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.pipelineCheck" :key="'pipe-'+index">
+                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
+                        <text v-if="item.checked" class="check-icon">✓</text>
+                      </view>
+                      <text class="readonly-checkbox-label">{{ item.label }}</text>
+                    </view>
+                  </view>
+                </view>
+                
+                <!-- 人工挖探 -->
+                <view class="business-group">
+                  <view class="business-title">人工挖探</view>
+                  <view class="readonly-checkbox-group">
+                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.manualExcavation" :key="'excavation-'+index">
+                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
+                        <text v-if="item.checked" class="check-icon">✓</text>
+                      </view>
+                      <text class="readonly-checkbox-label">{{ item.label }}</text>
+                    </view>
+                  </view>
+                </view>
+                
+                <!-- 钻孔准备 -->
+                <view class="business-group">
+                  <view class="business-title">钻孔准备</view>
+                  <view class="readonly-checkbox-group">
+                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.drillPreparation" :key="'drill-'+index">
+                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
+                        <text v-if="item.checked" class="check-icon">✓</text>
+                      </view>
+                      <text class="readonly-checkbox-label">{{ item.label }}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 附件 -->
+              <view class="form-section">
+                <view class="section-title">附件</view>
+                <view class="attachment-list">
+                  <view class="attachment-item" v-for="(file, index) in startCheckData.attachments" :key="index">
+                    <view class="attachment-info">
+                      <view class="attachment-icon">📎</view>
+                      <text class="attachment-name">{{ file.name }}</text>
+                    </view>
+                    <view class="attachment-actions">
+                      <view class="attachment-btn view-btn">查看</view>
+                      <view class="attachment-btn download-btn">下载</view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+            
+            <!-- 流程信息内容 -->
+            <scroll-view 
+              v-if="startCheckActiveTab === 'process'" 
+              class="tab-content process-content" 
+              scroll-y="true"
+            >
+              <view class="process-timeline">
+                <view 
+                  class="timeline-item" 
+                  v-for="(item, index) in startCheckData.processFlow" 
+                  :key="index"
+                  :class="{ 'current': item.isCurrent }"
+                >
+                  <view class="timeline-node">
+                    <view class="timeline-dot" :class="{ 'active': item.isCurrent }"></view>
+                    <view class="timeline-line" v-if="index !== startCheckData.processFlow.length - 1"></view>
+                  </view>
+                  <view class="timeline-content">
+                    <view class="timeline-header">
+                      <text class="timeline-title">{{ item.title }}</text>
+                      <text class="timeline-time">{{ item.time }}</text>
+                    </view>
+                    <view class="timeline-body" v-if="item.content">
+                      <view class="timeline-action" v-for="(action, actionIndex) in item.content" :key="actionIndex">
+                        <text class="action-title">{{ action.title }}</text>
+                        <text class="action-value">{{ action.value }}</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+          </view>
+        </template>
         <template v-else-if="currentBusinessType === 'overview'">
           <scroll-view class="drill-overview" scroll-y="true">
             <!-- 基础信息 -->
@@ -382,6 +583,96 @@ export default {
         startY: 0,
         isDragging: false
       },
+      // 开工检查TAB切换
+      startCheckActiveTab: 'form',
+      // 开工检查数据
+      startCheckData: {
+        // 基本信息
+        basicInfo: {
+          section: '粤港澳大湾区城际铁路广州东至花都天贵工程-初步勘察-1标',
+          workPoint: '广州东至方石站',
+          number: 'L018B-Z2-1-A7-0313',
+          project: '粤港澳大湾区城际铁路广州东至花都天贵工程空港车辆段及出入段初步勘察',
+          drillNo: 'MRNZ2-A256S',
+          machineLeader: '==请选择==',
+          machineNo: '7',
+          machineModel: 'XY-100',
+          inspector: '方勇华',
+          inspectionTime: '2025-03-30 00:00:00',
+          remarks: '备注'
+        },
+        // 相关业务
+        business: {
+          // 围岩类型
+          rockTypes: [
+            { label: '防塌陷', checked: true },
+            { label: '反光条及贴士', checked: true },
+            { label: '警戒筒', checked: true },
+            { label: '单色布', checked: false },
+            { label: '地水防渗马凳档', checked: true },
+            { label: '引路牌', checked: false },
+            { label: '警示灯', checked: false }
+          ],
+          // 技术准备
+          techPreparation: [
+            { label: '技术准备', checked: true }
+          ],
+          // 管线排查
+          pipelineCheck: [
+            { label: '已有管线查询图，孔位已确认无管线', checked: true },
+            { label: '三证齐管线权属单位意见', checked: false }
+          ],
+          // 人工挖探
+          manualExcavation: [
+            { label: '浅孔开挖', checked: true },
+            { label: '钎探', checked: false }
+          ],
+          // 钻孔准备
+          drillPreparation: [
+            { label: '水泥定位', checked: true }
+          ]
+        },
+        // 附件
+        attachments: [
+          { name: '开工检查表.pdf', size: '2.5MB', type: 'pdf' },
+          { name: '现场照片.jpg', size: '1.2MB', type: 'image' }
+        ],
+        // 流程信息
+        processFlow: [
+          {
+            title: '当前',
+            time: '',
+            isCurrent: true,
+            content: [
+              { title: '传阅【正在处理审节点】', value: '' }
+            ]
+          },
+          {
+            title: '助理审核',
+            time: '2025-03-31 21:33:28',
+            isCurrent: false,
+            content: [
+              { title: '【助理审核】刘辉军:', value: '需要更正核' }
+            ]
+          },
+          {
+            title: '咨询/总体单位审批',
+            time: '2025-03-30 13:33:12',
+            isCurrent: false,
+            content: [
+              { title: '【助理总工】方勇华:', value: '同意' }
+            ]
+          },
+          {
+            title: '开始',
+            time: '2025-03-29 09:15:45',
+            isCurrent: false,
+            content: [
+              { title: '【助理】刘辉军:', value: '创建流程' }
+            ]
+          }
+        ]
+      },
       // 钻孔概况数据
       drillInfo: {
         // 基础信息
@@ -428,25 +719,25 @@ export default {
       console.log('点击了:', type)
       
       // 设置弹窗标题和当前业务类型
-      this.setPopupInfo(type);
+      this.setPopupInfo(type)
       
       // 显示弹窗
-      this.showSubPopup = true;
+      this.showSubPopup = true
     },
     
     // 柱状图触摸开始
     handleTouchStart(e) {
       if (e.touches.length === 1) {
         // 单指拖动
-        this.columnChartData.isDragging = true;
-        this.columnChartData.startX = e.touches[0].clientX - this.columnChartData.translateX;
-        this.columnChartData.startY = e.touches[0].clientY - this.columnChartData.translateY;
+        this.columnChartData.isDragging = true
+        this.columnChartData.startX = e.touches[0].clientX - this.columnChartData.translateX
+        this.columnChartData.startY = e.touches[0].clientY - this.columnChartData.translateY
       } else if (e.touches.length === 2) {
         // 双指缩放 - 记录初始距离
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        this.initialDistance = Math.sqrt(dx * dx + dy * dy);
-        this.initialScale = this.columnChartData.scale;
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        this.initialDistance = Math.sqrt(dx * dx + dy * dy)
+        this.initialScale = this.columnChartData.scale
       }
     },
     
@@ -454,144 +745,150 @@ export default {
     handleTouchMove(e) {
       if (this.columnChartData.isDragging && e.touches.length === 1) {
         // 单指拖动
-        this.columnChartData.translateX = e.touches[0].clientX - this.columnChartData.startX;
-        this.columnChartData.translateY = e.touches[0].clientY - this.columnChartData.startY;
+        this.columnChartData.translateX = e.touches[0].clientX - this.columnChartData.startX
+        this.columnChartData.translateY = e.touches[0].clientY - this.columnChartData.startY
       } else if (e.touches.length === 2) {
         // 双指缩放
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        const distance = Math.sqrt(dx * dx + dy * dy)
         
         // 计算新的缩放比例
-        let newScale = this.initialScale * (distance / this.initialDistance);
+        let newScale = this.initialScale * (distance / this.initialDistance)
         
         // 限制缩放范围
-        newScale = Math.max(this.columnChartData.minScale, Math.min(newScale, this.columnChartData.maxScale));
+        newScale = Math.max(this.columnChartData.minScale, Math.min(newScale, this.columnChartData.maxScale))
         
-        this.columnChartData.scale = newScale;
+        this.columnChartData.scale = newScale
       }
     },
     
     // 柱状图触摸结束
     handleTouchEnd() {
-      this.columnChartData.isDragging = false;
+      this.columnChartData.isDragging = false
     },
     
     // 放大
     zoomIn() {
       if (this.columnChartData.scale < this.columnChartData.maxScale) {
-        this.columnChartData.scale += 0.2;
+        this.columnChartData.scale += 0.2
       }
     },
     
     // 缩小
     zoomOut() {
       if (this.columnChartData.scale > this.columnChartData.minScale) {
-        this.columnChartData.scale -= 0.2;
+        this.columnChartData.scale -= 0.2
       }
     },
     
     // 重置缩放
     resetZoom() {
-      this.columnChartData.scale = 1;
-      this.columnChartData.translateX = 0;
-      this.columnChartData.translateY = 0;
+      this.columnChartData.scale = 1
+      this.columnChartData.translateX = 0
+      this.columnChartData.translateY = 0
+    },
+    
+    // 切换开工检查TAB
+    switchStartCheckTab(tab) {
+      this.startCheckActiveTab = tab
     },
     
     // 设置弹窗信息
     setPopupInfo(type) {
-      this.currentBusinessType = type;
+      this.currentBusinessType = type
       
       // 根据不同类型设置不同的标题
       switch(type) {
         case 'video':
-          this.subPopupTitle = '视频监控';
+          this.subPopupTitle = '视频监控'
           // 这里可以添加获取视频监控数据的逻辑
-          // this.getVideoMonitors();
-          break;
+          // this.getVideoMonitors()
+          break
         case 'overview':
-          this.subPopupTitle = '钻孔概况';
-          break;
+          this.subPopupTitle = '钻孔概况'
+          break
         case 'chart':
-          this.subPopupTitle = '柱状图';
-          break;
+          this.subPopupTitle = '柱状图'
+          break
         case 'start-check':
-          this.subPopupTitle = '开工检查';
-          break;
+          this.subPopupTitle = '开工检查'
+          this.startCheckActiveTab = 'form' // 默认显示表单信息
+          break
         case 'single-check':
-          this.subPopupTitle = '单孔报验';
-          break;
+          this.subPopupTitle = '单孔报验'
+          break
         case 'seal-check':
-          this.subPopupTitle = '封孔验收';
-          break;
+          this.subPopupTitle = '封孔验收'
+          break
         case 'disclosure':
-          this.subPopupTitle = '钻孔交底';
-          break;
+          this.subPopupTitle = '钻孔交底'
+          break
         case 'positioning':
-          this.subPopupTitle = '开孔定位';
-          break;
+          this.subPopupTitle = '开孔定位'
+          break
         case 'pipeline':
-          this.subPopupTitle = '管线探测';
-          break;
+          this.subPopupTitle = '管线探测'
+          break
         case 'excavation':
-          this.subPopupTitle = '开挖0-3米';
-          break;
+          this.subPopupTitle = '开挖0-3米'
+          break
         case 'protection':
-          this.subPopupTitle = '围蔽防护';
-          break;
+          this.subPopupTitle = '围蔽防护'
+          break
         case 'strike':
-          this.subPopupTitle = '击进3-6米';
-          break;
+          this.subPopupTitle = '击进3-6米'
+          break
         case 'drilling':
-          this.subPopupTitle = '机钻施工';
-          break;
+          this.subPopupTitle = '机钻施工'
+          break
         case 'safety-check':
-          this.subPopupTitle = '安全检查';
-          break;
+          this.subPopupTitle = '安全检查'
+          break
         case 'seal-record':
-          this.subPopupTitle = '封孔记录';
-          break;
+          this.subPopupTitle = '封孔记录'
+          break
         case 'quality-check':
-          this.subPopupTitle = '质量验收';
-          break;
+          this.subPopupTitle = '质量验收'
+          break
         case 'stratum':
-          this.subPopupTitle = '地层';
-          break;
+          this.subPopupTitle = '地层'
+          break
         case 'standard-penetration':
-          this.subPopupTitle = '标贯';
-          break;
+          this.subPopupTitle = '标贯'
+          break
         case 'dynamic-probe':
-          this.subPopupTitle = '动探';
-          break;
+          this.subPopupTitle = '动探'
+          break
         case 'in-situ-test':
-          this.subPopupTitle = '原位测试';
-          break;
+          this.subPopupTitle = '原位测试'
+          break
         case 'sampling':
-          this.subPopupTitle = '取样';
-          break;
+          this.subPopupTitle = '取样'
+          break
         case 'water-level':
-          this.subPopupTitle = '水位';
-          break;
+          this.subPopupTitle = '水位'
+          break
         case 'single-box':
-          this.subPopupTitle = '单箱';
-          break;
+          this.subPopupTitle = '单箱'
+          break
         case 'overall':
-          this.subPopupTitle = '整体';
-          break;
+          this.subPopupTitle = '整体'
+          break
         case 'ground':
-          this.subPopupTitle = '地面';
-          break;
+          this.subPopupTitle = '地面'
+          break
         case 'shift-report':
-          this.subPopupTitle = '班报表';
-          break;
+          this.subPopupTitle = '班报表'
+          break
         default:
-          this.subPopupTitle = '详情';
+          this.subPopupTitle = '详情'
       }
     },
     
     // 关闭弹窗
     closeSubPopup() {
-      this.showSubPopup = false;
+      this.showSubPopup = false
     }
   }
 }
@@ -964,5 +1261,416 @@ export default {
 
 .zoom-icon {
   line-height: 1;
+}
+
+/* 开工检查样式 */
+.start-check-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TAB切换样式 */
+.tab-header {
+  display: flex;
+  background-color: #ffffff;
+  border-bottom: 1rpx solid #e8eaed;
+  margin-bottom: 0;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 32rpx 0;
+  font-size: 28rpx;
+  color: #606266;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-item.active {
+  color: #2b7de0;
+  font-weight: 500;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background-color: #2b7de0;
+}
+
+.tab-icon {
+  display: none;
+}
+
+.tab-text {
+  font-size: 28rpx;
+}
+
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 表单信息样式 */
+.form-content {
+  padding: 20rpx;
+}
+
+.form-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #ebeef5;
+  background-color: #f6f8fa;
+}
+
+/* 基本信息单列布局样式 */
+.basic-info-list {
+  padding: 0;
+}
+
+.basic-info-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.basic-info-item:last-child {
+  border-bottom: none;
+}
+
+.basic-info-item .info-label {
+  width: 160rpx;
+  flex-shrink: 0;
+  font-size: 28rpx;
+  color: #606266;
+  font-weight: 500;
+  line-height: 1.6;
+  padding-right: 16rpx;
+  padding-top: 4rpx;
+}
+
+.basic-info-item .info-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #303133;
+  line-height: 1.6;
+  word-break: break-all;
+  padding-left: 16rpx;
+  padding-top: 4rpx;
+}
+
+.form-group {
+  padding: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.form-item {
+  width: 50%;
+  padding: 16rpx;
+  box-sizing: border-box;
+}
+
+.form-item.full-width {
+  width: 100%;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: #909399;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.form-value {
+  font-size: 28rpx;
+  color: #303133;
+  word-break: break-all;
+}
+
+/* 相关业务样式 */
+.business-group {
+  padding: 20rpx;
+  border-bottom: 1rpx solid #ebeef5;
+}
+
+.business-group:last-child {
+  border-bottom: none;
+}
+
+.business-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #303133;
+  margin-bottom: 16rpx;
+}
+
+/* 只读多选框样式 */
+.readonly-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.readonly-checkbox-item {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 8rpx;
+  padding: 12rpx 16rpx;
+  margin-bottom: 12rpx;
+  border: 1rpx solid #e9ecef;
+  min-width: calc(50% - 8rpx);
+  box-sizing: border-box;
+}
+
+.readonly-checkbox {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 4rpx;
+  margin-right: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2rpx solid #dee2e6;
+  background-color: #ffffff;
+}
+
+.readonly-checkbox.checked {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.check-icon {
+  font-size: 20rpx;
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.readonly-checkbox-label {
+  font-size: 26rpx;
+  color: #495057;
+  line-height: 1.4;
+  word-break: break-all;
+  flex: 1;
+}
+
+.readonly-checkbox-item:not(:last-child) {
+  margin-right: 0;
+}
+
+/* 保留原有的可编辑多选框样式（如果需要） */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  margin-right: 30rpx;
+  margin-bottom: 16rpx;
+  width: calc(50% - 30rpx);
+}
+
+.checkbox {
+  width: 32rpx;
+  height: 32rpx;
+  border: 2rpx solid #dcdfe6;
+  border-radius: 4rpx;
+  margin-right: 8rpx;
+  position: relative;
+}
+
+.checkbox.checked {
+  background-color: #2b7de0;
+  border-color: #2b7de0;
+}
+
+.checkbox.checked::after {
+  content: '';
+  position: absolute;
+  top: 6rpx;
+  left: 10rpx;
+  width: 8rpx;
+  height: 14rpx;
+  border-right: 2rpx solid #fff;
+  border-bottom: 2rpx solid #fff;
+  transform: rotate(45deg);
+}
+
+.checkbox-label {
+  font-size: 26rpx;
+  color: #606266;
+}
+
+/* 附件样式 */
+.attachment-list {
+  padding: 20rpx;
+}
+
+.attachment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx;
+  border-bottom: 1rpx solid #ebeef5;
+}
+
+.attachment-item:last-child {
+  border-bottom: none;
+}
+
+.attachment-info {
+  display: flex;
+  align-items: center;
+}
+
+.attachment-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+
+.attachment-name {
+  font-size: 28rpx;
+  color: #303133;
+}
+
+.attachment-actions {
+  display: flex;
+}
+
+.attachment-btn {
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  border-radius: 8rpx;
+  margin-left: 16rpx;
+}
+
+.view-btn {
+  background-color: #ecf5ff;
+  color: #2b7de0;
+}
+
+.download-btn {
+  background-color: #f0f9eb;
+  color: #67c23a;
+}
+
+/* 流程信息样式 */
+.process-content {
+  padding: 30rpx 20rpx;
+}
+
+.process-timeline {
+  position: relative;
+}
+
+.timeline-item {
+  display: flex;
+  margin-bottom: 40rpx;
+  position: relative;
+}
+
+.timeline-node {
+  width: 60rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeline-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background-color: #dcdfe6;
+  z-index: 1;
+}
+
+.timeline-dot.active {
+  background-color: #2b7de0;
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2rpx;
+  height: calc(100% + 40rpx);
+  background-color: #dcdfe6;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-left: 20rpx;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.timeline-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #303133;
+}
+
+.timeline-time {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.timeline-body {
+  background-color: #f6f8fa;
+  border-radius: 8rpx;
+  padding: 16rpx;
+}
+
+.timeline-action {
+  margin-bottom: 8rpx;
+}
+
+.timeline-action:last-child {
+  margin-bottom: 0;
+}
+
+.action-title {
+  font-size: 26rpx;
+  color: #606266;
+  margin-right: 8rpx;
+}
+
+.action-value {
+  font-size: 26rpx;
+  color: #303133;
+}
+
+.timeline-item.current .timeline-title {
+  color: #2b7de0;
 }
 </style>
