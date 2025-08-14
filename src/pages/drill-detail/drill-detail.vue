@@ -254,6 +254,530 @@
             </scroll-view>
           </view>
         </template>
+        <template v-else-if="currentBusinessType === 'single-check'">
+          <view class="single-check-container">
+            <!-- TAB切换 -->
+            <view class="tab-header">
+              <view 
+                class="tab-item" 
+                :class="{ active: singleCheckActiveTab === 'form' }" 
+                @click="switchSingleCheckTab('form')"
+              >
+                <view class="tab-icon">📋</view>
+                <text class="tab-text">表单信息</text>
+              </view>
+              <view 
+                class="tab-item" 
+                :class="{ active: singleCheckActiveTab === 'process' }" 
+                @click="switchSingleCheckTab('process')"
+              >
+                <view class="tab-icon">🔄</view>
+                <text class="tab-text">流程信息</text>
+              </view>
+            </view>
+            
+            <!-- 表单信息内容 -->
+            <scroll-view 
+              v-if="singleCheckActiveTab === 'form'" 
+              class="tab-content form-content" 
+              scroll-y="true"
+            >
+              <!-- 基本信息 -->
+              <view class="form-section">
+                <view class="section-title">基本信息</view>
+                <view class="basic-info-list">
+                  <view class="basic-info-item">
+                    <text class="info-label">标段</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.section }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">工点</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.workPoint }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">工程项目</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.project }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">编号</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.number }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻孔编号</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.drillNo }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">地质编录人</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.inspector }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻机机长</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.machineLeader }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻机编号</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.machineNo }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻机型号</text>
+                    <text class="info-value">{{ singleCheckData.basicInfo.machineModel }}</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 自检意见 -->
+              <view class="form-section">
+                <view class="section-title">自检意见</view>
+                <view class="basic-info-list">
+                  <view class="basic-info-item">
+                    <text class="info-label">开孔日期</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.startDate }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">终孔日期</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.endDate }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">终孔深度(m)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.actualDepth }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻孔类型</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.drillType }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">岩芯照片(张)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.rockSamples }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">班报记录人</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.qualityInspector }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">抗动土样(组)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.soilSamples }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">岩芯采取率(%)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.coreRecoveryRate }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">水样(组)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.others }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">原状土样(组)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.originalSoilSamples }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">岩样(组)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.rockSamples2 }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">标贯试验(次)</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.standardTests }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">其它质位测试</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.remarks }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">自检意见</text>
+                    <text class="info-value">{{ singleCheckData.selfInspection.selfInspectionResult }}</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 验收意见 -->
+              <view class="form-section">
+                <view class="section-title">验收意见</view>
+                <view class="acceptance-list">
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">钻孔深度符合技术要求</text>
+                    <view class="radio-group">
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.drillDepthCompliance === '符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">符合</text>
+                      </view>
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.drillDepthCompliance === '不符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">不符合</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">取土、原位测试符合技术要求</text>
+                    <view class="radio-group">
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.positionCompliance === '符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">符合</text>
+                      </view>
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.positionCompliance === '不符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">不符合</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">岩芯数据符合技术要求</text>
+                    <view class="radio-group">
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.soilDataCompliance === '符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">符合</text>
+                      </view>
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.soilDataCompliance === '不符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">不符合</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">封孔符合技术要求</text>
+                    <view class="radio-group">
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.rockCompliance === '符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">符合</text>
+                      </view>
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.rockCompliance === '不符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">不符合</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">岩芯照片符合技术要求</text>
+                    <view class="radio-group">
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.sealingCompliance === '符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">符合</text>
+                      </view>
+                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.sealingCompliance === '不符合' }">
+                        <view class="radio-dot"></view>
+                        <text class="radio-text">不符合</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">其他</text>
+                    <text class="acceptance-value">{{ singleCheckData.acceptance.others }}</text>
+                  </view>
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">验收结论</text>
+                    <text class="acceptance-value">{{ singleCheckData.acceptance.acceptanceResult }}</text>
+                  </view>
+                  <view class="acceptance-item">
+                    <text class="acceptance-label">验收意见</text>
+                    <text class="acceptance-value">{{ singleCheckData.acceptance.acceptancePersonnel }}</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 附件 -->
+              <view class="form-section">
+                <view class="section-title">附件</view>
+                <view class="attachment-list">
+                  <view class="attachment-item" v-for="(file, index) in singleCheckData.attachments" :key="index">
+                    <view class="attachment-info">
+                      <view class="attachment-icon">📎</view>
+                      <text class="attachment-name">{{ file.name }}</text>
+                    </view>
+                    <view class="attachment-actions">
+                      <view class="attachment-btn view-btn">查看</view>
+                      <view class="attachment-btn download-btn">下载</view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+            
+            <!-- 流程信息内容 -->
+            <scroll-view 
+              v-if="singleCheckActiveTab === 'process'" 
+              class="tab-content process-content" 
+              scroll-y="true"
+            >
+              <view class="process-timeline">
+                <view 
+                  class="timeline-item" 
+                  v-for="(item, index) in singleCheckData.processFlow" 
+                  :key="index"
+                  :class="{ 'current': item.isCurrent }"
+                >
+                  <view class="timeline-node">
+                    <view class="timeline-dot" :class="{ 'active': item.isCurrent }"></view>
+                    <view class="timeline-line" v-if="index !== singleCheckData.processFlow.length - 1"></view>
+                  </view>
+                  <view class="timeline-content">
+                    <view class="timeline-header">
+                      <text class="timeline-title">{{ item.title }}</text>
+                      <text class="timeline-time">{{ item.time }}</text>
+                    </view>
+                    <view class="timeline-body" v-if="item.content">
+                      <view class="timeline-action" v-for="(action, actionIndex) in item.content" :key="actionIndex">
+                        <text class="action-title">{{ action.title }}</text>
+                        <text class="action-value">{{ action.value }}</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+          </view>
+        </template>
+        <template v-else-if="currentBusinessType === 'seal-check'">
+          <view class="seal-check-container">
+            <!-- TAB切换 -->
+            <view class="tab-header">
+              <view 
+                class="tab-item" 
+                :class="{ active: sealCheckActiveTab === 'form' }" 
+                @click="switchSealCheckTab('form')"
+              >
+                <view class="tab-icon">📋</view>
+                <text class="tab-text">表单信息</text>
+              </view>
+              <view 
+                class="tab-item" 
+                :class="{ active: sealCheckActiveTab === 'process' }" 
+                @click="switchSealCheckTab('process')"
+              >
+                <view class="tab-icon">🔄</view>
+                <text class="tab-text">流程信息</text>
+              </view>
+            </view>
+            
+            <!-- 表单信息内容 -->
+            <scroll-view 
+              v-if="sealCheckActiveTab === 'form'" 
+              class="tab-content form-content seal-form-content" 
+              scroll-y="true"
+            >
+              <!-- 基本信息（只读） -->
+              <view class="form-section">
+                <view class="section-title">基本信息</view>
+                <view class="basic-info-list">
+                  <view class="basic-info-item">
+                    <text class="info-label">标段</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.section }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">工点</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.workPoint }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">编号</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.number }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">工程项目</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.project }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻孔编号</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.drillNo }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">现场技术员</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.inspector }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">钻机机长</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.machineLeader }}</text>
+                  </view>
+                  <view class="basic-info-item">
+                    <text class="info-label">日期</text>
+                    <text class="info-value">{{ sealCheckData.basicInfo.date }}</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 自检意见（可编辑） -->
+              <view class="form-section">
+                <view class="section-title">自检意见</view>
+                <view class="editable-form-list">
+                  <view class="editable-form-item">
+                    <text class="form-label">开孔日期</text>
+                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.startDate" placeholder="请选择日期" />
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">终孔日期</text>
+                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.endDate" placeholder="请选择日期" />
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">坐标X</text>
+                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.coordinateX" placeholder="请输入坐标X" />
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">坐标Y</text>
+                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.coordinateY" placeholder="请输入坐标Y" />
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">终孔深度(m)</text>
+                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.actualDepth" placeholder="请输入深度" />
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">封孔方法</text>
+                    <view class="checkbox-group-editable">
+                      <view class="checkbox-item-editable">
+                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingMethod.includes('孔口在地上高注水泥浆') }" @click="toggleSealingMethod('孔口在地上高注水泥浆')">
+                          <text v-if="sealCheckData.selfInspection.sealingMethod.includes('孔口在地上高注水泥浆')" class="check-icon">✓</text>
+                        </view>
+                        <text class="checkbox-label-editable">孔口在地上高注水泥浆</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">水泥用量(包)</text>
+                    <input class="form-input" type="number" v-model="sealCheckData.selfInspection.waterUsage" placeholder="请输入水泥用量(包)" />
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">管理条件</text>
+                    <view class="checkbox-group-editable">
+                      <view class="checkbox-item-editable">
+                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.managementCondition.includes('孔口返浆') }" @click="toggleManagementCondition('孔口返浆')">
+                          <text v-if="sealCheckData.selfInspection.managementCondition.includes('孔口返浆')" class="check-icon">✓</text>
+                        </view>
+                        <text class="checkbox-label-editable">孔口返浆</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">管理条件</text>
+                    <view class="checkbox-group-editable">
+                      <view class="checkbox-item-editable">
+                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingCondition.includes('孔口返浆后停浆水泥浆') }" @click="toggleSealingCondition('孔口返浆后停浆水泥浆')">
+                          <text v-if="sealCheckData.selfInspection.sealingCondition.includes('孔口返浆后停浆水泥浆')" class="check-icon">✓</text>
+                        </view>
+                        <text class="checkbox-label-editable">孔口返浆后停浆水泥浆</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">封孔录像</text>
+                    <view class="checkbox-group-editable">
+                      <view class="checkbox-item-editable">
+                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingRecord.includes('内高完整') }" @click="toggleSealingRecord('内高完整')">
+                          <text v-if="sealCheckData.selfInspection.sealingRecord.includes('内高完整')" class="check-icon">✓</text>
+                        </view>
+                        <text class="checkbox-label-editable">内高完整</text>
+                      </view>
+                      <view class="checkbox-item-editable">
+                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingRecord.includes('清晰') }" @click="toggleSealingRecord('清晰')">
+                          <text v-if="sealCheckData.selfInspection.sealingRecord.includes('清晰')" class="check-icon">✓</text>
+                        </view>
+                        <text class="checkbox-label-editable">清晰</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">自检意见</text>
+                    <textarea class="form-textarea" v-model="sealCheckData.selfInspection.selfInspectionResult" placeholder="请输入自检意见"></textarea>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 验收意见（可编辑） -->
+              <view class="form-section">
+                <view class="section-title">验收意见</view>
+                <view class="editable-form-list">
+                  <view class="editable-form-item">
+                    <text class="form-label">验收结论</text>
+                    <view class="radio-group-editable">
+                      <view class="radio-item-editable" @click="setSealAcceptanceResult('同意自检意见，通过孔验收')">
+                        <view class="radio-dot-editable" :class="{ active: sealCheckData.acceptance.acceptanceResult === '同意自检意见，通过孔验收' }"></view>
+                        <text class="radio-text-editable">同意自检意见，通过孔验收</text>
+                      </view>
+                      <view class="radio-item-editable" @click="setSealAcceptanceResult('不同意自检意见，该孔重新封孔')">
+                        <view class="radio-dot-editable" :class="{ active: sealCheckData.acceptance.acceptanceResult === '不同意自检意见，该孔重新封孔' }"></view>
+                        <text class="radio-text-editable">不同意自检意见，该孔重新封孔</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">验收意见</text>
+                    <textarea class="form-textarea" v-model="sealCheckData.acceptance.acceptancePersonnel" placeholder="请输入验收意见"></textarea>
+                  </view>
+                  <view class="editable-form-item">
+                    <text class="form-label">备注</text>
+                    <textarea class="form-textarea" v-model="sealCheckData.acceptance.remarks" placeholder="请输入备注"></textarea>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 附件 -->
+              <view class="form-section">
+                <view class="section-title">附件</view>
+                <view class="attachment-list">
+                  <view class="attachment-item" v-for="(file, index) in sealCheckData.attachments" :key="index">
+                    <view class="attachment-info">
+                      <view class="attachment-icon">📎</view>
+                      <text class="attachment-name">{{ file.name }}</text>
+                    </view>
+                    <view class="attachment-actions">
+                      <view class="attachment-btn view-btn">查看</view>
+                      <view class="attachment-btn delete-btn" @click="deleteAttachment(index)">删除</view>
+                    </view>
+                  </view>
+                  <view class="upload-attachment" @click="uploadAttachment">
+                    <view class="upload-icon">📎</view>
+                    <text class="upload-text">上传附件</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 底部操作按钮 -->
+              <view class="form-actions">
+                <view class="action-btn save-btn" @click="saveSealCheck">保存</view>
+                <view class="action-btn submit-btn" @click="submitSealCheck">提交</view>
+              </view>
+            </scroll-view>
+            
+            <!-- 流程信息内容 -->
+            <scroll-view 
+              v-if="sealCheckActiveTab === 'process'" 
+              class="tab-content process-content" 
+              scroll-y="true"
+            >
+              <view class="process-timeline">
+                <view 
+                  class="timeline-item" 
+                  v-for="(item, index) in sealCheckData.processFlow" 
+                  :key="index"
+                  :class="{ 'current': item.isCurrent }"
+                >
+                  <view class="timeline-node">
+                    <view class="timeline-dot" :class="{ 'active': item.isCurrent }"></view>
+                    <view class="timeline-line" v-if="index !== sealCheckData.processFlow.length - 1"></view>
+                  </view>
+                  <view class="timeline-content">
+                    <view class="timeline-header">
+                      <text class="timeline-title">{{ item.title }}</text>
+                      <text class="timeline-time">{{ item.time }}</text>
+                    </view>
+                    <view class="timeline-body" v-if="item.content">
+                      <view class="timeline-action" v-for="(action, actionIndex) in item.content" :key="actionIndex">
+                        <text class="action-title">{{ action.title }}</text>
+                        <text class="action-value">{{ action.value }}</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+          </view>
+          
+          <!-- 提交确认弹窗 -->
+          <view v-if="showSealCheckConfirm" class="confirm-overlay" @click="closeSealCheckConfirm">
+            <view class="confirm-dialog" @click.stop>
+              <view class="confirm-title">提示</view>
+              <view class="confirm-content">是否提交流程？</view>
+              <view class="confirm-actions">
+                <view class="confirm-btn cancel-btn" @click="closeSealCheckConfirm">取消</view>
+                <view class="confirm-btn confirm-btn" @click="confirmSubmitSealCheck">确认</view>
+              </view>
+            </view>
+          </view>
+        </template>
         <template v-else-if="currentBusinessType === 'overview'">
           <scroll-view class="drill-overview" scroll-y="true">
             <!-- 基础信息 -->
@@ -585,6 +1109,12 @@ export default {
       },
       // 开工检查TAB切换
       startCheckActiveTab: 'form',
+      // 单孔报验TAB切换
+      singleCheckActiveTab: 'form',
+      // 封孔验收TAB切换
+      sealCheckActiveTab: 'form',
+      // 封孔验收确认弹窗
+      showSealCheckConfirm: false,
       // 开工检查数据
       startCheckData: {
         // 基本信息
@@ -669,6 +1199,142 @@ export default {
             isCurrent: false,
             content: [
               { title: '【助理】刘辉军:', value: '创建流程' }
+            ]
+          }
+        ]
+      },
+      // 单孔报验数据
+      singleCheckData: {
+        // 基本信息
+        basicInfo: {
+          section: '粤港澳大湾区城际铁路广州东至花都天贵工程-初步勘察-1标',
+          workPoint: '广州东至方石站',
+          project: '粤港澳大湾区城际铁路广州东至花都天贵工程空港车辆段及出入段初步勘察',
+          number: 'L018B-Z2-1-A8-0312',
+          drillNo: 'MRNZ2-A256S',
+          inspector: '刘辉军',
+          machineLeader: '==请选择==',
+          machineNo: '7',
+          machineModel: ''
+        },
+        // 自检意见
+        selfInspection: {
+          startDate: '2021-04-10',
+          endDate: '2021-04-15',
+          actualDepth: '16',
+          drillType: '一般孔,非取孔',
+          rockSamples: '4',
+          soilSamples: '0',
+          others: '3',
+          qualityInspector: '凡从良',
+          coreRecoveryRate: '90',
+          originalSoilSamples: '0',
+          rockSamples2: '0',
+          standardTests: '0',
+          selfInspectionResult: '同意验收',
+          remarks: ''
+        },
+        // 验收意见
+        acceptance: {
+          drillDepthCompliance: '符合',
+          positionCompliance: '符合',
+          soilDataCompliance: '符合',
+          rockCompliance: '符合',
+          sealingCompliance: '符合',
+          others: '',
+          acceptanceResult: '同意自检意见，通过孔验收',
+          acceptanceResultDetail: '不同意自检意见，该孔不予验收，移位后重新钻',
+          acceptancePersonnel: '符合要求'
+        },
+        // 附件
+        attachments: [
+          { name: '单孔报验表.pdf', size: '3.2MB', type: 'pdf' },
+          { name: '钻孔记录.xlsx', size: '1.8MB', type: 'excel' },
+          { name: '现场照片.jpg', size: '2.1MB', type: 'image' }
+        ],
+        // 流程信息
+        processFlow: [
+          {
+            title: '当前',
+            time: '',
+            isCurrent: true,
+            content: [
+              { title: '传阅【正在处理审节点】', value: '' }
+            ]
+          },
+          {
+            title: '验收审核',
+            time: '2025-04-02 14:25:18',
+            isCurrent: false,
+            content: [
+              { title: '【验收审核】张工程师:', value: '验收合格，同意通过' }
+            ]
+          },
+          {
+            title: '自检提交',
+            time: '2025-04-01 09:30:45',
+            isCurrent: false,
+            content: [
+              { title: '【自检员】凡从良:', value: '自检完成，提交验收' }
+            ]
+          },
+          {
+            title: '开始',
+            time: '2025-03-31 16:20:12',
+            isCurrent: false,
+            content: [
+              { title: '【项目员】刘辉军:', value: '创建单孔报验流程' }
+            ]
+          }
+        ]
+      },
+      // 封孔验收数据
+      sealCheckData: {
+        // 基本信息（只读）
+        basicInfo: {
+          section: '粤港澳大湾区城际铁路广州东至花都天贵工程-初步勘察-1标',
+          workPoint: '广州东至方石站',
+          number: 'L018B-Z2-1-A9-0369',
+          project: '粤港澳大湾区城际铁路广州东至花都天贵工程空港车辆段及出入段初步勘察',
+          drillNo: 'MRNZ2-A256S',
+          inspector: '李新华',
+          machineLeader: '==请选择==',
+          date: '2025-08-14'
+        },
+        // 自检意见（可编辑）
+        selfInspection: {
+          startDate: '2021-04-10',
+          endDate: '2021-04-15',
+          coordinateX: '248669.9375',
+          coordinateY: '38971.78516',
+          actualDepth: '16',
+          sealingMethod: '孔口在地上高注水泥浆',
+          waterUsage: '请填写水泥用量(包)',
+          managementCondition: '孔口返浆',
+          sealingCondition: '孔口返浆后停浆水泥浆',
+          sealingRecord: '内高完整、清晰',
+          selfInspectionResult: ''
+        },
+        // 验收意见（可编辑）
+        acceptance: {
+          acceptanceResult: '同意自检意见，通过孔验收',
+          acceptanceResultDetail: '不同意自检意见，该孔重新封孔',
+          acceptancePersonnel: '',
+          remarks: ''
+        },
+        // 附件
+        attachments: [
+          { name: '封孔验收表.pdf', size: '2.8MB', type: 'pdf' },
+          { name: '封孔照片.jpg', size: '1.5MB', type: 'image' }
+        ],
+        // 流程信息
+        processFlow: [
+          {
+            title: '发起',
+            time: '2025-08-14 17:00:00',
+            isCurrent: true,
+            content: [
+              { title: '【发起人】李新华:', value: '创建封孔验收流程' }
             ]
           }
         ]
@@ -794,6 +1460,102 @@ export default {
       this.startCheckActiveTab = tab
     },
     
+    // 切换单孔报验TAB
+    switchSingleCheckTab(tab) {
+      this.singleCheckActiveTab = tab
+    },
+    
+    // 切换封孔验收TAB
+    switchSealCheckTab(tab) {
+      this.sealCheckActiveTab = tab
+    },
+    
+    // 切换封孔方法
+    toggleSealingMethod(method) {
+      if (this.sealCheckData.selfInspection.sealingMethod.includes(method)) {
+        this.sealCheckData.selfInspection.sealingMethod = this.sealCheckData.selfInspection.sealingMethod.replace(method, '').trim()
+      } else {
+        this.sealCheckData.selfInspection.sealingMethod = method
+      }
+    },
+    
+    // 切换管理条件
+    toggleManagementCondition(condition) {
+      if (this.sealCheckData.selfInspection.managementCondition.includes(condition)) {
+        this.sealCheckData.selfInspection.managementCondition = this.sealCheckData.selfInspection.managementCondition.replace(condition, '').trim()
+      } else {
+        this.sealCheckData.selfInspection.managementCondition = condition
+      }
+    },
+    
+    // 切换封孔条件
+    toggleSealingCondition(condition) {
+      if (this.sealCheckData.selfInspection.sealingCondition.includes(condition)) {
+        this.sealCheckData.selfInspection.sealingCondition = this.sealCheckData.selfInspection.sealingCondition.replace(condition, '').trim()
+      } else {
+        this.sealCheckData.selfInspection.sealingCondition = condition
+      }
+    },
+    
+    // 切换封孔录像
+    toggleSealingRecord(record) {
+      const records = this.sealCheckData.selfInspection.sealingRecord.split('、').filter(r => r.trim())
+      if (records.includes(record)) {
+        const index = records.indexOf(record)
+        records.splice(index, 1)
+      } else {
+        records.push(record)
+      }
+      this.sealCheckData.selfInspection.sealingRecord = records.join('、')
+    },
+    
+    // 设置验收结果
+    setSealAcceptanceResult(result) {
+      this.sealCheckData.acceptance.acceptanceResult = result
+    },
+    
+    // 删除附件
+    deleteAttachment(index) {
+      this.sealCheckData.attachments.splice(index, 1)
+    },
+    
+    // 上传附件
+    uploadAttachment() {
+      // 这里可以实现文件上传逻辑
+      console.log('上传附件')
+    },
+    
+    // 保存封孔验收
+    saveSealCheck() {
+      console.log('保存封孔验收数据')
+      uni.showToast({
+        title: '保存成功',
+        icon: 'success'
+      })
+    },
+    
+    // 提交封孔验收
+    submitSealCheck() {
+      this.showSealCheckConfirm = true
+    },
+    
+    // 关闭确认弹窗
+    closeSealCheckConfirm() {
+      this.showSealCheckConfirm = false
+    },
+    
+    // 确认提交封孔验收
+    confirmSubmitSealCheck() {
+      console.log('提交封孔验收流程')
+      this.showSealCheckConfirm = false
+      uni.showToast({
+        title: '提交成功',
+        icon: 'success'
+      })
+      // 这里可以关闭弹窗或刷新数据
+      this.closeSubPopup()
+    },
+    
     // 设置弹窗信息
     setPopupInfo(type) {
       this.currentBusinessType = type
@@ -817,9 +1579,12 @@ export default {
           break
         case 'single-check':
           this.subPopupTitle = '单孔报验'
+          this.singleCheckActiveTab = 'form' // 默认显示表单信息
           break
         case 'seal-check':
           this.subPopupTitle = '封孔验收'
+          this.sealCheckActiveTab = 'form' // 默认显示表单信息
+          this.sealCheckActiveTab = 'form' // 默认显示表单信息
           break
         case 'disclosure':
           this.subPopupTitle = '钻孔交底'
@@ -1672,5 +2437,394 @@ export default {
 
 .timeline-item.current .timeline-title {
   color: #2b7de0;
+}
+
+/* 单孔报验样式 */
+.single-check-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 验收意见样式 */
+.acceptance-list {
+  padding: 0;
+}
+
+.acceptance-item {
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.acceptance-item:last-child {
+  border-bottom: none;
+}
+
+.acceptance-label {
+  font-size: 28rpx;
+  color: #606266;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.acceptance-value {
+  font-size: 28rpx;
+  color: #303133;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.radio-group {
+  display: flex;
+  gap: 40rpx;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radio-dot {
+  width: 28rpx;
+  height: 28rpx;
+  border: 2rpx solid #dcdfe6;
+  border-radius: 50%;
+  margin-right: 12rpx;
+  position: relative;
+  background-color: #ffffff;
+}
+
+.radio-item.active .radio-dot {
+  border-color: #2b7de0;
+}
+
+.radio-item.active .radio-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16rpx;
+  height: 16rpx;
+  background-color: #2b7de0;
+  border-radius: 50%;
+}
+
+.radio-text {
+  font-size: 26rpx;
+  color: #606266;
+}
+
+.radio-item.active .radio-text {
+  color: #2b7de0;
+}
+
+/* 封孔验收样式 */
+.seal-check-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.seal-form-content {
+  padding-bottom: 120rpx; /* 为底部按钮留出空间 */
+}
+
+/* 可编辑表单样式 */
+.editable-form-list {
+  padding: 0;
+}
+
+.editable-form-item {
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.editable-form-item:last-child {
+  border-bottom: none;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #606266;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #dcdfe6;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #303133;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #2b7de0;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  border: 2rpx solid #dcdfe6;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #303133;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.form-textarea:focus {
+  border-color: #2b7de0;
+}
+
+/* 可编辑复选框样式 */
+.checkbox-group-editable {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.checkbox-item-editable {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 8rpx;
+  padding: 12rpx 16rpx;
+  border: 1rpx solid #e9ecef;
+  cursor: pointer;
+}
+
+.checkbox-editable {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 4rpx;
+  margin-right: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2rpx solid #dee2e6;
+  background-color: #ffffff;
+}
+
+.checkbox-editable.checked {
+  background-color: #2b7de0;
+  border-color: #2b7de0;
+}
+
+.checkbox-label-editable {
+  font-size: 26rpx;
+  color: #495057;
+  line-height: 1.4;
+}
+
+/* 可编辑单选框样式 */
+.radio-group-editable {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.radio-item-editable {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 12rpx 0;
+}
+
+.radio-dot-editable {
+  width: 28rpx;
+  height: 28rpx;
+  border: 2rpx solid #dcdfe6;
+  border-radius: 50%;
+  margin-right: 12rpx;
+  position: relative;
+  background-color: #ffffff;
+}
+
+.radio-dot-editable.active {
+  border-color: #2b7de0;
+}
+
+.radio-dot-editable.active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16rpx;
+  height: 16rpx;
+  background-color: #2b7de0;
+  border-radius: 50%;
+}
+
+.radio-text-editable {
+  font-size: 26rpx;
+  color: #606266;
+  line-height: 1.4;
+}
+
+/* 附件上传样式 */
+.upload-attachment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx;
+  border: 2rpx dashed #dcdfe6;
+  border-radius: 8rpx;
+  margin-top: 20rpx;
+  cursor: pointer;
+  background-color: #fafbfc;
+}
+
+.upload-attachment:hover {
+  border-color: #2b7de0;
+  background-color: #f0f7ff;
+}
+
+.upload-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+  color: #909399;
+}
+
+.upload-text {
+  font-size: 28rpx;
+  color: #909399;
+}
+
+.delete-btn {
+  background-color: #fef0f0;
+  color: #f56c6c;
+}
+
+/* 底部操作按钮 */
+.form-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 20rpx 32rpx;
+  background-color: #ffffff;
+  border-top: 1rpx solid #e8eaed;
+  gap: 20rpx;
+  z-index: 100;
+}
+
+.action-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: #f8f9fa;
+  color: #606266;
+  border: 2rpx solid #dcdfe6;
+}
+
+.save-btn:active {
+  background-color: #e9ecef;
+}
+
+.submit-btn {
+  background-color: #2b7de0;
+  color: #ffffff;
+}
+
+.submit-btn:active {
+  background-color: #1c6dd0;
+}
+
+/* 确认弹窗样式 */
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirm-dialog {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  margin: 0 40rpx;
+  min-width: 500rpx;
+  max-width: 80%;
+}
+
+.confirm-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #303133;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.confirm-content {
+  font-size: 28rpx;
+  color: #606266;
+  text-align: center;
+  margin-bottom: 40rpx;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.confirm-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #f8f9fa;
+  color: #606266;
+  border: 2rpx solid #dcdfe6;
+}
+
+.cancel-btn:active {
+  background-color: #e9ecef;
+}
+
+.confirm-btn.confirm-btn {
+  background-color: #2b7de0;
+  color: #ffffff;
+}
+
+.confirm-btn.confirm-btn:active {
+  background-color: #1c6dd0;
 }
 </style>
