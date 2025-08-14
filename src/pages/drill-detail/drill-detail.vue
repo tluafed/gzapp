@@ -12,8 +12,24 @@
     <!-- 通用二级弹窗 -->
     <sub-popup :show="showSubPopup" :title="subPopupTitle" @close="closeSubPopup">
       <view class="sub-popup-content">
-        <!-- 子业务内容将在这里动态显示 -->
-        <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
+        <!-- 根据业务类型显示不同内容 -->
+        <template v-if="currentBusinessType === 'video'">
+          <view class="video-monitors">
+            <view v-for="monitor in videoMonitors" :key="monitor.id" class="video-monitor-item">
+              <view class="monitor-title">{{ monitor.name }}</view>
+              <view class="video-container">
+                <!-- 实际项目中应使用适合的视频播放组件 -->
+                <view class="video-placeholder">
+                  <!-- 这里可以使用实际的视频组件，如 video 标签或第三方组件 -->
+                  <text class="video-placeholder-text">视频流将在这里显示</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </template>
+        <template v-else>
+          <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
+        </template>
       </view>
     </sub-popup>
 
@@ -206,7 +222,12 @@ export default {
       // 页面数据
       showSubPopup: false,
       subPopupTitle: '',
-      currentBusinessType: ''
+      currentBusinessType: '',
+      // 视频监控数据
+      videoMonitors: [
+        { id: 1, name: '监控编号A', url: 'https://example.com/stream1' },
+        { id: 2, name: '监控编号B', url: 'https://example.com/stream2' }
+      ]
     }
   },
   methods: {
@@ -238,6 +259,8 @@ export default {
       switch(type) {
         case 'video':
           this.subPopupTitle = '视频监控';
+          // 这里可以添加获取视频监控数据的逻辑
+          // this.getVideoMonitors();
           break;
         case 'overview':
           this.subPopupTitle = '钻孔概况';
@@ -493,5 +516,48 @@ export default {
 .sub-popup-content {
   padding: 20rpx;
   height: 100%;
+}
+
+/* 视频监控样式 */
+.video-monitors {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  padding: 10rpx;
+}
+
+.video-monitor-item {
+  width: 100%;
+}
+
+.monitor-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 16rpx;
+  padding-left: 10rpx;
+}
+
+.video-container {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  border: 2rpx solid #e74c3c;
+  box-sizing: border-box;
+}
+
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-placeholder-text {
+  color: #909399;
+  font-size: 28rpx;
 }
 </style>
