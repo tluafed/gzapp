@@ -27,6 +27,122 @@
             </view>
           </view>
         </template>
+        <template v-else-if="currentBusinessType === 'overview'">
+          <scroll-view class="drill-overview" scroll-y="true">
+            <!-- 基础信息 -->
+            <view class="info-section">
+              <view class="section-header">
+                <text class="section-title">基础信息</text>
+              </view>
+              <view class="info-table">
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">钻孔编号</text>
+                    <text class="info-value">{{ drillInfo.basicInfo.drillNo }}</text>
+                  </view>
+                  <view class="info-cell">
+                    <text class="info-label">钻孔类型</text>
+                    <text class="info-value">{{ drillInfo.basicInfo.drillType }}</text>
+                  </view>
+                </view>
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">项目负责人</text>
+                    <text class="info-value">{{ drillInfo.basicInfo.projectManager }}</text>
+                  </view>
+                  <view class="info-cell">
+                    <text class="info-label">技术员</text>
+                    <text class="info-value">{{ drillInfo.basicInfo.technician }}</text>
+                  </view>
+                </view>
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">终孔日期</text>
+                    <text class="info-value">{{ drillInfo.basicInfo.endDate }}</text>
+                  </view>
+                  <view class="info-cell"></view>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 坐标与高程 -->
+            <view class="info-section">
+              <view class="section-header">
+                <text class="section-title">坐标与高程</text>
+              </view>
+              <view class="info-table">
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">设计坐标X</text>
+                    <text class="info-value">{{ drillInfo.coordinates.designX }}</text>
+                  </view>
+                  <view class="info-cell">
+                    <text class="info-label">设计坐标Y</text>
+                    <text class="info-value">{{ drillInfo.coordinates.designY }}</text>
+                  </view>
+                </view>
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">设计经度</text>
+                    <text class="info-value">{{ drillInfo.coordinates.designLongitude }}</text>
+                  </view>
+                  <view class="info-cell">
+                    <text class="info-label">设计纬度</text>
+                    <text class="info-value">{{ drillInfo.coordinates.designLatitude }}</text>
+                  </view>
+                </view>
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">复测坐标X</text>
+                    <text class="info-value">{{ drillInfo.coordinates.actualX }}</text>
+                  </view>
+                  <view class="info-cell">
+                    <text class="info-label">复测坐标Y</text>
+                    <text class="info-value">{{ drillInfo.coordinates.actualY }}</text>
+                  </view>
+                </view>
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">设计孔深(m)</text>
+                    <text class="info-value">{{ drillInfo.coordinates.designDepth }}</text>
+                  </view>
+                  <view class="info-cell">
+                    <text class="info-label">实际孔深(m)</text>
+                    <text class="info-value">{{ drillInfo.coordinates.actualDepth }}</text>
+                  </view>
+                </view>
+                <view class="info-row">
+                  <view class="info-cell">
+                    <text class="info-label">孔口高程(m)</text>
+                    <text class="info-value">{{ drillInfo.coordinates.elevation }}</text>
+                  </view>
+                  <view class="info-cell"></view>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 项目归属 -->
+            <view class="info-section">
+              <view class="section-header">
+                <text class="section-title">项目归属</text>
+              </view>
+              <view class="project-info">
+                <view class="project-item">
+                  <text class="project-label">所属项目</text>
+                  <text class="project-value">{{ drillInfo.project.projectName }}</text>
+                </view>
+                <view class="project-item">
+                  <text class="project-label">工点名称</text>
+                  <text class="project-value">{{ drillInfo.project.workName }}</text>
+                </view>
+                <view class="project-item">
+                  <text class="project-label">工程名称</text>
+                  <text class="project-value">{{ drillInfo.project.engineeringName }}</text>
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </template>
         <template v-else>
           <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
         </template>
@@ -227,7 +343,36 @@ export default {
       videoMonitors: [
         { id: 1, name: '监控编号A', url: 'https://example.com/stream1' },
         { id: 2, name: '监控编号B', url: 'https://example.com/stream2' }
-      ]
+      ],
+      // 钻孔概况数据
+      drillInfo: {
+        // 基础信息
+        basicInfo: {
+          drillNo: 'MRNZ23-BF-001',
+          drillType: '控制孔、取样孔',
+          projectManager: '袁柱',
+          technician: '陈欣进',
+          endDate: '2025-02-15'
+        },
+        // 坐标与高程
+        coordinates: {
+          designX: '228136.008',
+          designY: '33932.776',
+          designLongitude: '113.224',
+          designLatitude: '23.119',
+          actualX: '228122.137',
+          actualY: '33930.266',
+          designDepth: '45',
+          actualDepth: '44.8',
+          elevation: '4.3'
+        },
+        // 项目归属
+        project: {
+          projectName: '粤港澳大湾区城际铁路广州东至花都天贵工程',
+          workName: '广州东站-京溪站区间详勘',
+          engineeringName: '粤港澳大湾区城际铁路广州东至花都天贵工程'
+        }
+      }
     }
   },
   methods: {
@@ -559,5 +704,110 @@ export default {
 .video-placeholder-text {
   color: #909399;
   font-size: 28rpx;
+}
+
+/* 钻孔概况样式 */
+.drill-overview {
+  height: 100%;
+  padding: 20rpx;
+}
+
+.info-section {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.section-header {
+  background-color: #f6f8fa;
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid #e8eaed;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rpx;
+  height: 28rpx;
+  background-color: #2b7de0;
+  border-radius: 3rpx;
+}
+
+/* 表格式布局 */
+.info-table {
+  padding: 16rpx;
+}
+
+.info-row {
+  display: flex;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-cell {
+  flex: 1;
+  padding: 20rpx 16rpx;
+  position: relative;
+}
+
+.info-cell:first-child {
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #909399;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.info-value {
+  font-size: 30rpx;
+  color: #303133;
+  font-weight: 500;
+}
+
+/* 项目归属特殊样式 */
+.project-info {
+  padding: 16rpx;
+}
+
+.project-item {
+  padding: 20rpx 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.project-item:last-child {
+  border-bottom: none;
+}
+
+.project-label {
+  font-size: 26rpx;
+  color: #909399;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.project-value {
+  font-size: 30rpx;
+  color: #303133;
+  line-height: 1.5;
+  word-break: break-all;
 }
 </style>
