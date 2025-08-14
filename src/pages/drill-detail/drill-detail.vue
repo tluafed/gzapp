@@ -1281,7 +1281,7 @@ export default {
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: 32rpx 0;
+  padding: 20rpx 0;
   font-size: 28rpx;
   color: #606266;
   position: relative;
