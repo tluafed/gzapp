@@ -27,6 +27,32 @@
             </view>
           </view>
         </template>
+        <template v-else-if="currentBusinessType === 'chart'">
+          <view class="column-chart-container">
+            <view class="chart-wrapper"
+                  :style="{
+                    transform: `scale(${columnChartData.scale}) translate(${columnChartData.translateX}px, ${columnChartData.translateY}px)`,
+                    transition: columnChartData.isDragging ? 'none' : 'transform 0.3s'
+                  }"
+                  @touchstart="handleTouchStart"
+                  @touchmove="handleTouchMove"
+                  @touchend="handleTouchEnd">
+              <image class="chart-image" :src="columnChartData.imageUrl" mode="widthFix"></image>
+            </view>
+            
+            <view class="zoom-controls">
+              <view class="zoom-btn" @click="zoomIn">
+                <text class="zoom-icon">+</text>
+              </view>
+              <view class="zoom-btn" @click="zoomOut">
+                <text class="zoom-icon">-</text>
+              </view>
+              <view class="zoom-btn" @click="resetZoom">
+                <text class="zoom-icon">↺</text>
+              </view>
+            </view>
+          </view>
+        </template>
         <template v-else-if="currentBusinessType === 'overview'">
           <scroll-view class="drill-overview" scroll-y="true">
             <!-- 基础信息 -->
@@ -344,6 +370,18 @@ export default {
         { id: 1, name: '监控编号A', url: 'https://example.com/stream1' },
         { id: 2, name: '监控编号B', url: 'https://example.com/stream2' }
       ],
+      // 柱状图数据
+      columnChartData: {
+        imageUrl: '/static/logo.png', // 使用已有的图片作为示例
+        scale: 1,
+        minScale: 0.5,
+        maxScale: 3,
+        translateX: 0,
+        translateY: 0,
+        startX: 0,
+        startY: 0,
+        isDragging: false
+      },
       // 钻孔概况数据
       drillInfo: {
         // 基础信息
@@ -394,6 +432,70 @@ export default {
       
       // 显示弹窗
       this.showSubPopup = true;
+    },
+    
+    // 柱状图触摸开始
+    handleTouchStart(e) {
+      if (e.touches.length === 1) {
+        // 单指拖动
+        this.columnChartData.isDragging = true;
+        this.columnChartData.startX = e.touches[0].clientX - this.columnChartData.translateX;
+        this.columnChartData.startY = e.touches[0].clientY - this.columnChartData.translateY;
+      } else if (e.touches.length === 2) {
+        // 双指缩放 - 记录初始距离
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        this.initialDistance = Math.sqrt(dx * dx + dy * dy);
+        this.initialScale = this.columnChartData.scale;
+      }
+    },
+    
+    // 柱状图触摸移动
+    handleTouchMove(e) {
+      if (this.columnChartData.isDragging && e.touches.length === 1) {
+        // 单指拖动
+        this.columnChartData.translateX = e.touches[0].clientX - this.columnChartData.startX;
+        this.columnChartData.translateY = e.touches[0].clientY - this.columnChartData.startY;
+      } else if (e.touches.length === 2) {
+        // 双指缩放
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // 计算新的缩放比例
+        let newScale = this.initialScale * (distance / this.initialDistance);
+        
+        // 限制缩放范围
+        newScale = Math.max(this.columnChartData.minScale, Math.min(newScale, this.columnChartData.maxScale));
+        
+        this.columnChartData.scale = newScale;
+      }
+    },
+    
+    // 柱状图触摸结束
+    handleTouchEnd() {
+      this.columnChartData.isDragging = false;
+    },
+    
+    // 放大
+    zoomIn() {
+      if (this.columnChartData.scale < this.columnChartData.maxScale) {
+        this.columnChartData.scale += 0.2;
+      }
+    },
+    
+    // 缩小
+    zoomOut() {
+      if (this.columnChartData.scale > this.columnChartData.minScale) {
+        this.columnChartData.scale -= 0.2;
+      }
+    },
+    
+    // 重置缩放
+    resetZoom() {
+      this.columnChartData.scale = 1;
+      this.columnChartData.translateX = 0;
+      this.columnChartData.translateY = 0;
     },
     
     // 设置弹窗信息
@@ -809,5 +911,58 @@ export default {
   color: #303133;
   line-height: 1.5;
   word-break: break-all;
+}
+
+/* 柱状图样式 */
+.column-chart-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+}
+
+.chart-wrapper {
+  transform-origin: center;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.zoom-controls {
+  position: absolute;
+  bottom: 30rpx;
+  right: 30rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.zoom-btn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.zoom-icon {
+  line-height: 1;
 }
 </style>
