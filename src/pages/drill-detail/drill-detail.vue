@@ -8,6 +8,14 @@
       <text class="header-title">GK01 钻孔详情</text>
       <view class="icon icon-right"></view>
     </view>
+    
+    <!-- 通用二级弹窗 -->
+    <sub-popup :show="showSubPopup" :title="subPopupTitle" @close="closeSubPopup">
+      <view class="sub-popup-content">
+        <!-- 子业务内容将在这里动态显示 -->
+        <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
+      </view>
+    </sub-popup>
 
     <scroll-view class="main-content" scroll-y="true">
       <!-- 钻孔概况 -->
@@ -186,11 +194,19 @@
 </template>
 
 <script>
+import SubPopup from '@/components/sub-popup/sub-popup.vue';
+
 export default {
   name: 'DrillDetail',
+  components: {
+    SubPopup
+  },
   data() {
     return {
       // 页面数据
+      showSubPopup: false,
+      subPopupTitle: '',
+      currentBusinessType: ''
     }
   },
   methods: {
@@ -206,24 +222,106 @@ export default {
     },
     handleItemClick(type) {
       console.log('点击了:', type)
-      // 根据不同类型跳转到不同页面或执行不同操作
+      
+      // 设置弹窗标题和当前业务类型
+      this.setPopupInfo(type);
+      
+      // 显示弹窗
+      this.showSubPopup = true;
+    },
+    
+    // 设置弹窗信息
+    setPopupInfo(type) {
+      this.currentBusinessType = type;
+      
+      // 根据不同类型设置不同的标题
       switch(type) {
         case 'video':
-          // 跳转到视频监控页面
-          break
+          this.subPopupTitle = '视频监控';
+          break;
         case 'overview':
-          // 跳转到钻孔概况页面
-          break
+          this.subPopupTitle = '钻孔概况';
+          break;
         case 'chart':
-          // 跳转到柱状图页面
-          break
-        // 其他case...
+          this.subPopupTitle = '柱状图';
+          break;
+        case 'start-check':
+          this.subPopupTitle = '开工检查';
+          break;
+        case 'single-check':
+          this.subPopupTitle = '单孔报验';
+          break;
+        case 'seal-check':
+          this.subPopupTitle = '封孔验收';
+          break;
+        case 'disclosure':
+          this.subPopupTitle = '钻孔交底';
+          break;
+        case 'positioning':
+          this.subPopupTitle = '开孔定位';
+          break;
+        case 'pipeline':
+          this.subPopupTitle = '管线探测';
+          break;
+        case 'excavation':
+          this.subPopupTitle = '开挖0-3米';
+          break;
+        case 'protection':
+          this.subPopupTitle = '围蔽防护';
+          break;
+        case 'strike':
+          this.subPopupTitle = '击进3-6米';
+          break;
+        case 'drilling':
+          this.subPopupTitle = '机钻施工';
+          break;
+        case 'safety-check':
+          this.subPopupTitle = '安全检查';
+          break;
+        case 'seal-record':
+          this.subPopupTitle = '封孔记录';
+          break;
+        case 'quality-check':
+          this.subPopupTitle = '质量验收';
+          break;
+        case 'stratum':
+          this.subPopupTitle = '地层';
+          break;
+        case 'standard-penetration':
+          this.subPopupTitle = '标贯';
+          break;
+        case 'dynamic-probe':
+          this.subPopupTitle = '动探';
+          break;
+        case 'in-situ-test':
+          this.subPopupTitle = '原位测试';
+          break;
+        case 'sampling':
+          this.subPopupTitle = '取样';
+          break;
+        case 'water-level':
+          this.subPopupTitle = '水位';
+          break;
+        case 'single-box':
+          this.subPopupTitle = '单箱';
+          break;
+        case 'overall':
+          this.subPopupTitle = '整体';
+          break;
+        case 'ground':
+          this.subPopupTitle = '地面';
+          break;
+        case 'shift-report':
+          this.subPopupTitle = '班报表';
+          break;
         default:
-          uni.showToast({
-            title: `点击了${type}`,
-            icon: 'none'
-          })
+          this.subPopupTitle = '详情';
       }
+    },
+    
+    // 关闭弹窗
+    closeSubPopup() {
+      this.showSubPopup = false;
     }
   }
 }
@@ -387,5 +485,13 @@ export default {
   background-color: #ffffff;
   color: #a8abb2;
   border-color: #dcdfe6;
+}
+</style>
+
+<style scoped>
+/* 二级弹窗内容样式 */
+.sub-popup-content {
+  padding: 20rpx;
+  height: 100%;
 }
 </style>
