@@ -1,299 +1,626 @@
 <template>
   <view class="shift-report-container">
-    <view class="content-card">
-      <view class="section-title">班报表</view>
-      
-      <view class="date-selector">
-        <view class="selector-label">选择日期：</view>
-        <picker mode="date" :value="currentDate" @change="dateChange" class="date-picker">
-          <view class="picker-value">{{ currentDate }}</view>
-        </picker>
-      </view>
-      
-      <view class="shift-tabs">
+    <!-- 报表类型选择弹窗 -->
+    <sub-popup 
+      :show="showTypeSelector" 
+      title="选择报表类型" 
+      @close="closeTypeSelector"
+    >
+      <view class="type-selector">
         <view 
-          class="tab-item" 
-          :class="{ active: currentShift === 'morning' }"
-          @click="switchShift('morning')"
+          class="type-item"
+          v-for="type in reportTypes" 
+          :key="type.key"
+          @click="selectReportType(type)"
         >
-          早班
-        </view>
-        <view 
-          class="tab-item" 
-          :class="{ active: currentShift === 'afternoon' }"
-          @click="switchShift('afternoon')"
-        >
-          中班
-        </view>
-        <view 
-          class="tab-item" 
-          :class="{ active: currentShift === 'night' }"
-          @click="switchShift('night')"
-        >
-          晚班
+          <text class="type-name">{{ type.name }}</text>
         </view>
       </view>
-      
-      <view class="report-form">
-        <view class="form-group">
-          <view class="form-title">基本信息</view>
-          <view class="form-item">
-            <text class="item-label">钻孔编号：</text>
-            <text class="item-value">GK01</text>
-          </view>
-          <view class="form-item">
-            <text class="item-label">班次：</text>
-            <text class="item-value">{{ shiftName }}</text>
-          </view>
-          <view class="form-item">
-            <text class="item-label">班组长：</text>
-            <text class="item-value">张工</text>
-          </view>
-        </view>
-        
-        <view class="form-group">
-          <view class="form-title">工作内容</view>
-          <view class="form-item">
-            <text class="item-label">起始深度：</text>
-            <input type="digit" class="item-input" placeholder="请输入起始深度" />
-          </view>
-          <view class="form-item">
-            <text class="item-label">终止深度：</text>
-            <input type="digit" class="item-input" placeholder="请输入终止深度" />
-          </view>
-          <view class="form-item">
-            <text class="item-label">岩性描述：</text>
-            <textarea class="item-textarea" placeholder="请输入岩性描述"></textarea>
-          </view>
-        </view>
-        
-        <view class="form-group">
-          <view class="form-title">设备使用</view>
-          <view class="form-item">
-            <text class="item-label">钻机型号：</text>
-            <input type="text" class="item-input" placeholder="请输入钻机型号" />
-          </view>
-          <view class="form-item">
-            <text class="item-label">钻头类型：</text>
-            <input type="text" class="item-input" placeholder="请输入钻头类型" />
-          </view>
-          <view class="form-item">
-            <text class="item-label">泥浆参数：</text>
-            <input type="text" class="item-input" placeholder="请输入泥浆参数" />
-          </view>
-        </view>
-        
-        <view class="form-group">
-          <view class="form-title">异常情况</view>
-          <view class="form-item full-width">
-            <textarea class="item-textarea" placeholder="请输入异常情况描述"></textarea>
-          </view>
-        </view>
-      </view>
-      
-      <view class="action-bar">
-        <button class="action-button">保存草稿</button>
-        <button class="action-button primary">提交报表</button>
-      </view>
-    </view>
+    </sub-popup>
+
+    <recording-container
+      :dataList="shiftReportList"
+      :cardConfig="currentCardConfig"
+      :formConfig="currentFormConfig"
+      :emptyText="'暂无班报表数据，请点击右下角按钮添加'"
+      :addTitle="'新增班报表'"
+      :editTitle="'编辑班报表'"
+      @save="handleSave"
+      @edit-item="handleEditItem"
+      @add-item="handleAddItem"
+    />
   </view>
 </template>
 
 <script>
+import RecordingContainer from '../recording/common/RecordingContainer.vue';
+import SubPopup from '../../sub-popup/sub-popup.vue';
+
 export default {
   name: 'ShiftReport',
+  components: {
+    RecordingContainer,
+    SubPopup
+  },
   data() {
     return {
-      currentDate: this.formatDate(new Date()),
-      currentShift: 'morning'
+      showTypeSelector: false,
+      currentReportType: 'manual',
+      shiftReportList: [
+        {
+          id: 1,
+          reportType: '人工挖深',
+          startDepth: 25,
+          holeDepth: '填写钻具全长与上余',
+          advance: '填写进尺',
+          rockCoreLength: '填写岩(土)芯长度',
+          holeCondition: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等'
+        }
+      ],
+      
+      // 报表类型配置
+      reportTypes: [
+        { key: 'manual', name: '人工挖深' },
+        { key: 'standard', name: '标贯试验' },
+        { key: 'hammer', name: '锤击贯入' },
+        { key: 'rotary', name: '回转钻进' },
+        { key: 'sampling', name: '取样' }
+      ],
+      
+      // 不同报表类型的配置
+      reportConfigs: {
+        manual: {
+          cardConfig: {
+            titleField: 'reportType',
+            subtitleFormat: (item) => `起始深度: ${item.startDepth}m`,
+            fields: [
+              [
+                { key: 'startDepth', label: '起始深度', suffix: 'm' },
+                { key: 'advance', label: '进尺' }
+              ],
+              [
+                { key: 'holeDepth', label: '孔深', fullWidth: true }
+              ],
+              [
+                { key: 'holeCondition', label: '孔内情况', fullWidth: true, isDescription: true }
+              ]
+            ]
+          },
+          formConfig: {
+            fields: [
+              {
+                key: 'startDepth',
+                label: '起始深度',
+                type: 'number',
+                placeholder: '请输入起始深度(m)',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺(m)',
+                type: 'input',
+                placeholder: '填写进尺',
+                required: true
+              },
+              {
+                key: 'rockCoreLength',
+                label: '岩(土)芯长度',
+                type: 'input',
+                placeholder: '填写岩(土)芯长度',
+                required: false
+              },
+              {
+                key: 'holeCondition',
+                label: '孔内情况',
+                type: 'textarea',
+                placeholder: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等',
+                required: false
+              }
+            ]
+          }
+        },
+        standard: {
+          cardConfig: {
+            titleField: 'reportType',
+            subtitleFormat: (item) => `起始深度: ${item.startDepth}m`,
+            fields: [
+              [
+                { key: 'startDepth', label: '起始深度', suffix: 'm' },
+                { key: 'drillToolLength', label: '钻具全长', suffix: 'm' }
+              ],
+              [
+                { key: 'remainder', label: '上余', suffix: 'm' },
+                { key: 'advance', label: '进尺', suffix: 'm' }
+              ],
+              [
+                { key: 'standardDepthFrom', label: '标贯深度自', suffix: 'm' },
+                { key: 'standardDepthTo', label: '标贯深度至', suffix: 'm' }
+              ]
+            ]
+          },
+          formConfig: {
+            fields: [
+              {
+                key: 'startDepth',
+                label: '起始深度',
+                type: 'number',
+                placeholder: '请输入起始深度(m)',
+                required: true
+              },
+              {
+                key: 'drillToolLength',
+                label: '钻具全长',
+                type: 'input',
+                placeholder: '填写钻具全长(m)',
+                required: true
+              },
+              {
+                key: 'remainder',
+                label: '上余',
+                type: 'input',
+                placeholder: '填写上余',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺',
+                type: 'input',
+                placeholder: '填写进尺',
+                required: true
+              },
+              {
+                key: 'rodLength',
+                label: '杆长',
+                type: 'input',
+                placeholder: '填写杆长',
+                required: false
+              },
+              {
+                key: 'standardDepthFrom',
+                label: '标贯深度自',
+                type: 'input',
+                placeholder: '填写标贯深度自(m)',
+                required: false
+              },
+              {
+                key: 'standardDepthTo',
+                label: '标贯深度至',
+                type: 'input',
+                placeholder: '填写标贯深度至(m)',
+                required: false
+              },
+              {
+                key: 'hit15cm',
+                label: '击数15cm',
+                type: 'input',
+                placeholder: '击数15cm',
+                required: false
+              },
+              {
+                key: 'hit10cm1',
+                label: '击数10cm',
+                type: 'input',
+                placeholder: '击数10cm',
+                required: false
+              },
+              {
+                key: 'hit10cm2',
+                label: '击数10cm',
+                type: 'input',
+                placeholder: '击数10cm',
+                required: false
+              },
+              {
+                key: 'hit10cm3',
+                label: '击数10cm',
+                type: 'input',
+                placeholder: '击数10cm',
+                required: false
+              },
+              {
+                key: 'rockCoreLength',
+                label: '岩(土)芯长度',
+                type: 'input',
+                placeholder: '填写岩(土)芯长度',
+                required: false
+              },
+              {
+                key: 'holeCondition',
+                label: '孔内情况',
+                type: 'textarea',
+                placeholder: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等',
+                required: false
+              }
+            ]
+          }
+        },
+        hammer: {
+          cardConfig: {
+            titleField: 'reportType',
+            subtitleFormat: (item) => `钻头类型: ${item.drillType || ''} | 钻头规格: ${item.drillSpec || ''}`,
+            fields: [
+              [
+                { key: 'drillType', label: '钻头类型' },
+                { key: 'drillSpec', label: '钻头规格' }
+              ],
+              [
+                { key: 'startDepth', label: '起始深度', suffix: 'm' },
+                { key: 'advance', label: '进尺', suffix: 'm' }
+              ]
+            ]
+          },
+          formConfig: {
+            fields: [
+              {
+                key: 'drillType',
+                label: '钻头类型',
+                type: 'picker',
+                options: ['合金', '钢粒', '金刚石'],
+                placeholder: '请选择钻头类型',
+                required: true
+              },
+              {
+                key: 'drillSpec',
+                label: '钻头规格',
+                type: 'picker',
+                options: ['110mm', '130mm', '150mm'],
+                placeholder: '请选择钻头规格',
+                required: true
+              },
+              {
+                key: 'startDepth',
+                label: '起始深度',
+                type: 'number',
+                placeholder: '请输入起始深度(m)',
+                required: true
+              },
+              {
+                key: 'drillToolLength',
+                label: '钻具全长',
+                type: 'input',
+                placeholder: '填写钻具全长(m)',
+                required: true
+              },
+              {
+                key: 'remainder',
+                label: '上余',
+                type: 'input',
+                placeholder: '填写上余',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺',
+                type: 'input',
+                placeholder: '填写进尺',
+                required: true
+              },
+              {
+                key: 'rockCoreLength',
+                label: '岩(土)芯长度',
+                type: 'input',
+                placeholder: '填写岩(土)芯长度',
+                required: false
+              },
+              {
+                key: 'holeCondition',
+                label: '孔内情况',
+                type: 'textarea',
+                placeholder: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等',
+                required: false
+              }
+            ]
+          }
+        },
+        rotary: {
+          cardConfig: {
+            titleField: 'reportType',
+            subtitleFormat: (item) => `钻头类型: ${item.drillType || ''} | 钻头规格: ${item.drillSpec || ''}`,
+            fields: [
+              [
+                { key: 'drillType', label: '钻头类型' },
+                { key: 'drillSpec', label: '钻头规格' }
+              ],
+              [
+                { key: 'startDepth', label: '起始深度', suffix: 'm' },
+                { key: 'advance', label: '进尺', suffix: 'm' }
+              ]
+            ]
+          },
+          formConfig: {
+            fields: [
+              {
+                key: 'drillType',
+                label: '钻头类型',
+                type: 'picker',
+                options: ['合金', '钢粒', '金刚石'],
+                placeholder: '请选择钻头类型',
+                required: true
+              },
+              {
+                key: 'drillSpec',
+                label: '钻头规格',
+                type: 'picker',
+                options: ['110mm', '130mm', '150mm'],
+                placeholder: '请选择钻头规格',
+                required: true
+              },
+              {
+                key: 'startDepth',
+                label: '起始深度',
+                type: 'number',
+                placeholder: '请输入起始深度(m)',
+                required: true
+              },
+              {
+                key: 'drillToolLength',
+                label: '钻具全长',
+                type: 'input',
+                placeholder: '填写钻具全长(m)',
+                required: true
+              },
+              {
+                key: 'remainder',
+                label: '上余',
+                type: 'input',
+                placeholder: '填写上余',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺',
+                type: 'input',
+                placeholder: '填写进尺',
+                required: true
+              },
+              {
+                key: 'rockCoreLength',
+                label: '岩(土)芯长度',
+                type: 'input',
+                placeholder: '填写岩(土)芯长度',
+                required: false
+              },
+              {
+                key: 'holeCondition',
+                label: '孔内情况',
+                type: 'textarea',
+                placeholder: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等',
+                required: false
+              }
+            ]
+          }
+        },
+        sampling: {
+          cardConfig: {
+            titleField: 'reportType',
+            subtitleFormat: (item) => `起始深度: ${item.startDepth}m`,
+            fields: [
+              [
+                { key: 'startDepth', label: '起始深度', suffix: 'm' },
+                { key: 'remainder', label: '上余', suffix: 'm' }
+              ],
+              [
+                { key: 'sampleType', label: '样品类型' },
+                { key: 'samplingDepthFrom', label: '取样深度自', suffix: 'm' }
+              ],
+              [
+                { key: 'samplingDepthTo', label: '取样深度至', suffix: 'm' },
+                { key: 'advance', label: '进尺', suffix: 'm' }
+              ]
+            ]
+          },
+          formConfig: {
+            fields: [
+              {
+                key: 'startDepth',
+                label: '起始深度',
+                type: 'number',
+                placeholder: '请输入起始深度(m)',
+                required: true
+              },
+              {
+                key: 'remainder',
+                label: '上余',
+                type: 'input',
+                placeholder: '填写上余',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺',
+                type: 'input',
+                placeholder: '填写进尺',
+                required: true
+              },
+              {
+                key: 'sampleType',
+                label: '样品类型',
+                type: 'picker',
+                options: ['原状土', '扰动土', '岩石', '水样'],
+                placeholder: '请选择样品类型',
+                required: true
+              },
+              {
+                key: 'samplingDepthFrom',
+                label: '取样深度自',
+                type: 'input',
+                placeholder: '填写取样深度自(m)',
+                required: false
+              },
+              {
+                key: 'samplingDepthTo',
+                label: '取样深度至',
+                type: 'input',
+                placeholder: '填写取样深度至(m)',
+                required: false
+              },
+              {
+                key: 'rockCoreLength',
+                label: '岩(土)芯长度',
+                type: 'input',
+                placeholder: '填写岩(土)芯长度',
+                required: false
+              },
+              {
+                key: 'holeCondition',
+                label: '孔内情况',
+                type: 'textarea',
+                placeholder: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等',
+                required: false
+              }
+            ]
+          }
+        }
+      }
     }
   },
   computed: {
-    shiftName() {
-      const shiftMap = {
-        'morning': '早班',
-        'afternoon': '中班',
-        'night': '晚班'
+    currentCardConfig() {
+      return this.reportConfigs[this.currentReportType].cardConfig;
+    },
+    currentFormConfig() {
+      const baseConfig = this.reportConfigs[this.currentReportType].formConfig;
+      // 在表单配置前添加报表类型选择
+      return {
+        fields: [
+          {
+            key: 'reportType',
+            label: '作业类型',
+            type: 'picker',
+            options: this.reportTypes.map(type => type.name),
+            placeholder: '请选择作业类型',
+            required: true
+          },
+          ...baseConfig.fields
+        ]
       };
-      return shiftMap[this.currentShift] || '早班';
     }
   },
   methods: {
-    formatDate(date) {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
+    // 处理新增项目
+    handleAddItem() {
+      this.showTypeSelector = true;
     },
-    dateChange(e) {
-      this.currentDate = e.detail.value;
+    
+    // 关闭类型选择器
+    closeTypeSelector() {
+      this.showTypeSelector = false;
     },
-    switchShift(shift) {
-      this.currentShift = shift;
+    
+    // 选择报表类型
+    selectReportType(type) {
+      this.currentReportType = type.key;
+      this.closeTypeSelector();
+    },
+    
+    // 处理保存
+    handleSave({ data, isEdit, editIndex }) {
+      // 验证起始深度
+      if (parseFloat(data.startDepth) < 0) {
+        uni.showToast({
+          title: '起始深度不能为负数',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      if (isEdit) {
+        // 编辑现有班报表
+        if (editIndex > -1) {
+          this.shiftReportList.splice(editIndex, 1, data);
+        }
+      } else {
+        // 添加新班报表
+        const newId = this.shiftReportList.length > 0 ? Math.max(...this.shiftReportList.map(item => item.id)) + 1 : 1;
+        data.id = newId;
+        this.shiftReportList.push(data);
+      }
+      
+      // 按起始深度排序
+      this.shiftReportList.sort((a, b) => a.startDepth - b.startDepth);
+      
+      // 提示成功
+      uni.showToast({
+        title: isEdit ? '编辑成功' : '添加成功',
+        icon: 'success'
+      });
+    },
+    
+    // 处理编辑项目
+    handleEditItem(item) {
+      // 根据编辑项目的报表类型设置当前类型
+      const reportType = this.reportTypes.find(type => type.name === item.reportType);
+      if (reportType) {
+        this.currentReportType = reportType.key;
+      }
+      console.log('编辑班报表:', item);
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .shift-report-container {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #e8e8e8 !important;
+}
+
+.type-selector {
   padding: 20rpx;
 }
 
-.content-card {
-  background-color: #fff;
-  border-radius: 12rpx;
-  padding: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 30rpx;
-  border-left: 8rpx solid #1890ff;
-  padding-left: 20rpx;
-}
-
-.date-selector {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30rpx;
-}
-
-.selector-label {
-  font-size: 28rpx;
-  color: #666;
-  margin-right: 20rpx;
-}
-
-.date-picker {
-  flex: 1;
-}
-
-.picker-value {
-  font-size: 28rpx;
-  color: #333;
-  padding: 10rpx 20rpx;
-  background-color: #f5f5f5;
+.type-item {
+  padding: 30rpx 20rpx;
+  background-color: #f8f9fa;
   border-radius: 8rpx;
-}
-
-.shift-tabs {
-  display: flex;
-  margin-bottom: 30rpx;
-  border-bottom: 1rpx solid #eee;
-}
-
-.tab-item {
-  flex: 1;
-  text-align: center;
-  font-size: 28rpx;
-  color: #666;
-  padding: 20rpx 0;
-  position: relative;
-}
-
-.tab-item.active {
-  color: #1890ff;
-  font-weight: 500;
-}
-
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 4rpx;
-  background-color: #1890ff;
-}
-
-.report-form {
-  margin-bottom: 30rpx;
-}
-
-.form-group {
-  margin-bottom: 30rpx;
-  background-color: #f9f9f9;
-  border-radius: 8rpx;
-  padding: 20rpx;
-}
-
-.form-title {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #333;
   margin-bottom: 20rpx;
-  border-bottom: 1rpx solid #eee;
-  padding-bottom: 10rpx;
+  border: 2rpx solid transparent;
 }
 
-.form-item {
-  display: flex;
-  margin-bottom: 20rpx;
+.type-item:active {
+  background-color: #e9ecef;
+  border-color: #1890ff;
 }
 
-.form-item:last-child {
-  margin-bottom: 0;
-}
-
-.item-label {
-  width: 160rpx;
-  font-size: 28rpx;
-  color: #666;
-  line-height: 60rpx;
-}
-
-.item-value {
-  flex: 1;
-  font-size: 28rpx;
+.type-name {
+  font-size: 30rpx;
   color: #333;
-  line-height: 60rpx;
-}
-
-.item-input {
-  flex: 1;
-  height: 60rpx;
-  font-size: 28rpx;
-  background-color: #fff;
-  border-radius: 6rpx;
-  padding: 0 20rpx;
-}
-
-.item-textarea {
-  flex: 1;
-  height: 160rpx;
-  font-size: 28rpx;
-  background-color: #fff;
-  border-radius: 6rpx;
-  padding: 10rpx 20rpx;
-}
-
-.full-width {
-  display: block;
-}
-
-.action-bar {
-  display: flex;
-  justify-content: space-between;
-}
-
-.action-button {
-  width: 48%;
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-  border-radius: 8rpx;
-  font-size: 28rpx;
-  background-color: #f5f5f5;
-  color: #666;
-}
-
-.action-button.primary {
-  background-color: #1890ff;
-  color: #fff;
+  font-weight: 500;
 }
 </style>
