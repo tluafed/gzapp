@@ -65,6 +65,25 @@
         <quality-check
           v-else-if="currentBusinessType === 'quality-check'"
         />
+        <!-- 编录数据组件 -->
+        <Stratum
+          v-else-if="currentBusinessType === 'stratum'"
+        />
+        <StandardPenetration
+          v-else-if="currentBusinessType === 'standard-penetration'"
+        />
+        <DynamicProbe
+          v-else-if="currentBusinessType === 'dynamic-probe'"
+        />
+        <InSituTest
+          v-else-if="currentBusinessType === 'in-situ-test'"
+        />
+        <Sampling
+          v-else-if="currentBusinessType === 'sampling'"
+        />
+        <WaterLevel
+          v-else-if="currentBusinessType === 'water-level'"
+        />
         <view v-else>
           <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
         </view>
@@ -295,6 +314,14 @@ import {
   SealRecord,
   QualityCheck
 } from '@/components/drill-detail/safety';
+import {
+  Stratum,
+  StandardPenetration,
+  DynamicProbe,
+  InSituTest,
+  Sampling,
+  WaterLevel
+} from '@/components/drill-detail/recording';
 
 export default {
   name: 'DrillDetail',
@@ -315,7 +342,13 @@ export default {
     DrillingWork,
     SafetyCheck,
     SealRecord,
-    QualityCheck
+    QualityCheck,
+    Stratum,
+    StandardPenetration,
+    DynamicProbe,
+    InSituTest,
+    Sampling,
+    WaterLevel
   },
   data() {
     return {
