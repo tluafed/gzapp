@@ -29,54 +29,78 @@
           <view class="form-list">
             <view class="form-item">
               <text class="form-label required">标段</text>
-              <picker mode="selector" :value="0" :range="['afb2a52a-8879-40ee-bb5b-08c6e25c8a1b']">
-                <view class="form-value">afb2a52a-8879-40ee-bb5b-08c6e25c8a1b</view>
+              <picker mode="selector" :value="0" :range="['==请选择==']">
+                <view class="form-value">==请选择==</view>
               </picker>
             </view>
             
             <view class="form-item">
               <text class="form-label required">工点</text>
-              <picker mode="selector" :value="0" :range="['L018B00001']">
-                <view class="form-value">L018B00001</view>
+              <picker mode="selector" :value="0" :range="['==请选择==']">
+                <view class="form-value">==请选择==</view>
               </picker>
             </view>
             
             <view class="form-item">
               <text class="form-label required">编号</text>
-              <input class="form-input" value="L018B-Z3-1-A7-1819" />
+              <input class="form-input" placeholder="请输入编号" />
             </view>
             
             <view class="form-item">
               <text class="form-label required">工程项目</text>
-              <view class="form-value multiline">粤港澳大湾区城际线路广州东至花都天贵工程【广州东站-京溪站区间】详勘勘察</view>
+              <picker mode="selector" :value="0" :range="['==请选择==']">
+                <view class="form-value">==请选择==</view>
+              </picker>
             </view>
             
             <view class="form-item">
               <text class="form-label required">钻孔编号</text>
-              <picker mode="selector" :value="0" :range="['MRNZ3-GJ-01']">
-                <view class="form-value">MRNZ3-GJ-01</view>
+              <picker mode="selector" :value="0" :range="['==请选择==']">
+                <view class="form-value">==请选择==</view>
               </picker>
             </view>
             
             <view class="form-item">
               <text class="form-label required">编录技术员</text>
-              <picker mode="selector" :value="0" :range="['5ee3647e-3ddd-4327-acf5-273f06e811cd']">
-                <view class="form-value">5ee3647e-3ddd-4327-acf5-273f06e811cd</view>
+              <picker mode="selector" :value="0" :range="['==请选择==']">
+                <view class="form-value">==请选择==</view>
               </picker>
             </view>
             
             <view class="form-item">
               <text class="form-label required">机台编号</text>
-              <picker mode="selector" :value="0" :range="['1#刘建祥']">
-                <view class="form-value">1#刘建祥</view>
-              </picker>
+              <input class="form-input" placeholder="请输入机台编号" />
             </view>
             
             <view class="form-item">
               <text class="form-label required">机长</text>
-              <picker mode="selector" :value="0" :range="['刘建祥']">
-                <view class="form-value">刘建祥</view>
+              <picker mode="selector" :value="0" :range="['==请选择==']">
+                <view class="form-value">==请选择==</view>
               </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">机台型号</text>
+              <input class="form-input" placeholder="请输入机台型号" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">总体单位检查人</text>
+              <picker mode="selector" :value="0" :range="['==请选择==']">
+                <view class="form-value">==请选择==</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">检查时间</text>
+              <picker mode="date" :value="formData.checkDate">
+                <view class="form-value">{{ formData.checkDate }}</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">备注</text>
+              <textarea class="form-textarea" placeholder="请输入备注信息" />
             </view>
           </view>
         </view>
@@ -122,6 +146,30 @@
               <view class="form-value-tags">
                 <view class="tag active">洛阳铲挖探</view>
                 <view class="tag">坑探</view>
+              </view>
+              
+              <!-- 洛阳铲挖探详细信息 -->
+              <view class="explore-details" v-if="formData.exploreType === '洛阳铲挖探'">
+                <view class="explore-detail-item">
+                  <text class="detail-label">深度(m)</text>
+                  <input class="detail-input" type="digit" placeholder="请填写深度" v-model="formData.luoyangDepth" />
+                </view>
+              </view>
+              
+              <!-- 坑探详细信息 -->
+              <view class="explore-details" v-if="formData.exploreType === '坑探'">
+                <view class="explore-detail-item">
+                  <text class="detail-label">长(m)</text>
+                  <input class="detail-input" type="digit" placeholder="请填写长度" v-model="formData.pitLength" />
+                </view>
+                <view class="explore-detail-item">
+                  <text class="detail-label">宽(m)</text>
+                  <input class="detail-input" type="digit" placeholder="请填写宽度" v-model="formData.pitWidth" />
+                </view>
+                <view class="explore-detail-item">
+                  <text class="detail-label">深(m)</text>
+                  <input class="detail-input" type="digit" placeholder="请填写深度" v-model="formData.pitDepth" />
+                </view>
               </view>
             </view>
             <view class="business-row">
@@ -210,11 +258,27 @@ export default {
   data() {
     return {
       activeTab: this.activeTabProp,
+      formData: {
+        checkDate: '2025-08-15',
+        exploreType: '洛阳铲挖探', // 默认选中洛阳铲挖探
+        luoyangDepth: '', // 洛阳铲挖探深度
+        pitLength: '', // 坑探长度
+        pitWidth: '', // 坑探宽度
+        pitDepth: '', // 坑探深度
+        surroundingTypes: ['防撞墙', '警示筒', '引路牌'], // 围蔽类型选中项
+        techPreparations: ['责任条款验收表', '标识牌及取样器'], // 技术准备选中项
+        pipelineChecks: ['已按委管线图', '已征询管线权属单位意见'] // 管线排查选中项
+      },
       attachments: [
         { name: '开工检查表.pdf', size: '2.5MB' },
         { name: '现场照片.zip', size: '15.8MB' },
         { name: '设备检查记录.doc', size: '1.2MB' }
-      ]
+      ],
+      // 选项数据
+      surroundingTypeOptions: ['防撞墙', '反光条及挡土', '警示筒', '单色布', '抽水机械马达', '引路牌', '警示灯'],
+      techPreparationOptions: ['责任条款验收表', '班组表及岗心牌', '标识牌及取样器', '安全帽眼镜等一'],
+      pipelineCheckOptions: ['已按委管线图', '孔位已确保既有管线', '已征询管线权属单位意见'],
+      exploreTypeOptions: ['洛阳铲挖探', '坑探']
     }
   },
   watch: {
@@ -223,6 +287,11 @@ export default {
     }
   },
   methods: {
+    // 切换挖探类型
+    toggleExploreType(type) {
+      this.formData.exploreType = type;
+    },
+    
     previewFile(file) {
       uni.showToast({
         title: `预览 ${file.name}`,
@@ -421,12 +490,62 @@ export default {
   padding: 8rpx 20rpx;
   border-radius: 30rpx;
   border: 1rpx solid #e8e8e8;
+  cursor: pointer;
 }
 
 .tag.active {
   color: #1890ff;
   background-color: #e6f7ff;
   border-color: #91d5ff;
+}
+
+/* 挖探详细信息样式 */
+.explore-details {
+  margin-top: 20rpx;
+  background-color: #f9f9f9;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx dashed #e8e8e8;
+}
+
+.explore-detail-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.explore-detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-size: 26rpx;
+  color: #333;
+  width: 120rpx;
+  flex-shrink: 0;
+}
+
+.detail-input {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+  background-color: #fff;
+  padding: 12rpx 16rpx;
+  border-radius: 6rpx;
+  border: 1rpx solid #e8e8e8;
+}
+
+/* 文本域样式 */
+.form-textarea {
+  width: 100%;
+  height: 160rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: #f8f9fa;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #e8e8e8;
+  box-sizing: border-box;
 }
 
 /* 附件样式 */

@@ -1,4 +1,4 @@
- <template>
+<template>
   <view class="seal-check-container">
     <view class="tab-header">
       <view 
@@ -107,10 +107,8 @@
             
             <view class="form-item">
               <text class="form-label required">封孔方法</text>
-              <view class="checkbox-group">
-                <label class="checkbox-item">
-                  <checkbox value="孔底往上逐渐水泥浆" :checked="formData.sealMethods.includes('孔底往上逐渐水泥浆')" @change="onSealMethodChange" />孔底往上逐渐水泥浆
-                </label>
+              <view class="form-value-tags">
+                <view class="tag" :class="{ active: formData.sealMethods.includes('孔底往上逐渐水泥浆') }" @click="toggleSealMethod('孔底往上逐渐水泥浆')">孔底往上逐渐水泥浆</view>
               </view>
             </view>
             
@@ -121,31 +119,22 @@
             
             <view class="form-item">
               <text class="form-label">停置条件</text>
-              <view class="checkbox-group">
-                <label class="checkbox-item">
-                  <checkbox value="孔口返浆后停泥水泥浆" :checked="formData.stopConditions.includes('孔口返浆后停泥水泥浆')" @change="onStopConditionChange" />孔口返浆后停泥水泥浆
-                </label>
+              <view class="form-value-tags">
+                <view class="tag" :class="{ active: formData.stopConditions.includes('孔口返浆后停泥水泥浆') }" @click="toggleStopCondition('孔口返浆后停泥水泥浆')">孔口返浆后停泥水泥浆</view>
               </view>
             </view>
             
             <view class="form-item">
               <text class="form-label">孔口恢复</text>
-              <view class="checkbox-group">
-                <label class="checkbox-item">
-                  <checkbox value="水泥砂浆恢复" :checked="formData.holeRestoration.includes('水泥砂浆恢复')" @change="onHoleRestorationChange" />水泥砂浆恢复
-                </label>
+              <view class="form-value-tags">
+                <view class="tag" :class="{ active: formData.holeRestoration.includes('水泥砂浆恢复') }" @click="toggleHoleRestoration('水泥砂浆恢复')">水泥砂浆恢复</view>
               </view>
             </view>
             
             <view class="form-item">
               <text class="form-label">封孔录像</text>
-              <view class="checkbox-group">
-                <label class="checkbox-item">
-                  <checkbox value="内容完整" :checked="formData.sealVideo.includes('内容完整')" @change="onSealVideoChange" />内容完整
-                </label>
-                <label class="checkbox-item">
-                  <checkbox value="清晰" :checked="formData.sealVideo.includes('清晰')" @change="onSealVideoChange" />清晰
-                </label>
+              <view class="form-value-tags">
+                <view class="tag" :class="{ active: formData.sealVideo.includes('内容完整，清晰') }" @click="toggleSealVideo('内容完整，清晰')">内容完整，清晰</view>
               </view>
             </view>
             
@@ -165,14 +154,18 @@
           <view class="business-content">
             <view class="business-row">
               <view class="business-label">验收结论</view>
-              <view class="option-group">
-                <view class="option-item radio" :class="{ checked: formData.acceptanceResult === 'agree' }" @click="setAcceptanceResult('agree')">
-                  <view class="option-icon radio-icon"></view>
-                  <text class="option-text">同意自检意见，通过该孔封孔验收</text>
+              <view class="radio-options">
+                <view class="radio-option" :class="{ active: formData.acceptanceResult === 'agree' }" @click="setAcceptanceResult('agree')">
+                  <view class="radio-circle">
+                    <view class="radio-inner" v-if="formData.acceptanceResult === 'agree'"></view>
+                  </view>
+                  <text class="radio-text">同意自检意见，通过该孔封孔验收</text>
                 </view>
-                <view class="option-item radio" :class="{ checked: formData.acceptanceResult === 'disagree' }" @click="setAcceptanceResult('disagree')">
-                  <view class="option-icon radio-icon"></view>
-                  <text class="option-text">不同意自检意见，该孔重新封孔</text>
+                <view class="radio-option" :class="{ active: formData.acceptanceResult === 'disagree' }" @click="setAcceptanceResult('disagree')">
+                  <view class="radio-circle">
+                    <view class="radio-inner" v-if="formData.acceptanceResult === 'disagree'"></view>
+                  </view>
+                  <text class="radio-text">不同意自检意见，该孔重新封孔</text>
                 </view>
               </view>
             </view>
@@ -268,7 +261,7 @@ export default {
         cementAmount: '',
         stopConditions: ['孔口返浆后停泥水泥浆'],
         holeRestoration: ['水泥砂浆恢复'],
-        sealVideo: ['内容完整', '清晰'],
+        sealVideo: ['内容完整，清晰'],
         selfCheckOpinion: '',
         acceptanceResult: 'agree',
         acceptanceOpinion: '',
@@ -295,64 +288,44 @@ export default {
       this.endDate = e.detail.value
     },
     
-    onSealMethodChange(e) {
-      const value = e.detail.value[0]
-      if (e.detail.value.length > 0) {
-        if (!this.formData.sealMethods.includes(value)) {
-          this.formData.sealMethods.push(value)
-        }
+    toggleSealMethod(value) {
+      const index = this.formData.sealMethods.indexOf(value);
+      if (index === -1) {
+        this.formData.sealMethods.push(value);
       } else {
-        const index = this.formData.sealMethods.indexOf(value)
-        if (index > -1) {
-          this.formData.sealMethods.splice(index, 1)
-        }
+        this.formData.sealMethods.splice(index, 1);
       }
     },
     
-    onStopConditionChange(e) {
-      const value = e.detail.value[0]
-      if (e.detail.value.length > 0) {
-        if (!this.formData.stopConditions.includes(value)) {
-          this.formData.stopConditions.push(value)
-        }
+    toggleStopCondition(value) {
+      const index = this.formData.stopConditions.indexOf(value);
+      if (index === -1) {
+        this.formData.stopConditions.push(value);
       } else {
-        const index = this.formData.stopConditions.indexOf(value)
-        if (index > -1) {
-          this.formData.stopConditions.splice(index, 1)
-        }
+        this.formData.stopConditions.splice(index, 1);
       }
     },
     
-    onHoleRestorationChange(e) {
-      const value = e.detail.value[0]
-      if (e.detail.value.length > 0) {
-        if (!this.formData.holeRestoration.includes(value)) {
-          this.formData.holeRestoration.push(value)
-        }
+    toggleHoleRestoration(value) {
+      const index = this.formData.holeRestoration.indexOf(value);
+      if (index === -1) {
+        this.formData.holeRestoration.push(value);
       } else {
-        const index = this.formData.holeRestoration.indexOf(value)
-        if (index > -1) {
-          this.formData.holeRestoration.splice(index, 1)
-        }
+        this.formData.holeRestoration.splice(index, 1);
       }
     },
     
-    onSealVideoChange(e) {
-      const value = e.detail.value[0]
-      if (e.detail.value.length > 0) {
-        if (!this.formData.sealVideo.includes(value)) {
-          this.formData.sealVideo.push(value)
-        }
+    toggleSealVideo(value) {
+      const index = this.formData.sealVideo.indexOf(value);
+      if (index === -1) {
+        this.formData.sealVideo.push(value);
       } else {
-        const index = this.formData.sealVideo.indexOf(value)
-        if (index > -1) {
-          this.formData.sealVideo.splice(index, 1)
-        }
+        this.formData.sealVideo.splice(index, 1);
       }
     },
     
     setAcceptanceResult(value) {
-      this.formData.acceptanceResult = value
+      this.formData.acceptanceResult = value;
     },
     
     previewFile(file) {
@@ -396,7 +369,6 @@ export default {
       })
     },
     
-
     formatFileSize(bytes) {
       if (bytes === 0) return '0 B'
       const k = 1024
@@ -440,7 +412,6 @@ export default {
     }
   }
 }
-
 </script>
 
 <style scoped>
@@ -610,24 +581,73 @@ export default {
   line-height: 1.6;
 }
 
-/* 复选框样式 */
-.checkbox-group {
+/* 标签样式 */
+.form-value-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
+  gap: 16rpx;
+  padding: 16rpx 0;
 }
 
-.checkbox-item {
-  display: flex;
-  align-items: center;
+.tag {
   font-size: 26rpx;
   color: #666;
-  margin-right: 30rpx;
-  margin-bottom: 15rpx;
+  background-color: #f5f5f5;
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
+  border: 1rpx solid #e8e8e8;
+  cursor: pointer;
 }
 
-.checkbox-item checkbox {
-  margin-right: 10rpx;
+.tag.active {
+  color: #1890ff;
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+/* 单选框样式 */
+.radio-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 16rpx 0;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radio-circle {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  border: 2rpx solid #d9d9d9;
+  margin-right: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radio-option.active .radio-circle {
+  border-color: #1890ff;
+}
+
+.radio-inner {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+  background-color: #1890ff;
+}
+
+.radio-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.radio-option.active .radio-text {
+  color: #1890ff;
 }
 
 /* 相关业务样式 */
@@ -644,77 +664,6 @@ export default {
   color: #333;
   margin-bottom: 20rpx;
   font-weight: 500;
-}
-
-.option-group {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.option-item {
-  display: flex;
-  align-items: center;
-  font-size: 26rpx;
-  color: #666;
-  margin-bottom: 15rpx;
-  cursor: pointer;
-}
-
-.option-item.checked {
-  color: #1890ff;
-}
-
-.option-icon {
-  width: 32rpx;
-  height: 32rpx;
-  border: 2rpx solid #d9d9d9;
-  border-radius: 4rpx;
-  margin-right: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20rpx;
-  font-weight: bold;
-  background-color: #fff;
-}
-
-.option-item.checked .option-icon {
-  background-color: #1890ff;
-  border-color: #1890ff;
-  color: #fff;
-}
-
-.radio-icon {
-  border-radius: 50% !important;
-  font-size: 24rpx;
-}
-
-.option-item.radio .option-icon {
-  border-radius: 50%;
-}
-
-.option-item.radio.checked .option-icon {
-  background-color: #fff;
-  border-color: #1890ff;
-  border-width: 6rpx;
-  position: relative;
-}
-
-.option-item.radio.checked .option-icon::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 12rpx;
-  height: 12rpx;
-  background-color: #1890ff;
-  border-radius: 50%;
-}
-
-.option-text {
-  flex: 1;
 }
 
 /* 附件样式 */
