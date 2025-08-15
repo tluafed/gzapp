@@ -94,6 +94,10 @@
         <Ground
           v-else-if="currentBusinessType === 'ground'"
         />
+        <!-- 班报表组件 -->
+        <ShiftReport
+          v-else-if="currentBusinessType === 'shift-report'"
+        />
         <view v-else>
           <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
         </view>
@@ -305,18 +309,21 @@
 <script>
 import SubPopup from '@/components/sub-popup/sub-popup.vue';
 import {
-  VideoMonitor,
-  DrillOverview,
-  ColumnChart,
-  StartCheck,
-  SingleCheck,
-  SealCheck
-} from '@/components/drill-detail/popups';
+  Stratum,
+  StandardPenetration,
+  DynamicProbe,
+  InSituTest,
+  Sampling,
+  WaterLevel
+} from '@/components/drill-detail/recording';
 import {
   SingleBox,
   Overall,
   Ground
 } from '@/components/drill-detail/imaging';
+import {
+  ShiftReport
+} from '@/components/drill-detail/report';
 import {
   DrillDisclosure,
   HolePositioning,
@@ -330,13 +337,13 @@ import {
   QualityCheck
 } from '@/components/drill-detail/safety';
 import {
-  Stratum,
-  StandardPenetration,
-  DynamicProbe,
-  InSituTest,
-  Sampling,
-  WaterLevel
-} from '@/components/drill-detail/recording';
+  VideoMonitor,
+  DrillOverview,
+  ColumnChart,
+  StartCheck,
+  SingleCheck,
+  SealCheck
+} from '@/components/drill-detail/popups';
 
 export default {
   name: 'DrillDetail',
@@ -366,7 +373,8 @@ export default {
     WaterLevel,
     SingleBox,
     Overall,
-    Ground
+    Ground,
+    ShiftReport
   },
   data() {
     return {
