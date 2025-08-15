@@ -110,7 +110,7 @@ export default {
     // 获取字段值
     getFieldValue(item, field) {
       if (field.format) {
-        return field.format(item[field.key]);
+        return field.format(item[field.key], item);
       }
       const value = item[field.key];
       if (field.suffix) {
