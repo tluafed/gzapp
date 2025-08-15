@@ -88,27 +88,68 @@ export default {
   props: {
     formData: {
       type: Array,
-      default: () => []
+      default: () => [
+        { label: '钻孔编号', value: 'GK01' },
+        { label: '验收日期', value: '2023-08-05' },
+        { label: '封孔材料', value: '水泥浆' },
+        { label: '封孔深度', value: '30.5米' },
+        { label: '施工单位', value: '某某地质勘察公司' },
+        { label: '监理单位', value: '某某监理公司' }
+      ]
     },
     checkItems: {
       type: Array,
-      default: () => []
+      default: () => [
+        { 
+          name: '封孔材料', 
+          status: 'passed', 
+          statusText: '合格', 
+          description: '使用标准水泥浆，配比符合规范要求' 
+        },
+        { 
+          name: '封孔深度', 
+          status: 'passed', 
+          statusText: '合格', 
+          description: '封孔深度达到设计要求的30.5米' 
+        },
+        { 
+          name: '封孔质量', 
+          status: 'passed', 
+          statusText: '合格', 
+          description: '封孔密实，无漏浆现象' 
+        },
+        { 
+          name: '地表处理', 
+          status: 'passed', 
+          statusText: '合格', 
+          description: '地表恢复良好，标识清晰' 
+        }
+      ]
     },
     checkResult: {
       type: Object,
       default: () => ({
-        status: 'pending',
-        statusText: '待验收',
-        comments: ''
+        status: 'passed',
+        statusText: '验收通过',
+        comments: '封孔工作符合设计和规范要求，各项指标合格，准予通过验收。'
       })
     },
     signatures: {
       type: Array,
-      default: () => []
+      default: () => [
+        { role: '施工负责人', name: '张工', date: '2023-08-05', image: '/static/images/signature-3.png' },
+        { role: '监理工程师', name: '王工', date: '2023-08-05', image: '/static/images/signature-2.png' },
+        { role: '业主代表', name: '刘总', date: '2023-08-05', image: '/static/images/signature-4.png' }
+      ]
     },
     photos: {
       type: Array,
-      default: () => []
+      default: () => [
+        { url: '/static/images/seal-check-1.jpg', description: '封孔前准备' },
+        { url: '/static/images/seal-check-2.jpg', description: '封孔过程' },
+        { url: '/static/images/seal-check-3.jpg', description: '封孔完成' },
+        { url: '/static/images/seal-check-4.jpg', description: '地表恢复' }
+      ]
     },
     activeTabProp: {
       type: String,
@@ -128,6 +169,10 @@ export default {
   methods: {
     previewPhoto(photo) {
       // 预览照片
+      uni.previewImage({
+        urls: [photo.url],
+        current: photo.url
+      })
       this.$emit('preview-photo', photo)
     }
   }

@@ -75,23 +75,39 @@ export default {
   props: {
     formData: {
       type: Array,
-      default: () => []
+      default: () => [
+        { label: '钻孔编号', value: 'GK01' },
+        { label: '报验日期', value: '2023-07-20' },
+        { label: '钻孔深度', value: '30.5米' },
+        { label: '施工单位', value: '某某地质勘察公司' },
+        { label: '施工负责人', value: '张工' },
+        { label: '监理单位', value: '某某监理公司' },
+        { label: '监理工程师', value: '王工' }
+      ]
     },
     checkResult: {
       type: Object,
       default: () => ({
-        status: 'pending',
-        statusText: '待验收',
-        comments: ''
+        status: 'passed',
+        statusText: '验收通过',
+        comments: '钻孔施工符合设计要求，各项指标达标，准予通过。'
       })
     },
     signatures: {
       type: Array,
-      default: () => []
+      default: () => [
+        { role: '施工负责人', name: '张工', date: '2023-07-20', image: '/static/images/signature-3.png' },
+        { role: '监理工程师', name: '王工', date: '2023-07-20', image: '/static/images/signature-2.png' },
+        { role: '业主代表', name: '刘总', date: '2023-07-20', image: '/static/images/signature-4.png' }
+      ]
     },
     photos: {
       type: Array,
-      default: () => []
+      default: () => [
+        { url: '/static/images/single-check-1.jpg', description: '钻孔全景' },
+        { url: '/static/images/single-check-2.jpg', description: '钻孔测量' },
+        { url: '/static/images/single-check-3.jpg', description: '取样展示' }
+      ]
     },
     activeTabProp: {
       type: String,
@@ -111,6 +127,10 @@ export default {
   methods: {
     previewPhoto(photo) {
       // 预览照片
+      uni.previewImage({
+        urls: [photo.url],
+        current: photo.url
+      })
       this.$emit('preview-photo', photo)
     }
   }

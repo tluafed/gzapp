@@ -62,15 +62,41 @@ export default {
   props: {
     formData: {
       type: Array,
-      default: () => []
+      default: () => [
+        {
+          title: '基本信息',
+          items: [
+            { label: '工程名称', value: '某某工程地质勘察' },
+            { label: '钻孔编号', value: 'GK01' },
+            { label: '检查日期', value: '2023-06-15' },
+            { label: '检查人员', value: '张工' }
+          ]
+        },
+        {
+          title: '设备检查',
+          items: [
+            { label: '钻机型号', value: 'XY-2型' },
+            { label: '设备状态', value: '良好' },
+            { label: '安全装置', value: '齐全' }
+          ]
+        }
+      ]
     },
     signatures: {
       type: Array,
-      default: () => []
+      default: () => [
+        { role: '项目负责人', name: '李工', date: '2023-06-15', image: '/static/images/signature-1.png' },
+        { role: '监理工程师', name: '王工', date: '2023-06-15', image: '/static/images/signature-2.png' },
+        { role: '施工负责人', name: '张工', date: '2023-06-15', image: '/static/images/signature-3.png' }
+      ]
     },
     photos: {
       type: Array,
-      default: () => []
+      default: () => [
+        { url: '/static/images/start-check-1.jpg', description: '钻机就位' },
+        { url: '/static/images/start-check-2.jpg', description: '安全装置检查' },
+        { url: '/static/images/start-check-3.jpg', description: '现场环境' }
+      ]
     },
     activeTabProp: {
       type: String,
@@ -90,6 +116,10 @@ export default {
   methods: {
     previewPhoto(photo) {
       // 预览照片
+      uni.previewImage({
+        urls: [photo.url],
+        current: photo.url
+      })
       this.$emit('preview-photo', photo)
     }
   }

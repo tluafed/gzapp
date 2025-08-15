@@ -38,11 +38,51 @@ export default {
   props: {
     basicInfo: {
       type: Array,
-      default: () => []
+      default: () => [
+        { label: '钻孔编号', value: 'GK01' },
+        { label: '坐标X', value: '123456.78' },
+        { label: '坐标Y', value: '987654.32' },
+        { label: '设计深度', value: '30.5米' },
+        { label: '实际深度', value: '30.5米' },
+        { label: '开工日期', value: '2023-06-15' },
+        { label: '完工日期', value: '2023-08-05' },
+        { label: '施工单位', value: '某某地质勘察公司' }
+      ]
     },
     progressInfo: {
       type: Array,
-      default: () => []
+      default: () => [
+        { 
+          name: '开工检查', 
+          progress: 100, 
+          status: 'completed', 
+          statusText: '已完成' 
+        },
+        { 
+          name: '钻孔施工', 
+          progress: 100, 
+          status: 'completed', 
+          statusText: '已完成' 
+        },
+        { 
+          name: '取样测试', 
+          progress: 100, 
+          status: 'completed', 
+          statusText: '已完成' 
+        },
+        { 
+          name: '单孔报验', 
+          progress: 100, 
+          status: 'completed', 
+          statusText: '已完成' 
+        },
+        { 
+          name: '封孔验收', 
+          progress: 100, 
+          status: 'completed', 
+          statusText: '已完成' 
+        }
+      ]
     }
   }
 }

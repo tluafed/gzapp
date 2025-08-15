@@ -19,12 +19,20 @@ export default {
   props: {
     videoMonitors: {
       type: Array,
-      default: () => []
+      default: () => [
+        { id: 1, name: '钻机视角', thumbnail: '/static/images/video-thumb-1.jpg' },
+        { id: 2, name: '全景视角', thumbnail: '/static/images/video-thumb-2.jpg' },
+        { id: 3, name: '钻头视角', thumbnail: '/static/images/video-thumb-3.jpg' }
+      ]
     }
   },
   methods: {
     playVideo(monitor) {
       // 播放视频的逻辑
+      uni.showToast({
+        title: `正在播放: ${monitor.name}`,
+        icon: 'none'
+      })
       this.$emit('play-video', monitor)
     }
   }

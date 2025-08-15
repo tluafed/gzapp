@@ -64,11 +64,46 @@ export default {
   props: {
     layers: {
       type: Array,
-      default: () => []
+      default: () => [
+        { name: '粘土', thickness: 150, color: '#f5deb3' },
+        { name: '砂土', thickness: 200, color: '#ffe4b5' },
+        { name: '砾石', thickness: 180, color: '#d3d3d3' },
+        { name: '岩石', thickness: 250, color: '#a9a9a9' }
+      ]
     },
     dataColumns: {
       type: Array,
-      default: () => []
+      default: () => [
+        {
+          name: '标贯',
+          values: [
+            { position: 100, text: '10' },
+            { position: 250, text: '15' },
+            { position: 400, text: '25' },
+            { position: 550, text: '30' }
+          ]
+        },
+        {
+          name: '取样',
+          values: [
+            { position: 150, text: 'S1' },
+            { position: 350, text: 'S2' },
+            { position: 500, text: 'S3' }
+          ]
+        }
+      ]
+    },
+    scale: {
+      type: Number,
+      default: 1
+    },
+    translateX: {
+      type: Number,
+      default: 0
+    },
+    translateY: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -79,7 +114,67 @@ export default {
         { name: '砾石', color: '#d3d3d3' },
         { name: '岩石', color: '#a9a9a9' }
       ],
-      depthMarks: [0, 5, 10, 15, 20, 25, 30]
+      depthMarks: [0, 5, 10, 15, 20, 25, 30],
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      initialDistance: 0,
+      initialScale: 1,
+      currentScale: this.scale,
+      currentTranslateX: this.translateX,
+      currentTranslateY: this.translateY
+    }
+  },
+  methods: {
+    handleTouchStart(e) {
+      if (e.touches.length === 1) {
+        // 单指拖动
+        this.isDragging = true
+        this.startX = e.touches[0].clientX - this.currentTranslateX
+        this.startY = e.touches[0].clientY - this.currentTranslateY
+      } else if (e.touches.length === 2) {
+        // 双指缩放 - 记录初始距离
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        this.initialDistance = Math.sqrt(dx * dx + dy * dy)
+        this.initialScale = this.currentScale
+      }
+    },
+    
+    handleTouchMove(e) {
+      if (e.touches.length === 1 && this.isDragging) {
+        // 单指拖动
+        this.currentTranslateX = e.touches[0].clientX - this.startX
+        this.currentTranslateY = e.touches[0].clientY - this.startY
+        this.$emit('update:translateX', this.currentTranslateX)
+        this.$emit('update:translateY', this.currentTranslateY)
+      } else if (e.touches.length === 2) {
+        // 双指缩放
+        const dx = e.touches[0].clientX - e.touches[1].clientX
+        const dy = e.touches[0].clientY - e.touches[1].clientY
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        
+        // 计算新的缩放比例
+        this.currentScale = this.initialScale * (distance / this.initialDistance)
+        
+        // 限制缩放范围
+        if (this.currentScale < 0.5) this.currentScale = 0.5
+        if (this.currentScale > 3) this.currentScale = 3
+        
+        this.$emit('update:scale', this.currentScale)
+      }
+    },
+    
+    handleTouchEnd() {
+      this.isDragging = false
+    }
+  },
+  computed: {
+    chartStyle() {
+      return {
+        transform: `scale(${this.currentScale}) translate(${this.currentTranslateX}px, ${this.currentTranslateY}px)`,
+        transition: this.isDragging ? 'none' : 'transform 0.3s'
+      }
     }
   }
 }
