@@ -660,7 +660,7 @@ export default {
 
 /* 二级弹窗内容样式 */
 .sub-popup-content {
-  padding: 20rpx;
+  padding: 0;
   height: 100%;
 }
 </style>

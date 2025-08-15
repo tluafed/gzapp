@@ -106,6 +106,6 @@ export default {
 .popup-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20rpx;
+  padding: 0;
 }
 </style>
