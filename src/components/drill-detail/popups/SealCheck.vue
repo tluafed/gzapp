@@ -1,4 +1,4 @@
-<template>
+ <template>
   <view class="seal-check-container">
     <view class="tab-header">
       <view 
@@ -10,71 +10,235 @@
       </view>
       <view 
         class="tab-item" 
-        :class="{ active: activeTab === 'photos' }" 
-        @click="activeTab = 'photos'"
+        :class="{ active: activeTab === 'process' }" 
+        @click="activeTab = 'process'"
       >
-        现场照片
+        流程信息
       </view>
     </view>
     
     <view class="tab-content">
       <!-- 表单信息 -->
       <view v-if="activeTab === 'form'" class="form-content">
-        <view class="form-group">
-          <view class="group-title">封孔验收信息</view>
-          <view class="form-items">
-            <view class="form-item" v-for="(item, itemIndex) in formData" :key="itemIndex">
-              <text class="item-label">{{ item.label }}</text>
-              <text class="item-value">{{ item.value }}</text>
+        <!-- 基本信息 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">基本信息</text>
+          </view>
+          <view class="form-list">
+            <view class="form-item">
+              <text class="form-label required">标段</text>
+              <view class="form-value">粤港澳大湾区城际线路广州东至花都天贵工程 初步勘察-1标</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">工点</text>
+              <view class="form-value">广州东至石牌</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">编号</text>
+              <view class="form-value">L018B-Z2-1-A9-0369</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">工程项目</text>
+              <view class="form-value multiline">粤港澳大湾区城际线路广州东至花都天贵工程详勘车站段及出入段线初步勘察</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">钻孔编号</text>
+              <view class="form-value">MRNZ2-A256S</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">现场技术员</text>
+              <view class="form-value">李新华</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">钻机机长</text>
+              <view class="form-value">--请选择--</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">日期</text>
+              <view class="form-value">2025-08-15</view>
             </view>
           </view>
         </view>
-        
-        <view class="check-items">
-          <view class="check-title">验收项目</view>
-          <view class="check-list">
-            <view class="check-item" v-for="(item, itemIndex) in checkItems" :key="itemIndex">
-              <view class="check-item-header">
-                <text class="check-item-name">{{ item.name }}</text>
-                <text class="check-item-status" :class="item.status">{{ item.statusText }}</text>
+
+        <!-- 自检意见 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">自检意见</text>
+          </view>
+          <view class="form-list">
+            <view class="form-item">
+              <text class="form-label required">开孔日期</text>
+              <picker mode="date" :value="startDate" @change="onStartDateChange">
+                <view class="form-input editable">2021-04-10</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">终孔日期</text>
+              <picker mode="date" :value="endDate" @change="onEndDateChange">
+                <view class="form-input editable">2021-04-15</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">坐标X</text>
+              <input class="form-input" v-model="formData.coordinateX" placeholder="请输入坐标X" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">坐标Y</text>
+              <input class="form-input" v-model="formData.coordinateY" placeholder="请输入坐标Y" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">终孔深度 (m)</text>
+              <input class="form-input" v-model="formData.finalDepth" placeholder="请输入终孔深度" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">封孔方法</text>
+              <view class="checkbox-group">
+                <label class="checkbox-item">
+                  <checkbox value="孔底往上逐渐水泥浆" :checked="formData.sealMethods.includes('孔底往上逐渐水泥浆')" @change="onSealMethodChange" />孔底往上逐渐水泥浆
+                </label>
               </view>
-              <text class="check-item-desc">{{ item.description }}</text>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">水泥用量(包)</text>
+              <input class="form-input" v-model="formData.cementAmount" placeholder="请填写水泥用量(包)" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">停置条件</text>
+              <view class="checkbox-group">
+                <label class="checkbox-item">
+                  <checkbox value="孔口返浆后停泥水泥浆" :checked="formData.stopConditions.includes('孔口返浆后停泥水泥浆')" @change="onStopConditionChange" />孔口返浆后停泥水泥浆
+                </label>
+              </view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">孔口恢复</text>
+              <view class="checkbox-group">
+                <label class="checkbox-item">
+                  <checkbox value="水泥砂浆恢复" :checked="formData.holeRestoration.includes('水泥砂浆恢复')" @change="onHoleRestorationChange" />水泥砂浆恢复
+                </label>
+              </view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">封孔录像</text>
+              <view class="checkbox-group">
+                <label class="checkbox-item">
+                  <checkbox value="内容完整" :checked="formData.sealVideo.includes('内容完整')" @change="onSealVideoChange" />内容完整
+                </label>
+                <label class="checkbox-item">
+                  <checkbox value="清晰" :checked="formData.sealVideo.includes('清晰')" @change="onSealVideoChange" />清晰
+                </label>
+              </view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">自检意见</text>
+              <textarea class="form-textarea" v-model="formData.selfCheckOpinion" placeholder="请输入自检意见"></textarea>
+            </view>
+          </view>
+        </view>
+
+        <!-- 验收意见 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">验收意见</text>
+          </view>
+          <view class="business-content">
+            <view class="business-row">
+              <view class="business-label">验收结论</view>
+              <view class="option-group">
+                <view class="option-item radio" :class="{ checked: formData.acceptanceResult === 'agree' }" @click="setAcceptanceResult('agree')">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">同意自检意见，通过该孔封孔验收</text>
+                </view>
+                <view class="option-item radio" :class="{ checked: formData.acceptanceResult === 'disagree' }" @click="setAcceptanceResult('disagree')">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">不同意自检意见，该孔重新封孔</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">验收意见</text>
+              <textarea class="form-textarea" v-model="formData.acceptanceOpinion" placeholder="请输入验收意见"></textarea>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">备注</text>
+              <textarea class="form-textarea" v-model="formData.remarks" placeholder="请输入备注"></textarea>
+            </view>
+          </view>
+        </view>
+
+        <!-- 附件 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">附件</text>
+          </view>
+          <view class="attachment-content">
+            <view class="attachment-list" v-if="attachments.length > 0">
+              <view class="attachment-item" v-for="(file, index) in attachments" :key="index">
+                <view class="file-icon">📄</view>
+                <view class="file-info">
+                  <text class="file-name">{{ file.name }}</text>
+                  <text class="file-size">{{ file.size }}</text>
+                </view>
+                <view class="file-actions">
+                  <text class="action-btn" @click="previewFile(file)">查看</text>
+                  <text class="action-btn delete" @click="deleteFile(index)">删除</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="upload-section">
+              <view class="upload-btn" @click="uploadFile">
+                <text class="upload-icon">+</text>
+                <text class="upload-text">上传附件</text>
+              </view>
             </view>
           </view>
         </view>
         
-        <view class="check-result">
-          <view class="result-title">验收结果</view>
-          <view class="result-content">
-            <view class="result-status" :class="checkResult.status">
-              {{ checkResult.statusText }}
-            </view>
-            <view class="result-comments">
-              <text class="comments-label">验收意见：</text>
-              <text class="comments-text">{{ checkResult.comments }}</text>
-            </view>
-          </view>
-        </view>
-        
-        <view class="signature-section">
-          <view class="signature-title">签名确认</view>
-          <view class="signatures">
-            <view class="signature-item" v-for="(sig, sigIndex) in signatures" :key="sigIndex">
-              <text class="signature-role">{{ sig.role }}</text>
-              <image class="signature-image" :src="sig.image" mode="aspectFit" />
-              <text class="signature-name">{{ sig.name }}</text>
-              <text class="signature-date">{{ sig.date }}</text>
-            </view>
-          </view>
+        <!-- 底部按钮 -->
+        <view class="form-actions">
+          <button class="action-btn save-btn" @click="saveForm">保存</button>
+          <button class="action-btn submit-btn" @click="submitForm">提交</button>
         </view>
       </view>
       
-      <!-- 现场照片 -->
-      <view v-else-if="activeTab === 'photos'" class="photos-content">
-        <view class="photo-grid">
-          <view class="photo-item" v-for="(photo, photoIndex) in photos" :key="photoIndex" @click="previewPhoto(photo)">
-            <image class="photo-image" :src="photo.url" mode="aspectFill" />
-            <text class="photo-desc">{{ photo.description }}</text>
+      <!-- 流程信息 -->
+      <view v-else-if="activeTab === 'process'" class="process-content">
+        <view class="process-list">
+          <view class="process-item current">
+            <view class="process-dot current"></view>
+            <view class="process-info">
+              <view class="process-title">发起申请</view>
+              <view class="process-status current">进行中</view>
+              <view class="process-detail">
+                <text class="process-user">操作人：陈欣雄</text>
+                <text class="process-time">开始时间：2025-08-15 09:30:00</text>
+              </view>
+            </view>
           </view>
         </view>
       </view>
@@ -86,71 +250,6 @@
 export default {
   name: 'SealCheck',
   props: {
-    formData: {
-      type: Array,
-      default: () => [
-        { label: '钻孔编号', value: 'GK01' },
-        { label: '验收日期', value: '2023-08-05' },
-        { label: '封孔材料', value: '水泥浆' },
-        { label: '封孔深度', value: '30.5米' },
-        { label: '施工单位', value: '某某地质勘察公司' },
-        { label: '监理单位', value: '某某监理公司' }
-      ]
-    },
-    checkItems: {
-      type: Array,
-      default: () => [
-        { 
-          name: '封孔材料', 
-          status: 'passed', 
-          statusText: '合格', 
-          description: '使用标准水泥浆，配比符合规范要求' 
-        },
-        { 
-          name: '封孔深度', 
-          status: 'passed', 
-          statusText: '合格', 
-          description: '封孔深度达到设计要求的30.5米' 
-        },
-        { 
-          name: '封孔质量', 
-          status: 'passed', 
-          statusText: '合格', 
-          description: '封孔密实，无漏浆现象' 
-        },
-        { 
-          name: '地表处理', 
-          status: 'passed', 
-          statusText: '合格', 
-          description: '地表恢复良好，标识清晰' 
-        }
-      ]
-    },
-    checkResult: {
-      type: Object,
-      default: () => ({
-        status: 'passed',
-        statusText: '验收通过',
-        comments: '封孔工作符合设计和规范要求，各项指标合格，准予通过验收。'
-      })
-    },
-    signatures: {
-      type: Array,
-      default: () => [
-        { role: '施工负责人', name: '张工', date: '2023-08-05', image: '/static/images/signature-3.png' },
-        { role: '监理工程师', name: '王工', date: '2023-08-05', image: '/static/images/signature-2.png' },
-        { role: '业主代表', name: '刘总', date: '2023-08-05', image: '/static/images/signature-4.png' }
-      ]
-    },
-    photos: {
-      type: Array,
-      default: () => [
-        { url: '/static/images/seal-check-1.jpg', description: '封孔前准备' },
-        { url: '/static/images/seal-check-2.jpg', description: '封孔过程' },
-        { url: '/static/images/seal-check-3.jpg', description: '封孔完成' },
-        { url: '/static/images/seal-check-4.jpg', description: '地表恢复' }
-      ]
-    },
     activeTabProp: {
       type: String,
       default: 'form'
@@ -158,7 +257,28 @@ export default {
   },
   data() {
     return {
-      activeTab: this.activeTabProp
+      activeTab: this.activeTabProp,
+      startDate: '2021-04-10',
+      endDate: '2021-04-15',
+      formData: {
+        coordinateX: '248669.9375',
+        coordinateY: '389717.8516',
+        finalDepth: '16',
+        sealMethods: ['孔底往上逐渐水泥浆'],
+        cementAmount: '',
+        stopConditions: ['孔口返浆后停泥水泥浆'],
+        holeRestoration: ['水泥砂浆恢复'],
+        sealVideo: ['内容完整', '清晰'],
+        selfCheckOpinion: '',
+        acceptanceResult: 'agree',
+        acceptanceOpinion: '',
+        remarks: ''
+      },
+      attachments: [
+        { name: '封孔验收表.pdf', size: '2.1MB' },
+        { name: '封孔录像.mp4', size: '45.8MB' },
+        { name: '现场照片.zip', size: '8.3MB' }
+      ]
     }
   },
   watch: {
@@ -167,16 +287,160 @@ export default {
     }
   },
   methods: {
-    previewPhoto(photo) {
-      // 预览照片
-      uni.previewImage({
-        urls: [photo.url],
-        current: photo.url
+    onStartDateChange(e) {
+      this.startDate = e.detail.value
+    },
+    
+    onEndDateChange(e) {
+      this.endDate = e.detail.value
+    },
+    
+    onSealMethodChange(e) {
+      const value = e.detail.value[0]
+      if (e.detail.value.length > 0) {
+        if (!this.formData.sealMethods.includes(value)) {
+          this.formData.sealMethods.push(value)
+        }
+      } else {
+        const index = this.formData.sealMethods.indexOf(value)
+        if (index > -1) {
+          this.formData.sealMethods.splice(index, 1)
+        }
+      }
+    },
+    
+    onStopConditionChange(e) {
+      const value = e.detail.value[0]
+      if (e.detail.value.length > 0) {
+        if (!this.formData.stopConditions.includes(value)) {
+          this.formData.stopConditions.push(value)
+        }
+      } else {
+        const index = this.formData.stopConditions.indexOf(value)
+        if (index > -1) {
+          this.formData.stopConditions.splice(index, 1)
+        }
+      }
+    },
+    
+    onHoleRestorationChange(e) {
+      const value = e.detail.value[0]
+      if (e.detail.value.length > 0) {
+        if (!this.formData.holeRestoration.includes(value)) {
+          this.formData.holeRestoration.push(value)
+        }
+      } else {
+        const index = this.formData.holeRestoration.indexOf(value)
+        if (index > -1) {
+          this.formData.holeRestoration.splice(index, 1)
+        }
+      }
+    },
+    
+    onSealVideoChange(e) {
+      const value = e.detail.value[0]
+      if (e.detail.value.length > 0) {
+        if (!this.formData.sealVideo.includes(value)) {
+          this.formData.sealVideo.push(value)
+        }
+      } else {
+        const index = this.formData.sealVideo.indexOf(value)
+        if (index > -1) {
+          this.formData.sealVideo.splice(index, 1)
+        }
+      }
+    },
+    
+    setAcceptanceResult(value) {
+      this.formData.acceptanceResult = value
+    },
+    
+    previewFile(file) {
+      uni.showToast({
+        title: `预览 ${file.name}`,
+        icon: 'none'
       })
-      this.$emit('preview-photo', photo)
+    },
+    
+    deleteFile(index) {
+      uni.showModal({
+        title: '确认删除',
+        content: '确定要删除这个附件吗？',
+        success: (res) => {
+          if (res.confirm) {
+            this.attachments.splice(index, 1)
+            uni.showToast({
+              title: '删除成功',
+              icon: 'success'
+            })
+          }
+        }
+      })
+    },
+    
+    uploadFile() {
+      uni.chooseFile({
+        count: 1,
+        success: (res) => {
+          const file = res.tempFiles[0]
+          // 模拟上传
+          this.attachments.push({
+            name: file.name || '新文件.pdf',
+            size: this.formatFileSize(file.size || 1024000)
+          })
+          uni.showToast({
+            title: '上传成功',
+            icon: 'success'
+          })
+        }
+      })
+    },
+    
+
+    formatFileSize(bytes) {
+      if (bytes === 0) return '0 B'
+      const k = 1024
+      const sizes = ['B', 'KB', 'MB', 'GB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i]
+    },
+    
+    saveForm() {
+      uni.showToast({
+        title: '保存成功',
+        icon: 'success'
+      })
+      this.$emit('save', this.formData)
+    },
+    
+    submitForm() {
+      uni.showModal({
+        title: '确认提交',
+        content: '是否确认提交封孔验收申请？提交后将进入审核流程。',
+        confirmText: '确认提交',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            // 模拟提交过程
+            uni.showLoading({
+              title: '提交中...'
+            })
+            
+            setTimeout(() => {
+              uni.hideLoading()
+              uni.showToast({
+                title: '提交成功',
+                icon: 'success'
+              })
+              this.$emit('submit', this.formData)
+            }, 1500)
+          }
+        }
+      })
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -189,12 +453,15 @@ export default {
 .tab-header {
   display: flex;
   border-bottom: 1rpx solid #eee;
+  background-color: #fff;
+  margin-top: -0;
+  padding-top: 0;
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: 20rpx 0;
+  padding: 16rpx 0;
   font-size: 28rpx;
   color: #666;
   position: relative;
@@ -220,37 +487,67 @@ export default {
 .tab-content {
   flex: 1;
   overflow-y: auto;
+  background-color: #fff;
 }
 
-/* 表单样式 */
+/* 表单信息样式 */
 .form-content {
-  padding: 20rpx;
+  padding: 12rpx;
+  background-color: #fff;
 }
 
-.form-group {
-  margin-bottom: 30rpx;
+.info-section {
+  margin-bottom: 40rpx;
   background-color: #fff;
   border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  position: relative;
 }
 
-.group-title {
-  padding: 20rpx;
-  font-size: 28rpx;
-  font-weight: 500;
+.info-section:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, #e8e8e8, transparent);
+}
+
+.info-section:last-child {
+  margin-bottom: 30rpx;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.section-indicator {
+  width: 8rpx;
+  height: 32rpx;
+  background-color: #1890ff;
+  border-radius: 4rpx;
+  margin-right: 16rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
   color: #333;
-  background-color: #f5f7fa;
-  border-bottom: 1rpx solid #eee;
 }
 
-.form-items {
-  padding: 10rpx 0;
+.form-list {
+  padding: 0;
 }
 
 .form-item {
   display: flex;
-  padding: 15rpx 20rpx;
+  flex-direction: column;
+  padding: 20rpx 30rpx;
   border-bottom: 1rpx solid #f5f5f5;
 }
 
@@ -258,235 +555,371 @@ export default {
   border-bottom: none;
 }
 
-.item-label {
-  width: 200rpx;
-  font-size: 26rpx;
-  color: #666;
-}
-
-.item-value {
-  flex: 1;
-  font-size: 26rpx;
-  color: #333;
-}
-
-/* 验收项目 */
-.check-items {
-  margin-bottom: 30rpx;
-  background-color: #fff;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.check-title {
-  padding: 20rpx;
+.form-label {
   font-size: 28rpx;
-  font-weight: 500;
   color: #333;
-  background-color: #f5f7fa;
-  border-bottom: 1rpx solid #eee;
+  margin-bottom: 12rpx;
+  position: relative;
 }
 
-.check-list {
-  padding: 10rpx 0;
+.form-label.required::before {
+  content: '*';
+  color: #ff4d4f;
+  margin-right: 8rpx;
 }
 
-.check-item {
-  padding: 15rpx 20rpx;
-  border-bottom: 1rpx solid #f5f5f5;
-}
-
-.check-item:last-child {
-  border-bottom: none;
-}
-
-.check-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
-
-.check-item-name {
-  font-size: 26rpx;
-  color: #333;
-  font-weight: 500;
-}
-
-.check-item-status {
-  font-size: 24rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 20rpx;
-}
-
-.check-item-status.passed {
-  background-color: #e6f7e6;
-  color: #52c41a;
-}
-
-.check-item-status.failed {
-  background-color: #fff1f0;
-  color: #f5222d;
-}
-
-.check-item-status.pending {
-  background-color: #fff7e6;
-  color: #fa8c16;
-}
-
-.check-item-desc {
-  font-size: 24rpx;
-  color: #666;
-  line-height: 1.5;
-}
-
-/* 验收结果 */
-.check-result {
-  margin-bottom: 30rpx;
-  background-color: #fff;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.result-title {
-  padding: 20rpx;
+.form-value {
   font-size: 28rpx;
-  font-weight: 500;
-  color: #333;
-  background-color: #f5f7fa;
-  border-bottom: 1rpx solid #eee;
-}
-
-.result-content {
+  color: #666;
+  background-color: #f8f9fa;
   padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #e8e8e8;
+  min-height: 24rpx;
+  line-height: 1.4;
 }
 
-.result-status {
-  display: inline-block;
-  padding: 8rpx 20rpx;
-  border-radius: 30rpx;
-  font-size: 26rpx;
-  margin-bottom: 20rpx;
+.form-value.multiline {
+  line-height: 1.6;
+  min-height: 60rpx;
 }
 
-.result-status.passed {
-  background-color: #e6f7e6;
-  color: #52c41a;
+.form-input {
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fff;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #d9d9d9;
 }
 
-.result-status.failed {
-  background-color: #fff1f0;
-  color: #f5222d;
+.form-input.editable {
+  background-color: #fff;
+  border: 1rpx solid #d9d9d9;
+  color: #333;
 }
 
-.result-status.pending {
-  background-color: #fff7e6;
-  color: #fa8c16;
-}
-
-.result-comments {
-  font-size: 26rpx;
+.form-textarea {
+  font-size: 28rpx;
+  color: #333;
+  background-color: #fff;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #d9d9d9;
+  min-height: 120rpx;
   line-height: 1.6;
 }
 
-.comments-label {
-  color: #666;
-}
-
-.comments-text {
-  color: #333;
-}
-
-/* 签名区域 */
-.signature-section {
-  margin-top: 30rpx;
-  background-color: #fff;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.signature-title {
-  padding: 20rpx;
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #333;
-  background-color: #f5f7fa;
-  border-bottom: 1rpx solid #eee;
-}
-
-.signatures {
+/* 复选框样式 */
+.checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  padding: 20rpx;
+  gap: 20rpx;
 }
 
-.signature-item {
-  width: 33.33%;
-  padding: 10rpx;
-  box-sizing: border-box;
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #666;
+  margin-right: 30rpx;
+  margin-bottom: 15rpx;
+}
+
+.checkbox-item checkbox {
+  margin-right: 10rpx;
+}
+
+/* 相关业务样式 */
+.business-content {
+  padding: 20rpx 30rpx 30rpx 30rpx;
+}
+
+.business-row {
+  margin-bottom: 40rpx;
+}
+
+.business-label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+}
+
+.option-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 20rpx;
 }
 
-.signature-role {
-  font-size: 24rpx;
-  color: #666;
-  margin-bottom: 10rpx;
-}
-
-.signature-image {
-  width: 120rpx;
-  height: 80rpx;
-  margin-bottom: 10rpx;
-  border-bottom: 1rpx solid #ddd;
-}
-
-.signature-name {
-  font-size: 26rpx;
-  color: #333;
-  margin-bottom: 5rpx;
-}
-
-.signature-date {
-  font-size: 22rpx;
-  color: #999;
-}
-
-/* 照片样式 */
-.photos-content {
-  padding: 20rpx;
-}
-
-.photo-grid {
+.option-item {
   display: flex;
-  flex-wrap: wrap;
-  margin: 0 -10rpx;
+  align-items: center;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+  cursor: pointer;
 }
 
-.photo-item {
-  width: 33.33%;
-  padding: 10rpx;
-  box-sizing: border-box;
+.option-item.checked {
+  color: #1890ff;
 }
 
-.photo-image {
-  width: 100%;
-  height: 200rpx;
-  border-radius: 8rpx;
+.option-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border: 2rpx solid #d9d9d9;
+  border-radius: 4rpx;
+  margin-right: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  font-weight: bold;
+  background-color: #fff;
+}
+
+.option-item.checked .option-icon {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: #fff;
+}
+
+.radio-icon {
+  border-radius: 50% !important;
+  font-size: 24rpx;
+}
+
+.option-item.radio .option-icon {
+  border-radius: 50%;
+}
+
+.option-item.radio.checked .option-icon {
+  background-color: #fff;
+  border-color: #1890ff;
+  border-width: 6rpx;
+  position: relative;
+}
+
+.option-item.radio.checked .option-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12rpx;
+  height: 12rpx;
+  background-color: #1890ff;
+  border-radius: 50%;
+}
+
+.option-text {
+  flex: 1;
+}
+
+/* 附件样式 */
+.attachment-content {
+  padding: 20rpx 30rpx 30rpx 30rpx;
+}
+
+.attachment-list {
+  margin-bottom: 30rpx;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.attachment-item:last-child {
+  border-bottom: none;
+}
+
+.file-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-name {
+  font-size: 28rpx;
+  color: #333;
+  display: block;
   margin-bottom: 8rpx;
 }
 
-.photo-desc {
+.file-size {
   font-size: 24rpx;
+  color: #999;
+}
+
+.file-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-btn {
+  font-size: 26rpx;
+  color: #1890ff;
+  padding: 8rpx 16rpx;
+  border: 1rpx solid #1890ff;
+  border-radius: 6rpx;
+  background-color: transparent;
+}
+
+.action-btn.delete {
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.upload-section {
+  display: flex;
+  justify-content: center;
+  padding: 30rpx 0;
+}
+
+.upload-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200rpx;
+  height: 120rpx;
+  border: 2rpx dashed #d9d9d9;
+  border-radius: 8rpx;
+  background-color: #fafafa;
   color: #666;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+}
+
+.upload-icon {
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.upload-text {
+  font-size: 24rpx;
+}
+
+/* 流程信息样式 */
+.process-content {
+  padding: 30rpx;
+  background-color: #fff;
+}
+
+.process-list {
+  position: relative;
+}
+
+.process-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 50rpx;
+  position: relative;
+}
+
+.process-dot {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.process-dot.current {
+  background-color: #1890ff;
+  border: 4rpx solid #e6f7ff;
+}
+
+.process-info {
+  flex: 1;
+  padding-top: 4rpx;
+}
+
+.process-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.process-status {
+  font-size: 28rpx;
+  margin-bottom: 12rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  display: inline-block;
+}
+
+.process-status.current {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.process-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.process-user {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.process-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 底部按钮样式 */
+.form-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx;
+  background-color: #fff;
+  border-top: 1rpx solid #f0f0f0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.action-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 8rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.save-btn:active {
+  background-color: #e8e8e8;
+}
+
+.submit-btn {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+.submit-btn:active {
+  background-color: #096dd9;
 }
 </style>
