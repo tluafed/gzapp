@@ -84,6 +84,16 @@
         <WaterLevel
           v-else-if="currentBusinessType === 'water-level'"
         />
+        <!-- 钻孔影像组件 -->
+        <SingleBox
+          v-else-if="currentBusinessType === 'single-box'"
+        />
+        <Overall
+          v-else-if="currentBusinessType === 'overall'"
+        />
+        <Ground
+          v-else-if="currentBusinessType === 'ground'"
+        />
         <view v-else>
           <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
         </view>
@@ -303,6 +313,11 @@ import {
   SealCheck
 } from '@/components/drill-detail/popups';
 import {
+  SingleBox,
+  Overall,
+  Ground
+} from '@/components/drill-detail/imaging';
+import {
   DrillDisclosure,
   HolePositioning,
   PipelineDetection,
@@ -348,7 +363,10 @@ export default {
     DynamicProbe,
     InSituTest,
     Sampling,
-    WaterLevel
+    WaterLevel,
+    SingleBox,
+    Overall,
+    Ground
   },
   data() {
     return {
