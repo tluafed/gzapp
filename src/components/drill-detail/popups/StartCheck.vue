@@ -90,95 +90,44 @@
           <view class="business-content">
             <view class="business-row">
               <view class="business-label">围敝类型</view>
-              <view class="option-group">
-                <view class="option-item checked">
-                  <view class="option-icon">✓</view>
-                  <text class="option-text">防撞墙</text>
-                </view>
-                <view class="option-item">
-                  <view class="option-icon"></view>
-                  <text class="option-text">反光条及挡土</text>
-                </view>
-                <view class="option-item checked">
-                  <view class="option-icon">✓</view>
-                  <text class="option-text">警示筒</text>
-                </view>
-                <view class="option-item">
-                  <view class="option-icon"></view>
-                  <text class="option-text">单色布</text>
-                </view>
-                <view class="option-item">
-                  <view class="option-icon"></view>
-                  <text class="option-text">抽水机械马达</text>
-                </view>
-                <view class="option-item checked">
-                  <view class="option-icon">✓</view>
-                  <text class="option-text">引路牌</text>
-                </view>
-                <view class="option-item">
-                  <view class="option-icon"></view>
-                  <text class="option-text">警示灯</text>
-                </view>
+              <view class="form-value-tags">
+                <view class="tag active">防撞墙</view>
+                <view class="tag">反光条及挡土</view>
+                <view class="tag active">警示筒</view>
+                <view class="tag">单色布</view>
+                <view class="tag">抽水机械马达</view>
+                <view class="tag active">引路牌</view>
+                <view class="tag">警示灯</view>
               </view>
             </view>
             <view class="business-row">
               <view class="business-label">技术准备</view>
-              <view class="option-group">
-                <view class="option-item checked">
-                  <view class="option-icon">✓</view>
-                  <text class="option-text">责任条款验收表</text>
-                </view>
-                <view class="option-item">
-                  <view class="option-icon"></view>
-                  <text class="option-text">班组表及岗心牌</text>
-                </view>
-                <view class="option-item checked">
-                  <view class="option-icon">✓</view>
-                  <text class="option-text">标识牌及取样器</text>
-                </view>
-                <view class="option-item">
-                  <view class="option-icon"></view>
-                  <text class="option-text">安全帽眼镜等一</text>
-                </view>
+              <view class="form-value-tags">
+                <view class="tag active">责任条款验收表</view>
+                <view class="tag">班组表及岗心牌</view>
+                <view class="tag active">标识牌及取样器</view>
+                <view class="tag">安全帽眼镜等一</view>
               </view>
             </view>
             <view class="business-row">
               <view class="business-label">管线排查</view>
-              <view class="option-group">
-                <view class="option-item checked">
-                  <view class="option-icon">✓</view>
-                  <text class="option-text">已按委管线图</text>
-                </view>
-                <view class="option-item">
-                  <view class="option-icon"></view>
-                  <text class="option-text">孔位已确保既有管线</text>
-                </view>
-                <view class="option-item checked">
-                  <view class="option-icon">✓</view>
-                  <text class="option-text">已征询管线权属单位意见</text>
-                </view>
+              <view class="form-value-tags">
+                <view class="tag active">已按委管线图</view>
+                <view class="tag">孔位已确保既有管线</view>
+                <view class="tag active">已征询管线权属单位意见</view>
               </view>
             </view>
             <view class="business-row">
               <view class="business-label">人工挖探</view>
-              <view class="option-group">
-                <view class="option-item checked radio">
-                  <view class="option-icon radio-icon"></view>
-                  <text class="option-text">洛阳铲挖探</text>
-                </view>
-                <view class="option-item radio">
-                  <view class="option-icon radio-icon"></view>
-                  <text class="option-text">坑探</text>
-                </view>
+              <view class="form-value-tags">
+                <view class="tag active">洛阳铲挖探</view>
+                <view class="tag">坑探</view>
               </view>
             </view>
             <view class="business-row">
               <view class="business-label">封孔准备</view>
-              <view class="option-group">
-                <view class="option-item checked radio">
-                  <view class="option-icon radio-icon"></view>
-                  <text class="option-text">黄泥到位</text>
-                </view>
+              <view class="form-value-tags">
+                <view class="tag active">黄泥到位</view>
               </view>
             </view>
           </view>
@@ -457,75 +406,27 @@ export default {
   font-weight: 500;
 }
 
-.option-group {
+/* 标签样式 */
+.form-value-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
+  gap: 16rpx;
+  padding: 16rpx 0;
 }
 
-.option-item {
-  display: flex;
-  align-items: center;
+.tag {
   font-size: 26rpx;
   color: #666;
-  margin-right: 30rpx;
-  margin-bottom: 15rpx;
+  background-color: #f5f5f5;
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
+  border: 1rpx solid #e8e8e8;
 }
 
-.option-item.checked {
+.tag.active {
   color: #1890ff;
-}
-
-.option-icon {
-  width: 32rpx;
-  height: 32rpx;
-  border: 2rpx solid #d9d9d9;
-  border-radius: 4rpx;
-  margin-right: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20rpx;
-  font-weight: bold;
-  background-color: #fff;
-}
-
-.option-item.checked .option-icon {
-  background-color: #1890ff;
-  border-color: #1890ff;
-  color: #fff;
-}
-
-.radio-icon {
-  border-radius: 50% !important;
-  font-size: 24rpx;
-}
-
-.option-item.radio .option-icon {
-  border-radius: 50%;
-}
-
-.option-item.radio.checked .option-icon {
-  background-color: #fff;
-  border-color: #1890ff;
-  border-width: 6rpx;
-  position: relative;
-}
-
-.option-item.radio.checked .option-icon::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 12rpx;
-  height: 12rpx;
-  background-color: #1890ff;
-  border-radius: 50%;
-}
-
-.option-text {
-  flex: 1;
+  background-color: #e6f7ff;
+  border-color: #91d5ff;
 }
 
 /* 附件样式 */
