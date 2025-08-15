@@ -3,900 +3,61 @@
     <!-- 顶部导航栏 -->
     <view class="app-header">
       <view class="icon icon-left" @click="goBack">
-        <text class="back-arrow"><</text>
+        <text class="back-arrow">&lt;</text>
       </view>
       <text class="header-title">GK01 钻孔详情</text>
       <view class="icon icon-right"></view>
     </view>
-    
-    <!-- 通用二级弹窗 -->
+
+    <!-- 二级弹窗 -->
     <sub-popup :show="showSubPopup" :title="subPopupTitle" @close="closeSubPopup">
       <view class="sub-popup-content">
         <!-- 根据业务类型显示不同内容 -->
-        <template v-if="currentBusinessType === 'video'">
-          <view class="video-monitors">
-            <view v-for="monitor in videoMonitors" :key="monitor.id" class="video-monitor-item">
-              <view class="monitor-title">{{ monitor.name }}</view>
-              <view class="video-container">
-                <!-- 实际项目中应使用适合的视频播放组件 -->
-                <view class="video-placeholder">
-                  <!-- 这里可以使用实际的视频组件，如 video 标签或第三方组件 -->
-                  <text class="video-placeholder-text">视频流将在这里显示</text>
-                </view>
-              </view>
-            </view>
-          </view>
-        </template>
-        <template v-else-if="currentBusinessType === 'chart'">
-          <view class="column-chart-container">
-            <view class="chart-wrapper"
-                  :style="{
-                    transform: `scale(${columnChartData.scale}) translate(${columnChartData.translateX}px, ${columnChartData.translateY}px)`,
-                    transition: columnChartData.isDragging ? 'none' : 'transform 0.3s'
-                  }"
-                  @touchstart="handleTouchStart"
-                  @touchmove="handleTouchMove"
-                  @touchend="handleTouchEnd">
-              <image class="chart-image" :src="columnChartData.imageUrl" mode="widthFix"></image>
-            </view>
-            
-            <view class="zoom-controls">
-              <view class="zoom-btn" @click="zoomIn">
-                <text class="zoom-icon">+</text>
-              </view>
-              <view class="zoom-btn" @click="zoomOut">
-                <text class="zoom-icon">-</text>
-              </view>
-              <view class="zoom-btn" @click="resetZoom">
-                <text class="zoom-icon">↺</text>
-              </view>
-            </view>
-          </view>
-        </template>
-        <template v-else-if="currentBusinessType === 'start-check'">
-          <view class="start-check-container">
-            <!-- TAB切换 -->
-            <view class="tab-header">
-              <view 
-                class="tab-item" 
-                :class="{ active: startCheckActiveTab === 'form' }" 
-                @click="switchStartCheckTab('form')"
-              >
-                <view class="tab-icon">📋</view>
-                <text class="tab-text">表单信息</text>
-              </view>
-              <view 
-                class="tab-item" 
-                :class="{ active: startCheckActiveTab === 'process' }" 
-                @click="switchStartCheckTab('process')"
-              >
-                <view class="tab-icon">🔄</view>
-                <text class="tab-text">流程信息</text>
-              </view>
-            </view>
-            
-            <!-- 表单信息内容 -->
-            <scroll-view 
-              v-if="startCheckActiveTab === 'form'" 
-              class="tab-content form-content" 
-              scroll-y="true"
-            >
-              <!-- 基本信息 -->
-              <view class="form-section">
-                <view class="section-title">基本信息</view>
-                <view class="basic-info-list">
-                  <view class="basic-info-item">
-                    <text class="info-label">标段</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.section }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">工点</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.workPoint }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">编号</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.number }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">工程项目</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.project }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻孔编号</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.drillNo }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">机长</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.machineLeader }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">机台编号</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.machineNo }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">机台型号</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.machineModel }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">总体单位检查人</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.inspector }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">检查时间</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.inspectionTime }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">备注</text>
-                    <text class="info-value">{{ startCheckData.basicInfo.remarks }}</text>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 相关业务 -->
-              <view class="form-section">
-                <view class="section-title">相关业务</view>
-                
-                <!-- 围岩类型 -->
-                <view class="business-group">
-                  <view class="business-title">围岩类型</view>
-                  <view class="readonly-checkbox-group">
-                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.rockTypes" :key="'rock-'+index">
-                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
-                        <text v-if="item.checked" class="check-icon">✓</text>
-                      </view>
-                      <text class="readonly-checkbox-label">{{ item.label }}</text>
-                    </view>
-                  </view>
-                </view>
-                
-                <!-- 技术准备 -->
-                <view class="business-group">
-                  <view class="business-title">技术准备</view>
-                  <view class="readonly-checkbox-group">
-                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.techPreparation" :key="'tech-'+index">
-                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
-                        <text v-if="item.checked" class="check-icon">✓</text>
-                      </view>
-                      <text class="readonly-checkbox-label">{{ item.label }}</text>
-                    </view>
-                  </view>
-                </view>
-                
-                <!-- 管线排查 -->
-                <view class="business-group">
-                  <view class="business-title">管线排查</view>
-                  <view class="readonly-checkbox-group">
-                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.pipelineCheck" :key="'pipe-'+index">
-                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
-                        <text v-if="item.checked" class="check-icon">✓</text>
-                      </view>
-                      <text class="readonly-checkbox-label">{{ item.label }}</text>
-                    </view>
-                  </view>
-                </view>
-                
-                <!-- 人工挖探 -->
-                <view class="business-group">
-                  <view class="business-title">人工挖探</view>
-                  <view class="readonly-checkbox-group">
-                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.manualExcavation" :key="'excavation-'+index">
-                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
-                        <text v-if="item.checked" class="check-icon">✓</text>
-                      </view>
-                      <text class="readonly-checkbox-label">{{ item.label }}</text>
-                    </view>
-                  </view>
-                </view>
-                
-                <!-- 钻孔准备 -->
-                <view class="business-group">
-                  <view class="business-title">钻孔准备</view>
-                  <view class="readonly-checkbox-group">
-                    <view class="readonly-checkbox-item" v-for="(item, index) in startCheckData.business.drillPreparation" :key="'drill-'+index">
-                      <view class="readonly-checkbox" :class="{ checked: item.checked }">
-                        <text v-if="item.checked" class="check-icon">✓</text>
-                      </view>
-                      <text class="readonly-checkbox-label">{{ item.label }}</text>
-                    </view>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 附件 -->
-              <view class="form-section">
-                <view class="section-title">附件</view>
-                <view class="attachment-list">
-                  <view class="attachment-item" v-for="(file, index) in startCheckData.attachments" :key="index">
-                    <view class="attachment-info">
-                      <view class="attachment-icon">📎</view>
-                      <text class="attachment-name">{{ file.name }}</text>
-                    </view>
-                    <view class="attachment-actions">
-                      <view class="attachment-btn view-btn">查看</view>
-                      <view class="attachment-btn download-btn">下载</view>
-                    </view>
-                  </view>
-                </view>
-              </view>
-            </scroll-view>
-            
-            <!-- 流程信息内容 -->
-            <scroll-view 
-              v-if="startCheckActiveTab === 'process'" 
-              class="tab-content process-content" 
-              scroll-y="true"
-            >
-              <view class="process-timeline">
-                <view 
-                  class="timeline-item" 
-                  v-for="(item, index) in startCheckData.processFlow" 
-                  :key="index"
-                  :class="{ 'current': item.isCurrent }"
-                >
-                  <view class="timeline-node">
-                    <view class="timeline-dot" :class="{ 'active': item.isCurrent }"></view>
-                    <view class="timeline-line" v-if="index !== startCheckData.processFlow.length - 1"></view>
-                  </view>
-                  <view class="timeline-content">
-                    <view class="timeline-header">
-                      <text class="timeline-title">{{ item.title }}</text>
-                      <text class="timeline-time">{{ item.time }}</text>
-                    </view>
-                    <view class="timeline-body" v-if="item.content">
-                      <view class="timeline-action" v-for="(action, actionIndex) in item.content" :key="actionIndex">
-                        <text class="action-title">{{ action.title }}</text>
-                        <text class="action-value">{{ action.value }}</text>
-                      </view>
-                    </view>
-                  </view>
-                </view>
-              </view>
-            </scroll-view>
-          </view>
-        </template>
-        <template v-else-if="currentBusinessType === 'single-check'">
-          <view class="single-check-container">
-            <!-- TAB切换 -->
-            <view class="tab-header">
-              <view 
-                class="tab-item" 
-                :class="{ active: singleCheckActiveTab === 'form' }" 
-                @click="switchSingleCheckTab('form')"
-              >
-                <view class="tab-icon">📋</view>
-                <text class="tab-text">表单信息</text>
-              </view>
-              <view 
-                class="tab-item" 
-                :class="{ active: singleCheckActiveTab === 'process' }" 
-                @click="switchSingleCheckTab('process')"
-              >
-                <view class="tab-icon">🔄</view>
-                <text class="tab-text">流程信息</text>
-              </view>
-            </view>
-            
-            <!-- 表单信息内容 -->
-            <scroll-view 
-              v-if="singleCheckActiveTab === 'form'" 
-              class="tab-content form-content" 
-              scroll-y="true"
-            >
-              <!-- 基本信息 -->
-              <view class="form-section">
-                <view class="section-title">基本信息</view>
-                <view class="basic-info-list">
-                  <view class="basic-info-item">
-                    <text class="info-label">标段</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.section }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">工点</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.workPoint }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">工程项目</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.project }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">编号</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.number }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻孔编号</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.drillNo }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">地质编录人</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.inspector }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻机机长</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.machineLeader }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻机编号</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.machineNo }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻机型号</text>
-                    <text class="info-value">{{ singleCheckData.basicInfo.machineModel }}</text>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 自检意见 -->
-              <view class="form-section">
-                <view class="section-title">自检意见</view>
-                <view class="basic-info-list">
-                  <view class="basic-info-item">
-                    <text class="info-label">开孔日期</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.startDate }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">终孔日期</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.endDate }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">终孔深度(m)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.actualDepth }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻孔类型</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.drillType }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">岩芯照片(张)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.rockSamples }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">班报记录人</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.qualityInspector }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">抗动土样(组)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.soilSamples }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">岩芯采取率(%)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.coreRecoveryRate }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">水样(组)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.others }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">原状土样(组)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.originalSoilSamples }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">岩样(组)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.rockSamples2 }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">标贯试验(次)</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.standardTests }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">其它质位测试</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.remarks }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">自检意见</text>
-                    <text class="info-value">{{ singleCheckData.selfInspection.selfInspectionResult }}</text>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 验收意见 -->
-              <view class="form-section">
-                <view class="section-title">验收意见</view>
-                <view class="acceptance-list">
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">钻孔深度符合技术要求</text>
-                    <view class="radio-group">
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.drillDepthCompliance === '符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">符合</text>
-                      </view>
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.drillDepthCompliance === '不符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">不符合</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">取土、原位测试符合技术要求</text>
-                    <view class="radio-group">
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.positionCompliance === '符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">符合</text>
-                      </view>
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.positionCompliance === '不符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">不符合</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">岩芯数据符合技术要求</text>
-                    <view class="radio-group">
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.soilDataCompliance === '符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">符合</text>
-                      </view>
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.soilDataCompliance === '不符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">不符合</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">封孔符合技术要求</text>
-                    <view class="radio-group">
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.rockCompliance === '符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">符合</text>
-                      </view>
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.rockCompliance === '不符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">不符合</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">岩芯照片符合技术要求</text>
-                    <view class="radio-group">
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.sealingCompliance === '符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">符合</text>
-                      </view>
-                      <view class="radio-item" :class="{ active: singleCheckData.acceptance.sealingCompliance === '不符合' }">
-                        <view class="radio-dot"></view>
-                        <text class="radio-text">不符合</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">其他</text>
-                    <text class="acceptance-value">{{ singleCheckData.acceptance.others }}</text>
-                  </view>
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">验收结论</text>
-                    <text class="acceptance-value">{{ singleCheckData.acceptance.acceptanceResult }}</text>
-                  </view>
-                  <view class="acceptance-item">
-                    <text class="acceptance-label">验收意见</text>
-                    <text class="acceptance-value">{{ singleCheckData.acceptance.acceptancePersonnel }}</text>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 附件 -->
-              <view class="form-section">
-                <view class="section-title">附件</view>
-                <view class="attachment-list">
-                  <view class="attachment-item" v-for="(file, index) in singleCheckData.attachments" :key="index">
-                    <view class="attachment-info">
-                      <view class="attachment-icon">📎</view>
-                      <text class="attachment-name">{{ file.name }}</text>
-                    </view>
-                    <view class="attachment-actions">
-                      <view class="attachment-btn view-btn">查看</view>
-                      <view class="attachment-btn download-btn">下载</view>
-                    </view>
-                  </view>
-                </view>
-              </view>
-            </scroll-view>
-            
-            <!-- 流程信息内容 -->
-            <scroll-view 
-              v-if="singleCheckActiveTab === 'process'" 
-              class="tab-content process-content" 
-              scroll-y="true"
-            >
-              <view class="process-timeline">
-                <view 
-                  class="timeline-item" 
-                  v-for="(item, index) in singleCheckData.processFlow" 
-                  :key="index"
-                  :class="{ 'current': item.isCurrent }"
-                >
-                  <view class="timeline-node">
-                    <view class="timeline-dot" :class="{ 'active': item.isCurrent }"></view>
-                    <view class="timeline-line" v-if="index !== singleCheckData.processFlow.length - 1"></view>
-                  </view>
-                  <view class="timeline-content">
-                    <view class="timeline-header">
-                      <text class="timeline-title">{{ item.title }}</text>
-                      <text class="timeline-time">{{ item.time }}</text>
-                    </view>
-                    <view class="timeline-body" v-if="item.content">
-                      <view class="timeline-action" v-for="(action, actionIndex) in item.content" :key="actionIndex">
-                        <text class="action-title">{{ action.title }}</text>
-                        <text class="action-value">{{ action.value }}</text>
-                      </view>
-                    </view>
-                  </view>
-                </view>
-              </view>
-            </scroll-view>
-          </view>
-        </template>
-        <template v-else-if="currentBusinessType === 'seal-check'">
-          <view class="seal-check-container">
-            <!-- TAB切换 -->
-            <view class="tab-header">
-              <view 
-                class="tab-item" 
-                :class="{ active: sealCheckActiveTab === 'form' }" 
-                @click="switchSealCheckTab('form')"
-              >
-                <view class="tab-icon">📋</view>
-                <text class="tab-text">表单信息</text>
-              </view>
-              <view 
-                class="tab-item" 
-                :class="{ active: sealCheckActiveTab === 'process' }" 
-                @click="switchSealCheckTab('process')"
-              >
-                <view class="tab-icon">🔄</view>
-                <text class="tab-text">流程信息</text>
-              </view>
-            </view>
-            
-            <!-- 表单信息内容 -->
-            <scroll-view 
-              v-if="sealCheckActiveTab === 'form'" 
-              class="tab-content form-content seal-form-content" 
-              scroll-y="true"
-            >
-              <!-- 基本信息（只读） -->
-              <view class="form-section">
-                <view class="section-title">基本信息</view>
-                <view class="basic-info-list">
-                  <view class="basic-info-item">
-                    <text class="info-label">标段</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.section }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">工点</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.workPoint }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">编号</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.number }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">工程项目</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.project }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻孔编号</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.drillNo }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">现场技术员</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.inspector }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">钻机机长</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.machineLeader }}</text>
-                  </view>
-                  <view class="basic-info-item">
-                    <text class="info-label">日期</text>
-                    <text class="info-value">{{ sealCheckData.basicInfo.date }}</text>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 自检意见（可编辑） -->
-              <view class="form-section">
-                <view class="section-title">自检意见</view>
-                <view class="editable-form-list">
-                  <view class="editable-form-item">
-                    <text class="form-label">开孔日期</text>
-                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.startDate" placeholder="请选择日期" />
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">终孔日期</text>
-                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.endDate" placeholder="请选择日期" />
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">坐标X</text>
-                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.coordinateX" placeholder="请输入坐标X" />
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">坐标Y</text>
-                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.coordinateY" placeholder="请输入坐标Y" />
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">终孔深度(m)</text>
-                    <input class="form-input" type="text" v-model="sealCheckData.selfInspection.actualDepth" placeholder="请输入深度" />
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">封孔方法</text>
-                    <view class="checkbox-group-editable">
-                      <view class="checkbox-item-editable">
-                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingMethod.includes('孔口在地上高注水泥浆') }" @click="toggleSealingMethod('孔口在地上高注水泥浆')">
-                          <text v-if="sealCheckData.selfInspection.sealingMethod.includes('孔口在地上高注水泥浆')" class="check-icon">✓</text>
-                        </view>
-                        <text class="checkbox-label-editable">孔口在地上高注水泥浆</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">水泥用量(包)</text>
-                    <input class="form-input" type="number" v-model="sealCheckData.selfInspection.waterUsage" placeholder="请输入水泥用量(包)" />
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">管理条件</text>
-                    <view class="checkbox-group-editable">
-                      <view class="checkbox-item-editable">
-                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.managementCondition.includes('孔口返浆') }" @click="toggleManagementCondition('孔口返浆')">
-                          <text v-if="sealCheckData.selfInspection.managementCondition.includes('孔口返浆')" class="check-icon">✓</text>
-                        </view>
-                        <text class="checkbox-label-editable">孔口返浆</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">管理条件</text>
-                    <view class="checkbox-group-editable">
-                      <view class="checkbox-item-editable">
-                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingCondition.includes('孔口返浆后停浆水泥浆') }" @click="toggleSealingCondition('孔口返浆后停浆水泥浆')">
-                          <text v-if="sealCheckData.selfInspection.sealingCondition.includes('孔口返浆后停浆水泥浆')" class="check-icon">✓</text>
-                        </view>
-                        <text class="checkbox-label-editable">孔口返浆后停浆水泥浆</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">封孔录像</text>
-                    <view class="checkbox-group-editable">
-                      <view class="checkbox-item-editable">
-                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingRecord.includes('内高完整') }" @click="toggleSealingRecord('内高完整')">
-                          <text v-if="sealCheckData.selfInspection.sealingRecord.includes('内高完整')" class="check-icon">✓</text>
-                        </view>
-                        <text class="checkbox-label-editable">内高完整</text>
-                      </view>
-                      <view class="checkbox-item-editable">
-                        <view class="checkbox-editable" :class="{ checked: sealCheckData.selfInspection.sealingRecord.includes('清晰') }" @click="toggleSealingRecord('清晰')">
-                          <text v-if="sealCheckData.selfInspection.sealingRecord.includes('清晰')" class="check-icon">✓</text>
-                        </view>
-                        <text class="checkbox-label-editable">清晰</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">自检意见</text>
-                    <textarea class="form-textarea" v-model="sealCheckData.selfInspection.selfInspectionResult" placeholder="请输入自检意见"></textarea>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 验收意见（可编辑） -->
-              <view class="form-section">
-                <view class="section-title">验收意见</view>
-                <view class="editable-form-list">
-                  <view class="editable-form-item">
-                    <text class="form-label">验收结论</text>
-                    <view class="radio-group-editable">
-                      <view class="radio-item-editable" @click="setSealAcceptanceResult('同意自检意见，通过孔验收')">
-                        <view class="radio-dot-editable" :class="{ active: sealCheckData.acceptance.acceptanceResult === '同意自检意见，通过孔验收' }"></view>
-                        <text class="radio-text-editable">同意自检意见，通过孔验收</text>
-                      </view>
-                      <view class="radio-item-editable" @click="setSealAcceptanceResult('不同意自检意见，该孔重新封孔')">
-                        <view class="radio-dot-editable" :class="{ active: sealCheckData.acceptance.acceptanceResult === '不同意自检意见，该孔重新封孔' }"></view>
-                        <text class="radio-text-editable">不同意自检意见，该孔重新封孔</text>
-                      </view>
-                    </view>
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">验收意见</text>
-                    <textarea class="form-textarea" v-model="sealCheckData.acceptance.acceptancePersonnel" placeholder="请输入验收意见"></textarea>
-                  </view>
-                  <view class="editable-form-item">
-                    <text class="form-label">备注</text>
-                    <textarea class="form-textarea" v-model="sealCheckData.acceptance.remarks" placeholder="请输入备注"></textarea>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 附件 -->
-              <view class="form-section">
-                <view class="section-title">附件</view>
-                <view class="attachment-list">
-                  <view class="attachment-item" v-for="(file, index) in sealCheckData.attachments" :key="index">
-                    <view class="attachment-info">
-                      <view class="attachment-icon">📎</view>
-                      <text class="attachment-name">{{ file.name }}</text>
-                    </view>
-                    <view class="attachment-actions">
-                      <view class="attachment-btn view-btn">查看</view>
-                      <view class="attachment-btn delete-btn" @click="deleteAttachment(index)">删除</view>
-                    </view>
-                  </view>
-                  <view class="upload-attachment" @click="uploadAttachment">
-                    <view class="upload-icon">📎</view>
-                    <text class="upload-text">上传附件</text>
-                  </view>
-                </view>
-              </view>
-              
-              <!-- 底部操作按钮 -->
-              <view class="form-actions">
-                <view class="action-btn save-btn" @click="saveSealCheck">保存</view>
-                <view class="action-btn submit-btn" @click="submitSealCheck">提交</view>
-              </view>
-            </scroll-view>
-            
-            <!-- 流程信息内容 -->
-            <scroll-view 
-              v-if="sealCheckActiveTab === 'process'" 
-              class="tab-content process-content" 
-              scroll-y="true"
-            >
-              <view class="process-timeline">
-                <view 
-                  class="timeline-item" 
-                  v-for="(item, index) in sealCheckData.processFlow" 
-                  :key="index"
-                  :class="{ 'current': item.isCurrent }"
-                >
-                  <view class="timeline-node">
-                    <view class="timeline-dot" :class="{ 'active': item.isCurrent }"></view>
-                    <view class="timeline-line" v-if="index !== sealCheckData.processFlow.length - 1"></view>
-                  </view>
-                  <view class="timeline-content">
-                    <view class="timeline-header">
-                      <text class="timeline-title">{{ item.title }}</text>
-                      <text class="timeline-time">{{ item.time }}</text>
-                    </view>
-                    <view class="timeline-body" v-if="item.content">
-                      <view class="timeline-action" v-for="(action, actionIndex) in item.content" :key="actionIndex">
-                        <text class="action-title">{{ action.title }}</text>
-                        <text class="action-value">{{ action.value }}</text>
-                      </view>
-                    </view>
-                  </view>
-                </view>
-              </view>
-            </scroll-view>
-          </view>
-          
-          <!-- 提交确认弹窗 -->
-          <view v-if="showSealCheckConfirm" class="confirm-overlay" @click="closeSealCheckConfirm">
-            <view class="confirm-dialog" @click.stop>
-              <view class="confirm-title">提示</view>
-              <view class="confirm-content">是否提交流程？</view>
-              <view class="confirm-actions">
-                <view class="confirm-btn cancel-btn" @click="closeSealCheckConfirm">取消</view>
-                <view class="confirm-btn confirm-btn" @click="confirmSubmitSealCheck">确认</view>
-              </view>
-            </view>
-          </view>
-        </template>
-        <template v-else-if="currentBusinessType === 'overview'">
-          <scroll-view class="drill-overview" scroll-y="true">
-            <!-- 基础信息 -->
-            <view class="info-section">
-              <view class="section-header">
-                <text class="section-title">基础信息</text>
-              </view>
-              <view class="info-table">
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">钻孔编号</text>
-                    <text class="info-value">{{ drillInfo.basicInfo.drillNo }}</text>
-                  </view>
-                  <view class="info-cell">
-                    <text class="info-label">钻孔类型</text>
-                    <text class="info-value">{{ drillInfo.basicInfo.drillType }}</text>
-                  </view>
-                </view>
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">项目负责人</text>
-                    <text class="info-value">{{ drillInfo.basicInfo.projectManager }}</text>
-                  </view>
-                  <view class="info-cell">
-                    <text class="info-label">技术员</text>
-                    <text class="info-value">{{ drillInfo.basicInfo.technician }}</text>
-                  </view>
-                </view>
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">终孔日期</text>
-                    <text class="info-value">{{ drillInfo.basicInfo.endDate }}</text>
-                  </view>
-                  <view class="info-cell"></view>
-                </view>
-              </view>
-            </view>
-            
-            <!-- 坐标与高程 -->
-            <view class="info-section">
-              <view class="section-header">
-                <text class="section-title">坐标与高程</text>
-              </view>
-              <view class="info-table">
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">设计坐标X</text>
-                    <text class="info-value">{{ drillInfo.coordinates.designX }}</text>
-                  </view>
-                  <view class="info-cell">
-                    <text class="info-label">设计坐标Y</text>
-                    <text class="info-value">{{ drillInfo.coordinates.designY }}</text>
-                  </view>
-                </view>
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">设计经度</text>
-                    <text class="info-value">{{ drillInfo.coordinates.designLongitude }}</text>
-                  </view>
-                  <view class="info-cell">
-                    <text class="info-label">设计纬度</text>
-                    <text class="info-value">{{ drillInfo.coordinates.designLatitude }}</text>
-                  </view>
-                </view>
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">复测坐标X</text>
-                    <text class="info-value">{{ drillInfo.coordinates.actualX }}</text>
-                  </view>
-                  <view class="info-cell">
-                    <text class="info-label">复测坐标Y</text>
-                    <text class="info-value">{{ drillInfo.coordinates.actualY }}</text>
-                  </view>
-                </view>
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">设计孔深(m)</text>
-                    <text class="info-value">{{ drillInfo.coordinates.designDepth }}</text>
-                  </view>
-                  <view class="info-cell">
-                    <text class="info-label">实际孔深(m)</text>
-                    <text class="info-value">{{ drillInfo.coordinates.actualDepth }}</text>
-                  </view>
-                </view>
-                <view class="info-row">
-                  <view class="info-cell">
-                    <text class="info-label">孔口高程(m)</text>
-                    <text class="info-value">{{ drillInfo.coordinates.elevation }}</text>
-                  </view>
-                  <view class="info-cell"></view>
-                </view>
-              </view>
-            </view>
-            
-            <!-- 项目归属 -->
-            <view class="info-section">
-              <view class="section-header">
-                <text class="section-title">项目归属</text>
-              </view>
-              <view class="project-info">
-                <view class="project-item">
-                  <text class="project-label">所属项目</text>
-                  <text class="project-value">{{ drillInfo.project.projectName }}</text>
-                </view>
-                <view class="project-item">
-                  <text class="project-label">工点名称</text>
-                  <text class="project-value">{{ drillInfo.project.workName }}</text>
-                </view>
-                <view class="project-item">
-                  <text class="project-label">工程名称</text>
-                  <text class="project-value">{{ drillInfo.project.engineeringName }}</text>
-                </view>
-              </view>
-            </view>
-          </scroll-view>
-        </template>
-        <template v-else>
+        <video-monitor 
+          v-if="currentBusinessType === 'video'"
+          :videoMonitors="videoMonitors"
+          @play-video="playVideo"
+        />
+        <column-chart
+          v-else-if="currentBusinessType === 'chart'"
+          :layers="columnChartData.layers"
+          :dataColumns="columnChartData.dataColumns"
+        />
+        <start-check
+          v-else-if="currentBusinessType === 'start-check'"
+          :formData="startCheckData.formData"
+          :signatures="startCheckData.signatures"
+          :photos="startCheckData.photos"
+          :activeTabProp="startCheckActiveTab"
+          @preview-photo="previewPhoto"
+        />
+        <single-check
+          v-else-if="currentBusinessType === 'single-check'"
+          :formData="singleCheckData.formData"
+          :checkResult="singleCheckData.checkResult"
+          :signatures="singleCheckData.signatures"
+          :photos="singleCheckData.photos"
+          :activeTabProp="singleCheckActiveTab"
+          @preview-photo="previewPhoto"
+        />
+        <seal-check
+          v-else-if="currentBusinessType === 'seal-check'"
+          :formData="sealCheckData.formData"
+          :checkItems="sealCheckData.checkItems"
+          :checkResult="sealCheckData.checkResult"
+          :signatures="sealCheckData.signatures"
+          :photos="sealCheckData.photos"
+          :activeTabProp="sealCheckActiveTab"
+          @preview-photo="previewPhoto"
+        />
+        <drill-overview
+          v-else-if="currentBusinessType === 'overview'"
+          :basicInfo="overviewData.basicInfo"
+          :progressInfo="overviewData.progressInfo"
+        />
+        <view v-else>
           <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
-        </template>
+        </view>
       </view>
     </sub-popup>
 
@@ -912,122 +73,141 @@
             <text class="grid-item-label">视频监控</text>
           </view>
           <view class="grid-item" @click="handleItemClick('overview')">
-            <view class="custom-icon blue">
+            <view class="custom-icon green">
               <text class="icon-text">📊</text>
             </view>
             <text class="grid-item-label">钻孔概况</text>
           </view>
           <view class="grid-item" @click="handleItemClick('chart')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🖼️</text>
+            <view class="custom-icon orange">
+              <text class="icon-text">📈</text>
             </view>
             <text class="grid-item-label">柱状图</text>
           </view>
         </view>
       </view>
 
-      <!-- 报审流程 -->
+      <!-- 施工过程 -->
       <view class="feature-card">
-        <text class="card-title">报审流程</text>
-        <view class="feature-grid three-columns">
+        <text class="card-title">施工过程</text>
+        <view class="feature-grid four-columns">
           <view class="grid-item" @click="handleItemClick('start-check')">
-            <view class="status-icon status-completed">A7</view>
+            <view class="custom-icon purple">
+              <text class="icon-text">🔍</text>
+            </view>
             <text class="grid-item-label">开工检查</text>
           </view>
           <view class="grid-item" @click="handleItemClick('single-check')">
-            <view class="status-icon status-inprogress">A8</view>
+            <view class="custom-icon blue">
+              <text class="icon-text">📝</text>
+            </view>
             <text class="grid-item-label">单孔报验</text>
           </view>
           <view class="grid-item" @click="handleItemClick('seal-check')">
-            <view class="status-icon status-not-started">A9</view>
+            <view class="custom-icon green">
+              <text class="icon-text">✅</text>
+            </view>
             <text class="grid-item-label">封孔验收</text>
           </view>
-        </view>
-      </view>
-
-      <!-- 安全施工 -->
-      <view class="feature-card">
-        <text class="card-title">安全施工</text>
-        <view class="feature-grid">
           <view class="grid-item" @click="handleItemClick('disclosure')">
-            <view class="status-icon status-completed">交</view>
+            <view class="custom-icon orange">
+              <text class="icon-text">📄</text>
+            </view>
             <text class="grid-item-label">钻孔交底</text>
           </view>
           <view class="grid-item" @click="handleItemClick('positioning')">
-            <view class="status-icon status-completed">开</view>
+            <view class="custom-icon purple">
+              <text class="icon-text">📍</text>
+            </view>
             <text class="grid-item-label">开孔定位</text>
           </view>
           <view class="grid-item" @click="handleItemClick('pipeline')">
-            <view class="status-icon status-completed">管</view>
+            <view class="custom-icon blue">
+              <text class="icon-text">🔌</text>
+            </view>
             <text class="grid-item-label">管线探测</text>
           </view>
           <view class="grid-item" @click="handleItemClick('excavation')">
-            <view class="status-icon status-completed">挖</view>
+            <view class="custom-icon green">
+              <text class="icon-text">⛏️</text>
+            </view>
             <text class="grid-item-label">开挖0-3米</text>
           </view>
           <view class="grid-item" @click="handleItemClick('protection')">
-            <view class="status-icon status-completed">围</view>
+            <view class="custom-icon orange">
+              <text class="icon-text">🛡️</text>
+            </view>
             <text class="grid-item-label">围蔽防护</text>
           </view>
           <view class="grid-item" @click="handleItemClick('strike')">
-            <view class="status-icon status-completed">击</view>
+            <view class="custom-icon purple">
+              <text class="icon-text">🔨</text>
+            </view>
             <text class="grid-item-label">击进3-6米</text>
           </view>
           <view class="grid-item" @click="handleItemClick('drilling')">
-            <view class="status-icon status-inprogress">钻</view>
+            <view class="custom-icon blue">
+              <text class="icon-text">🔄</text>
+            </view>
             <text class="grid-item-label">机钻施工</text>
           </view>
           <view class="grid-item" @click="handleItemClick('safety-check')">
-            <view class="status-icon status-not-started">安</view>
+            <view class="custom-icon green">
+              <text class="icon-text">🔒</text>
+            </view>
             <text class="grid-item-label">安全检查</text>
           </view>
           <view class="grid-item" @click="handleItemClick('seal-record')">
-            <view class="status-icon status-not-started">封</view>
+            <view class="custom-icon orange">
+              <text class="icon-text">📝</text>
+            </view>
             <text class="grid-item-label">封孔记录</text>
           </view>
           <view class="grid-item" @click="handleItemClick('quality-check')">
-            <view class="status-icon status-not-started">验</view>
+            <view class="custom-icon purple">
+              <text class="icon-text">🏆</text>
+            </view>
             <text class="grid-item-label">质量验收</text>
           </view>
         </view>
       </view>
 
-      <!-- 编录数据 -->
+      <!-- 地质信息 -->
       <view class="feature-card">
-        <text class="card-title">编录数据</text>
-        <view class="feature-grid">
+        <text class="card-title">地质信息</text>
+        <view class="feature-grid four-columns">
           <view class="grid-item" @click="handleItemClick('stratum')">
             <view class="custom-icon blue">
-              <text class="icon-text">🏔️</text>
+              <text class="icon-text">🌍</text>
             </view>
             <text class="grid-item-label">地层</text>
           </view>
           <view class="grid-item" @click="handleItemClick('standard-penetration')">
-            <view class="custom-icon blue">
-              <text class="icon-text">⚒️</text>
+            <view class="custom-icon green">
+              <text class="icon-text">📏</text>
             </view>
             <text class="grid-item-label">标贯</text>
           </view>
           <view class="grid-item" @click="handleItemClick('dynamic-probe')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🔧</text>
+            <view class="custom-icon orange">
+              <text class="icon-text">🔍</text>
             </view>
             <text class="grid-item-label">动探</text>
           </view>
           <view class="grid-item" @click="handleItemClick('in-situ-test')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🔬</text>
+            <view class="custom-icon purple">
+              <text class="icon-text">🧪</text>
             </view>
             <text class="grid-item-label">原位测试</text>
           </view>
           <view class="grid-item" @click="handleItemClick('sampling')">
             <view class="custom-icon blue">
-              <text class="icon-text">🪨</text>
+              <text class="icon-text">🧫</text>
             </view>
             <text class="grid-item-label">取样</text>
           </view>
           <view class="grid-item" @click="handleItemClick('water-level')">
-            <view class="custom-icon blue">
+            <view class="custom-icon green">
               <text class="icon-text">💧</text>
             </view>
             <text class="grid-item-label">水位</text>
@@ -1035,10 +215,10 @@
         </view>
       </view>
 
-      <!-- 钻孔影像 -->
+      <!-- 影像资料 -->
       <view class="feature-card">
-        <text class="card-title">钻孔影像</text>
-        <view class="feature-grid">
+        <text class="card-title">影像资料</text>
+        <view class="feature-grid three-columns">
           <view class="grid-item" @click="handleItemClick('single-box')">
             <view class="custom-icon blue">
               <text class="icon-text">📦</text>
@@ -1046,14 +226,14 @@
             <text class="grid-item-label">单箱</text>
           </view>
           <view class="grid-item" @click="handleItemClick('overall')">
-            <view class="custom-icon blue">
-              <text class="icon-text">📸</text>
+            <view class="custom-icon green">
+              <text class="icon-text">🖼️</text>
             </view>
             <text class="grid-item-label">整体</text>
           </view>
           <view class="grid-item" @click="handleItemClick('ground')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🏗️</text>
+            <view class="custom-icon orange">
+              <text class="icon-text">🏞️</text>
             </view>
             <text class="grid-item-label">地面</text>
           </view>
@@ -1063,10 +243,10 @@
       <!-- 班报表 -->
       <view class="feature-card">
         <text class="card-title">班报表</text>
-        <view class="feature-grid">
+        <view class="feature-grid three-columns">
           <view class="grid-item" @click="handleItemClick('shift-report')">
-            <view class="custom-icon blue">
-              <text class="icon-text">📋</text>
+            <view class="custom-icon purple">
+              <text class="icon-text">📊</text>
             </view>
             <text class="grid-item-label">班报表</text>
           </view>
@@ -1078,11 +258,25 @@
 
 <script>
 import SubPopup from '@/components/sub-popup/sub-popup.vue';
+import {
+  VideoMonitor,
+  DrillOverview,
+  ColumnChart,
+  StartCheck,
+  SingleCheck,
+  SealCheck
+} from '@/components/drill-detail/popups';
 
 export default {
   name: 'DrillDetail',
   components: {
-    SubPopup
+    SubPopup,
+    VideoMonitor,
+    DrillOverview,
+    ColumnChart,
+    StartCheck,
+    SingleCheck,
+    SealCheck
   },
   data() {
     return {
@@ -1090,301 +284,222 @@ export default {
       showSubPopup: false,
       subPopupTitle: '',
       currentBusinessType: '',
+      
       // 视频监控数据
       videoMonitors: [
-        { id: 1, name: '监控编号A', url: 'https://example.com/stream1' },
-        { id: 2, name: '监控编号B', url: 'https://example.com/stream2' }
+        { id: 1, name: '钻机视角', thumbnail: '/static/images/video-thumb-1.jpg' },
+        { id: 2, name: '全景视角', thumbnail: '/static/images/video-thumb-2.jpg' },
+        { id: 3, name: '钻头视角', thumbnail: '/static/images/video-thumb-3.jpg' }
       ],
+      
       // 柱状图数据
       columnChartData: {
-        imageUrl: '/static/logo.png', // 使用已有的图片作为示例
+        imageUrl: '/static/images/column-chart.png',
         scale: 1,
-        minScale: 0.5,
-        maxScale: 3,
         translateX: 0,
         translateY: 0,
+        isDragging: false,
         startX: 0,
         startY: 0,
-        isDragging: false
+        layers: [
+          { name: '粘土', thickness: 150, color: '#f5deb3' },
+          { name: '砂土', thickness: 200, color: '#ffe4b5' },
+          { name: '砾石', thickness: 180, color: '#d3d3d3' },
+          { name: '岩石', thickness: 250, color: '#a9a9a9' }
+        ],
+        dataColumns: [
+          {
+            name: '标贯',
+            values: [
+              { position: 100, text: '10' },
+              { position: 250, text: '15' },
+              { position: 400, text: '25' },
+              { position: 550, text: '30' }
+            ]
+          },
+          {
+            name: '取样',
+            values: [
+              { position: 150, text: 'S1' },
+              { position: 350, text: 'S2' },
+              { position: 500, text: 'S3' }
+            ]
+          }
+        ]
       },
-      // 开工检查TAB切换
-      startCheckActiveTab: 'form',
-      // 单孔报验TAB切换
-      singleCheckActiveTab: 'form',
-      // 封孔验收TAB切换
-      sealCheckActiveTab: 'form',
-      // 封孔验收确认弹窗
-      showSealCheckConfirm: false,
+      
       // 开工检查数据
+      startCheckActiveTab: 'form',
       startCheckData: {
-        // 基本信息
-        basicInfo: {
-          section: '粤港澳大湾区城际铁路广州东至花都天贵工程-初步勘察-1标',
-          workPoint: '广州东至方石站',
-          number: 'L018B-Z2-1-A7-0313',
-          project: '粤港澳大湾区城际铁路广州东至花都天贵工程空港车辆段及出入段初步勘察',
-          drillNo: 'MRNZ2-A256S',
-          machineLeader: '==请选择==',
-          machineNo: '7',
-          machineModel: 'XY-100',
-          inspector: '方勇华',
-          inspectionTime: '2025-03-30 00:00:00',
-          remarks: '备注'
-        },
-        // 相关业务
-        business: {
-          // 围岩类型
-          rockTypes: [
-            { label: '防塌陷', checked: true },
-            { label: '反光条及贴士', checked: true },
-            { label: '警戒筒', checked: true },
-            { label: '单色布', checked: false },
-            { label: '地水防渗马凳档', checked: true },
-            { label: '引路牌', checked: false },
-            { label: '警示灯', checked: false }
-          ],
-          // 技术准备
-          techPreparation: [
-            { label: '技术准备', checked: true }
-          ],
-          // 管线排查
-          pipelineCheck: [
-            { label: '已有管线查询图，孔位已确认无管线', checked: true },
-            { label: '三证齐管线权属单位意见', checked: false }
-          ],
-          // 人工挖探
-          manualExcavation: [
-            { label: '浅孔开挖', checked: true },
-            { label: '钎探', checked: false }
-          ],
-          // 钻孔准备
-          drillPreparation: [
-            { label: '水泥定位', checked: true }
-          ]
-        },
-        // 附件
-        attachments: [
-          { name: '开工检查表.pdf', size: '2.5MB', type: 'pdf' },
-          { name: '现场照片.jpg', size: '1.2MB', type: 'image' }
-        ],
-        // 流程信息
-        processFlow: [
+        formData: [
           {
-            title: '当前',
-            time: '',
-            isCurrent: true,
-            content: [
-              { title: '传阅【正在处理审节点】', value: '' }
+            title: '基本信息',
+            items: [
+              { label: '工程名称', value: '某某工程地质勘察' },
+              { label: '钻孔编号', value: 'GK01' },
+              { label: '检查日期', value: '2023-06-15' },
+              { label: '检查人员', value: '张工' }
             ]
           },
           {
-            title: '助理审核',
-            time: '2025-03-31 21:33:28',
-            isCurrent: false,
-            content: [
-              { title: '【助理审核】刘辉军:', value: '需要更正核' }
-            ]
-          },
-          {
-            title: '咨询/总体单位审批',
-            time: '2025-03-30 13:33:12',
-            isCurrent: false,
-            content: [
-              { title: '【助理总工】方勇华:', value: '同意' }
-            ]
-          },
-          {
-            title: '开始',
-            time: '2025-03-29 09:15:45',
-            isCurrent: false,
-            content: [
-              { title: '【助理】刘辉军:', value: '创建流程' }
+            title: '设备检查',
+            items: [
+              { label: '钻机型号', value: 'XY-2型' },
+              { label: '设备状态', value: '良好' },
+              { label: '安全装置', value: '齐全' }
             ]
           }
+        ],
+        signatures: [
+          { role: '项目负责人', name: '李工', date: '2023-06-15', image: '/static/images/signature-1.png' },
+          { role: '监理工程师', name: '王工', date: '2023-06-15', image: '/static/images/signature-2.png' },
+          { role: '施工负责人', name: '张工', date: '2023-06-15', image: '/static/images/signature-3.png' }
+        ],
+        photos: [
+          { url: '/static/images/start-check-1.jpg', description: '钻机就位' },
+          { url: '/static/images/start-check-2.jpg', description: '安全装置检查' },
+          { url: '/static/images/start-check-3.jpg', description: '现场环境' }
         ]
       },
+      
       // 单孔报验数据
+      singleCheckActiveTab: 'form',
       singleCheckData: {
-        // 基本信息
-        basicInfo: {
-          section: '粤港澳大湾区城际铁路广州东至花都天贵工程-初步勘察-1标',
-          workPoint: '广州东至方石站',
-          project: '粤港澳大湾区城际铁路广州东至花都天贵工程空港车辆段及出入段初步勘察',
-          number: 'L018B-Z2-1-A8-0312',
-          drillNo: 'MRNZ2-A256S',
-          inspector: '刘辉军',
-          machineLeader: '==请选择==',
-          machineNo: '7',
-          machineModel: ''
-        },
-        // 自检意见
-        selfInspection: {
-          startDate: '2021-04-10',
-          endDate: '2021-04-15',
-          actualDepth: '16',
-          drillType: '一般孔,非取孔',
-          rockSamples: '4',
-          soilSamples: '0',
-          others: '3',
-          qualityInspector: '凡从良',
-          coreRecoveryRate: '90',
-          originalSoilSamples: '0',
-          rockSamples2: '0',
-          standardTests: '0',
-          selfInspectionResult: '同意验收',
-          remarks: ''
-        },
-        // 验收意见
-        acceptance: {
-          drillDepthCompliance: '符合',
-          positionCompliance: '符合',
-          soilDataCompliance: '符合',
-          rockCompliance: '符合',
-          sealingCompliance: '符合',
-          others: '',
-          acceptanceResult: '同意自检意见，通过孔验收',
-          acceptanceResultDetail: '不同意自检意见，该孔不予验收，移位后重新钻',
-          acceptancePersonnel: '符合要求'
-        },
-        // 附件
-        attachments: [
-          { name: '单孔报验表.pdf', size: '3.2MB', type: 'pdf' },
-          { name: '钻孔记录.xlsx', size: '1.8MB', type: 'excel' },
-          { name: '现场照片.jpg', size: '2.1MB', type: 'image' }
+        formData: [
+          { label: '钻孔编号', value: 'GK01' },
+          { label: '报验日期', value: '2023-07-20' },
+          { label: '钻孔深度', value: '30.5米' },
+          { label: '施工单位', value: '某某地质勘察公司' },
+          { label: '施工负责人', value: '张工' },
+          { label: '监理单位', value: '某某监理公司' },
+          { label: '监理工程师', value: '王工' }
         ],
-        // 流程信息
-        processFlow: [
-          {
-            title: '当前',
-            time: '',
-            isCurrent: true,
-            content: [
-              { title: '传阅【正在处理审节点】', value: '' }
-            ]
-          },
-          {
-            title: '验收审核',
-            time: '2025-04-02 14:25:18',
-            isCurrent: false,
-            content: [
-              { title: '【验收审核】张工程师:', value: '验收合格，同意通过' }
-            ]
-          },
-          {
-            title: '自检提交',
-            time: '2025-04-01 09:30:45',
-            isCurrent: false,
-            content: [
-              { title: '【自检员】凡从良:', value: '自检完成，提交验收' }
-            ]
-          },
-          {
-            title: '开始',
-            time: '2025-03-31 16:20:12',
-            isCurrent: false,
-            content: [
-              { title: '【项目员】刘辉军:', value: '创建单孔报验流程' }
-            ]
-          }
+        checkResult: {
+          status: 'passed',
+          statusText: '验收通过',
+          comments: '钻孔施工符合设计要求，各项指标达标，准予通过。'
+        },
+        signatures: [
+          { role: '施工负责人', name: '张工', date: '2023-07-20', image: '/static/images/signature-3.png' },
+          { role: '监理工程师', name: '王工', date: '2023-07-20', image: '/static/images/signature-2.png' },
+          { role: '业主代表', name: '刘总', date: '2023-07-20', image: '/static/images/signature-4.png' }
+        ],
+        photos: [
+          { url: '/static/images/single-check-1.jpg', description: '钻孔全景' },
+          { url: '/static/images/single-check-2.jpg', description: '钻孔测量' },
+          { url: '/static/images/single-check-3.jpg', description: '取样展示' }
         ]
       },
+      
       // 封孔验收数据
+      sealCheckActiveTab: 'form',
       sealCheckData: {
-        // 基本信息（只读）
-        basicInfo: {
-          section: '粤港澳大湾区城际铁路广州东至花都天贵工程-初步勘察-1标',
-          workPoint: '广州东至方石站',
-          number: 'L018B-Z2-1-A9-0369',
-          project: '粤港澳大湾区城际铁路广州东至花都天贵工程空港车辆段及出入段初步勘察',
-          drillNo: 'MRNZ2-A256S',
-          inspector: '李新华',
-          machineLeader: '==请选择==',
-          date: '2025-08-14'
-        },
-        // 自检意见（可编辑）
-        selfInspection: {
-          startDate: '2021-04-10',
-          endDate: '2021-04-15',
-          coordinateX: '248669.9375',
-          coordinateY: '38971.78516',
-          actualDepth: '16',
-          sealingMethod: '孔口在地上高注水泥浆',
-          waterUsage: '请填写水泥用量(包)',
-          managementCondition: '孔口返浆',
-          sealingCondition: '孔口返浆后停浆水泥浆',
-          sealingRecord: '内高完整、清晰',
-          selfInspectionResult: ''
-        },
-        // 验收意见（可编辑）
-        acceptance: {
-          acceptanceResult: '同意自检意见，通过孔验收',
-          acceptanceResultDetail: '不同意自检意见，该孔重新封孔',
-          acceptancePersonnel: '',
-          remarks: ''
-        },
-        // 附件
-        attachments: [
-          { name: '封孔验收表.pdf', size: '2.8MB', type: 'pdf' },
-          { name: '封孔照片.jpg', size: '1.5MB', type: 'image' }
+        formData: [
+          { label: '钻孔编号', value: 'GK01' },
+          { label: '验收日期', value: '2023-08-05' },
+          { label: '封孔材料', value: '水泥浆' },
+          { label: '封孔深度', value: '30.5米' },
+          { label: '施工单位', value: '某某地质勘察公司' },
+          { label: '监理单位', value: '某某监理公司' }
         ],
-        // 流程信息
-        processFlow: [
-          {
-            title: '发起',
-            time: '2025-08-14 17:00:00',
-            isCurrent: true,
-            content: [
-              { title: '【发起人】李新华:', value: '创建封孔验收流程' }
-            ]
+        checkItems: [
+          { 
+            name: '封孔材料', 
+            status: 'passed', 
+            statusText: '合格', 
+            description: '使用标准水泥浆，配比符合规范要求' 
+          },
+          { 
+            name: '封孔深度', 
+            status: 'passed', 
+            statusText: '合格', 
+            description: '封孔深度达到设计要求的30.5米' 
+          },
+          { 
+            name: '封孔质量', 
+            status: 'passed', 
+            statusText: '合格', 
+            description: '封孔密实，无漏浆现象' 
+          },
+          { 
+            name: '地表处理', 
+            status: 'passed', 
+            statusText: '合格', 
+            description: '地表恢复良好，标识清晰' 
           }
+        ],
+        checkResult: {
+          status: 'passed',
+          statusText: '验收通过',
+          comments: '封孔工作符合设计和规范要求，各项指标合格，准予通过验收。'
+        },
+        signatures: [
+          { role: '施工负责人', name: '张工', date: '2023-08-05', image: '/static/images/signature-3.png' },
+          { role: '监理工程师', name: '王工', date: '2023-08-05', image: '/static/images/signature-2.png' },
+          { role: '业主代表', name: '刘总', date: '2023-08-05', image: '/static/images/signature-4.png' }
+        ],
+        photos: [
+          { url: '/static/images/seal-check-1.jpg', description: '封孔前准备' },
+          { url: '/static/images/seal-check-2.jpg', description: '封孔过程' },
+          { url: '/static/images/seal-check-3.jpg', description: '封孔完成' },
+          { url: '/static/images/seal-check-4.jpg', description: '地表恢复' }
         ]
       },
+      
       // 钻孔概况数据
-      drillInfo: {
-        // 基础信息
-        basicInfo: {
-          drillNo: 'MRNZ23-BF-001',
-          drillType: '控制孔、取样孔',
-          projectManager: '袁柱',
-          technician: '陈欣进',
-          endDate: '2025-02-15'
-        },
-        // 坐标与高程
-        coordinates: {
-          designX: '228136.008',
-          designY: '33932.776',
-          designLongitude: '113.224',
-          designLatitude: '23.119',
-          actualX: '228122.137',
-          actualY: '33930.266',
-          designDepth: '45',
-          actualDepth: '44.8',
-          elevation: '4.3'
-        },
-        // 项目归属
-        project: {
-          projectName: '粤港澳大湾区城际铁路广州东至花都天贵工程',
-          workName: '广州东站-京溪站区间详勘',
-          engineeringName: '粤港澳大湾区城际铁路广州东至花都天贵工程'
-        }
+      overviewData: {
+        basicInfo: [
+          { label: '钻孔编号', value: 'GK01' },
+          { label: '坐标X', value: '123456.78' },
+          { label: '坐标Y', value: '987654.32' },
+          { label: '设计深度', value: '30.5米' },
+          { label: '实际深度', value: '30.5米' },
+          { label: '开工日期', value: '2023-06-15' },
+          { label: '完工日期', value: '2023-08-05' },
+          { label: '施工单位', value: '某某地质勘察公司' }
+        ],
+        progressInfo: [
+          { 
+            name: '开工检查', 
+            progress: 100, 
+            status: 'completed', 
+            statusText: '已完成' 
+          },
+          { 
+            name: '钻孔施工', 
+            progress: 100, 
+            status: 'completed', 
+            statusText: '已完成' 
+          },
+          { 
+            name: '取样测试', 
+            progress: 100, 
+            status: 'completed', 
+            statusText: '已完成' 
+          },
+          { 
+            name: '单孔报验', 
+            progress: 100, 
+            status: 'completed', 
+            statusText: '已完成' 
+          },
+          { 
+            name: '封孔验收', 
+            progress: 100, 
+            status: 'completed', 
+            statusText: '已完成' 
+          }
+        ]
       }
     }
   },
   methods: {
     goBack() {
-      uni.navigateBack({
-        delta: 1
-      })
+      uni.navigateBack()
     },
-    goHome() {
-      uni.reLaunch({
-        url: '/pages/index/index'
-      })
-    },
+    
+    // 处理功能项点击
     handleItemClick(type) {
-      console.log('点击了:', type)
-      
-      // 设置弹窗标题和当前业务类型
       this.setPopupInfo(type)
       
       // 显示弹窗
@@ -1409,7 +524,7 @@ export default {
     
     // 柱状图触摸移动
     handleTouchMove(e) {
-      if (this.columnChartData.isDragging && e.touches.length === 1) {
+      if (e.touches.length === 1 && this.columnChartData.isDragging) {
         // 单指拖动
         this.columnChartData.translateX = e.touches[0].clientX - this.columnChartData.startX
         this.columnChartData.translateY = e.touches[0].clientY - this.columnChartData.startY
@@ -1420,140 +535,17 @@ export default {
         const distance = Math.sqrt(dx * dx + dy * dy)
         
         // 计算新的缩放比例
-        let newScale = this.initialScale * (distance / this.initialDistance)
+        this.columnChartData.scale = this.initialScale * (distance / this.initialDistance)
         
         // 限制缩放范围
-        newScale = Math.max(this.columnChartData.minScale, Math.min(newScale, this.columnChartData.maxScale))
-        
-        this.columnChartData.scale = newScale
+        if (this.columnChartData.scale < 0.5) this.columnChartData.scale = 0.5
+        if (this.columnChartData.scale > 3) this.columnChartData.scale = 3
       }
     },
     
     // 柱状图触摸结束
     handleTouchEnd() {
       this.columnChartData.isDragging = false
-    },
-    
-    // 放大
-    zoomIn() {
-      if (this.columnChartData.scale < this.columnChartData.maxScale) {
-        this.columnChartData.scale += 0.2
-      }
-    },
-    
-    // 缩小
-    zoomOut() {
-      if (this.columnChartData.scale > this.columnChartData.minScale) {
-        this.columnChartData.scale -= 0.2
-      }
-    },
-    
-    // 重置缩放
-    resetZoom() {
-      this.columnChartData.scale = 1
-      this.columnChartData.translateX = 0
-      this.columnChartData.translateY = 0
-    },
-    
-    // 切换开工检查TAB
-    switchStartCheckTab(tab) {
-      this.startCheckActiveTab = tab
-    },
-    
-    // 切换单孔报验TAB
-    switchSingleCheckTab(tab) {
-      this.singleCheckActiveTab = tab
-    },
-    
-    // 切换封孔验收TAB
-    switchSealCheckTab(tab) {
-      this.sealCheckActiveTab = tab
-    },
-    
-    // 切换封孔方法
-    toggleSealingMethod(method) {
-      if (this.sealCheckData.selfInspection.sealingMethod.includes(method)) {
-        this.sealCheckData.selfInspection.sealingMethod = this.sealCheckData.selfInspection.sealingMethod.replace(method, '').trim()
-      } else {
-        this.sealCheckData.selfInspection.sealingMethod = method
-      }
-    },
-    
-    // 切换管理条件
-    toggleManagementCondition(condition) {
-      if (this.sealCheckData.selfInspection.managementCondition.includes(condition)) {
-        this.sealCheckData.selfInspection.managementCondition = this.sealCheckData.selfInspection.managementCondition.replace(condition, '').trim()
-      } else {
-        this.sealCheckData.selfInspection.managementCondition = condition
-      }
-    },
-    
-    // 切换封孔条件
-    toggleSealingCondition(condition) {
-      if (this.sealCheckData.selfInspection.sealingCondition.includes(condition)) {
-        this.sealCheckData.selfInspection.sealingCondition = this.sealCheckData.selfInspection.sealingCondition.replace(condition, '').trim()
-      } else {
-        this.sealCheckData.selfInspection.sealingCondition = condition
-      }
-    },
-    
-    // 切换封孔录像
-    toggleSealingRecord(record) {
-      const records = this.sealCheckData.selfInspection.sealingRecord.split('、').filter(r => r.trim())
-      if (records.includes(record)) {
-        const index = records.indexOf(record)
-        records.splice(index, 1)
-      } else {
-        records.push(record)
-      }
-      this.sealCheckData.selfInspection.sealingRecord = records.join('、')
-    },
-    
-    // 设置验收结果
-    setSealAcceptanceResult(result) {
-      this.sealCheckData.acceptance.acceptanceResult = result
-    },
-    
-    // 删除附件
-    deleteAttachment(index) {
-      this.sealCheckData.attachments.splice(index, 1)
-    },
-    
-    // 上传附件
-    uploadAttachment() {
-      // 这里可以实现文件上传逻辑
-      console.log('上传附件')
-    },
-    
-    // 保存封孔验收
-    saveSealCheck() {
-      console.log('保存封孔验收数据')
-      uni.showToast({
-        title: '保存成功',
-        icon: 'success'
-      })
-    },
-    
-    // 提交封孔验收
-    submitSealCheck() {
-      this.showSealCheckConfirm = true
-    },
-    
-    // 关闭确认弹窗
-    closeSealCheckConfirm() {
-      this.showSealCheckConfirm = false
-    },
-    
-    // 确认提交封孔验收
-    confirmSubmitSealCheck() {
-      console.log('提交封孔验收流程')
-      this.showSealCheckConfirm = false
-      uni.showToast({
-        title: '提交成功',
-        icon: 'success'
-      })
-      // 这里可以关闭弹窗或刷新数据
-      this.closeSubPopup()
     },
     
     // 设置弹窗信息
@@ -1583,7 +575,6 @@ export default {
           break
         case 'seal-check':
           this.subPopupTitle = '封孔验收'
-          this.sealCheckActiveTab = 'form' // 默认显示表单信息
           this.sealCheckActiveTab = 'form' // 默认显示表单信息
           break
         case 'disclosure':
@@ -1651,6 +642,38 @@ export default {
       }
     },
     
+    // 切换开工检查标签页
+    switchStartCheckTab(tab) {
+      this.startCheckActiveTab = tab
+    },
+    
+    // 切换单孔报验标签页
+    switchSingleCheckTab(tab) {
+      this.singleCheckActiveTab = tab
+    },
+    
+    // 切换封孔验收标签页
+    switchSealCheckTab(tab) {
+      this.sealCheckActiveTab = tab
+    },
+    
+    // 播放视频
+    playVideo(monitor) {
+      // 播放视频的逻辑
+      uni.showToast({
+        title: `正在播放: ${monitor.name}`,
+        icon: 'none'
+      })
+    },
+    
+    // 预览照片
+    previewPhoto(photo) {
+      uni.previewImage({
+        urls: [photo.url],
+        current: photo.url
+      })
+    },
+    
     // 关闭弹窗
     closeSubPopup() {
       this.showSubPopup = false
@@ -1659,1172 +682,137 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .drill-detail-page {
-  background-color: #f5f7fa;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  background-color: #f5f7fa;
 }
 
-/* 顶部导航栏 */
+/* 顶部导航栏样式 */
 .app-header {
+  height: 90rpx;
   display: flex;
   align-items: center;
-  padding: 30rpx 40rpx;
-  background-color: #ffffff;
-  border-bottom: 2rpx solid #e4e7ed;
-  flex-shrink: 0;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  background-color: #fff;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 10;
 }
 
-.app-header .header-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  text-align: center;
-  flex-grow: 1;
-  color: #303133;
+.header-title {
+  font-size: 34rpx;
+  font-weight: 500;
+  color: #333;
 }
 
-.app-header .icon {
-  width: 48rpx;
-  height: 48rpx;
+.icon {
+  width: 60rpx;
+  height: 60rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.app-header .icon-left {
-  margin-right: auto;
-}
-
-.app-header .icon-right {
-  margin-left: auto;
-  visibility: hidden;
-}
-
 .back-arrow {
-  font-size: 36rpx;
-  color: #303133;
+  font-size: 40rpx;
   font-weight: bold;
+  color: #333;
 }
 
-/* 主内容区域 */
+/* 主内容区域样式 */
 .main-content {
-  flex-grow: 1;
-  padding: 32rpx;
+  flex: 1;
+  padding: 20rpx;
 }
 
-/* 卡片式模块 */
+/* 功能卡片样式 */
 .feature-card {
-  background-color: #ffffff;
-  border-radius: 24rpx;
-  padding: 32rpx;
-  margin-bottom: 32rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
 .card-title {
   font-size: 32rpx;
-  font-weight: 600;
-  margin: 0 0 60rpx 8rpx;
-  color: #303133;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: block;
 }
 
 /* 网格布局 */
 .feature-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24rpx;
-  row-gap: 40rpx;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10rpx;
 }
 
-.feature-grid.three-columns {
-  grid-template-columns: repeat(3, 1fr);
+.three-columns .grid-item {
+  width: 33.33%;
+}
+
+.four-columns .grid-item {
+  width: 25%;
 }
 
 .grid-item {
+  padding: 10rpx;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.custom-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10rpx;
+}
+
+.blue {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.green {
+  background-color: #e6f7e6;
+  color: #52c41a;
+}
+
+.orange {
+  background-color: #fff7e6;
+  color: #fa8c16;
+}
+
+.purple {
+  background-color: #f5e6ff;
+  color: #722ed1;
+}
+
+.icon-text {
+  font-size: 36rpx;
+}
+
+.grid-item-label {
+  font-size: 26rpx;
+  color: #666;
   text-align: center;
 }
 
-.grid-item .grid-item-label {
-  margin-top: 16rpx;
-  font-size: 26rpx;
-  color: #606266;
-  white-space: nowrap;
-}
-
-/* 图标样式 */
-.icon-container {
-  width: 96rpx;
-  height: 96rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-container.blue {
-  background-color: rgba(43, 125, 224, 0.1);
-  border-radius: 16rpx;
-}
-
-/* 自定义图标样式 */
-.custom-icon {
-  width: 96rpx;
-  height: 96rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16rpx;
-}
-
-.custom-icon.blue {
-  background-color: rgba(43, 125, 224, 0.1);
-}
-
-.custom-icon .icon-text {
-  font-size: 48rpx;
-  color: #2b7de0;
-  font-weight: bold;
-}
-
-/* 状态图标 */
-.status-icon {
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: 20rpx;
-  font-size: 32rpx;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4rpx 8rpx rgba(0,0,0,0.05);
-  border: 2rpx solid transparent;
-}
-
-.status-icon.status-completed {
-  background-color: #67c23a;
-  color: #ffffff;
-}
-
-.status-icon.status-inprogress {
-  background-color: #e6a23c;
-  color: #6d4d0c;
-}
-
-.status-icon.status-not-started {
-  background-color: #ffffff;
-  color: #a8abb2;
-  border-color: #dcdfe6;
-}
-</style>
-
-<style scoped>
 /* 二级弹窗内容样式 */
 .sub-popup-content {
   padding: 20rpx;
   height: 100%;
-}
-
-/* 视频监控样式 */
-.video-monitors {
-  display: flex;
-  flex-direction: column;
-  gap: 30rpx;
-  padding: 10rpx;
-}
-
-.video-monitor-item {
-  width: 100%;
-}
-
-.monitor-title {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 16rpx;
-  padding-left: 10rpx;
-}
-
-.video-container {
-  width: 100%;
-  height: 400rpx;
-  border-radius: 16rpx;
-  overflow: hidden;
-  border: 2rpx solid #e74c3c;
-  box-sizing: border-box;
-}
-
-.video-placeholder {
-  width: 100%;
-  height: 100%;
-  background-color: #f8f9fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.video-placeholder-text {
-  color: #909399;
-  font-size: 28rpx;
-}
-
-/* 钻孔概况样式 */
-.drill-overview {
-  height: 100%;
-  padding: 20rpx;
-}
-
-.info-section {
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-
-.section-header {
-  background-color: #f6f8fa;
-  padding: 20rpx 24rpx;
-  border-bottom: 1rpx solid #e8eaed;
-}
-
-.section-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
-  position: relative;
-  padding-left: 20rpx;
-}
-
-.section-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6rpx;
-  height: 28rpx;
-  background-color: #2b7de0;
-  border-radius: 3rpx;
-}
-
-/* 表格式布局 */
-.info-table {
-  padding: 16rpx;
-}
-
-.info-row {
-  display: flex;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.info-row:last-child {
-  border-bottom: none;
-}
-
-.info-cell {
-  flex: 1;
-  padding: 20rpx 16rpx;
-  position: relative;
-}
-
-.info-cell:first-child {
-  border-right: 1rpx solid #f0f0f0;
-}
-
-.info-label {
-  font-size: 26rpx;
-  color: #909399;
-  margin-bottom: 10rpx;
-  display: block;
-}
-
-.info-value {
-  font-size: 30rpx;
-  color: #303133;
-  font-weight: 500;
-}
-
-/* 项目归属特殊样式 */
-.project-info {
-  padding: 16rpx;
-}
-
-.project-item {
-  padding: 20rpx 16rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.project-item:last-child {
-  border-bottom: none;
-}
-
-.project-label {
-  font-size: 26rpx;
-  color: #909399;
-  margin-bottom: 10rpx;
-  display: block;
-}
-
-.project-value {
-  font-size: 30rpx;
-  color: #303133;
-  line-height: 1.5;
-  word-break: break-all;
-}
-
-/* 柱状图样式 */
-.column-chart-container {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f8f9fa;
-}
-
-.chart-wrapper {
-  transform-origin: center;
-  will-change: transform;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.chart-image {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.zoom-controls {
-  position: absolute;
-  bottom: 30rpx;
-  right: 30rpx;
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-
-.zoom-btn {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40rpx;
-  color: #333;
-  font-weight: bold;
-}
-
-.zoom-icon {
-  line-height: 1;
-}
-
-/* 开工检查样式 */
-.start-check-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* TAB切换样式 */
-.tab-header {
-  display: flex;
-  background-color: #ffffff;
-  border-bottom: 1rpx solid #e8eaed;
-  margin-bottom: 0;
-}
-
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 20rpx 0;
-  font-size: 28rpx;
-  color: #606266;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.tab-item.active {
-  color: #2b7de0;
-  font-weight: 500;
-}
-
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4rpx;
-  background-color: #2b7de0;
-}
-
-.tab-icon {
-  display: none;
-}
-
-.tab-text {
-  font-size: 28rpx;
-}
-
-.tab-content {
-  flex: 1;
-  overflow-y: auto;
-}
-
-/* 表单信息样式 */
-.form-content {
-  padding: 20rpx;
-}
-
-.form-section {
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.section-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
-  padding: 24rpx;
-  border-bottom: 1rpx solid #ebeef5;
-  background-color: #f6f8fa;
-}
-
-/* 基本信息单列布局样式 */
-.basic-info-list {
-  padding: 0;
-}
-
-.basic-info-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.basic-info-item:last-child {
-  border-bottom: none;
-}
-
-.basic-info-item .info-label {
-  width: 160rpx;
-  flex-shrink: 0;
-  font-size: 28rpx;
-  color: #606266;
-  font-weight: 500;
-  line-height: 1.6;
-  padding-right: 16rpx;
-  padding-top: 4rpx;
-}
-
-.basic-info-item .info-value {
-  flex: 1;
-  font-size: 28rpx;
-  color: #303133;
-  line-height: 1.6;
-  word-break: break-all;
-  padding-left: 16rpx;
-  padding-top: 4rpx;
-}
-
-.form-group {
-  padding: 16rpx;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.form-item {
-  width: 50%;
-  padding: 16rpx;
-  box-sizing: border-box;
-}
-
-.form-item.full-width {
-  width: 100%;
-}
-
-.form-label {
-  font-size: 26rpx;
-  color: #909399;
-  margin-bottom: 8rpx;
-  display: block;
-}
-
-.form-value {
-  font-size: 28rpx;
-  color: #303133;
-  word-break: break-all;
-}
-
-/* 相关业务样式 */
-.business-group {
-  padding: 20rpx;
-  border-bottom: 1rpx solid #ebeef5;
-}
-
-.business-group:last-child {
-  border-bottom: none;
-}
-
-.business-title {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #303133;
-  margin-bottom: 16rpx;
-}
-
-/* 只读多选框样式 */
-.readonly-checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16rpx;
-}
-
-.readonly-checkbox-item {
-  display: flex;
-  align-items: center;
-  background-color: #f8f9fa;
-  border-radius: 8rpx;
-  padding: 12rpx 16rpx;
-  margin-bottom: 12rpx;
-  border: 1rpx solid #e9ecef;
-  min-width: calc(50% - 8rpx);
-  box-sizing: border-box;
-}
-
-.readonly-checkbox {
-  width: 28rpx;
-  height: 28rpx;
-  border-radius: 4rpx;
-  margin-right: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 2rpx solid #dee2e6;
-  background-color: #ffffff;
-}
-
-.readonly-checkbox.checked {
-  background-color: #28a745;
-  border-color: #28a745;
-}
-
-.check-icon {
-  font-size: 20rpx;
-  color: #ffffff;
-  font-weight: bold;
-  line-height: 1;
-}
-
-.readonly-checkbox-label {
-  font-size: 26rpx;
-  color: #495057;
-  line-height: 1.4;
-  word-break: break-all;
-  flex: 1;
-}
-
-.readonly-checkbox-item:not(:last-child) {
-  margin-right: 0;
-}
-
-/* 保留原有的可编辑多选框样式（如果需要） */
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  margin-right: 30rpx;
-  margin-bottom: 16rpx;
-  width: calc(50% - 30rpx);
-}
-
-.checkbox {
-  width: 32rpx;
-  height: 32rpx;
-  border: 2rpx solid #dcdfe6;
-  border-radius: 4rpx;
-  margin-right: 8rpx;
-  position: relative;
-}
-
-.checkbox.checked {
-  background-color: #2b7de0;
-  border-color: #2b7de0;
-}
-
-.checkbox.checked::after {
-  content: '';
-  position: absolute;
-  top: 6rpx;
-  left: 10rpx;
-  width: 8rpx;
-  height: 14rpx;
-  border-right: 2rpx solid #fff;
-  border-bottom: 2rpx solid #fff;
-  transform: rotate(45deg);
-}
-
-.checkbox-label {
-  font-size: 26rpx;
-  color: #606266;
-}
-
-/* 附件样式 */
-.attachment-list {
-  padding: 20rpx;
-}
-
-.attachment-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16rpx;
-  border-bottom: 1rpx solid #ebeef5;
-}
-
-.attachment-item:last-child {
-  border-bottom: none;
-}
-
-.attachment-info {
-  display: flex;
-  align-items: center;
-}
-
-.attachment-icon {
-  font-size: 36rpx;
-  margin-right: 12rpx;
-}
-
-.attachment-name {
-  font-size: 28rpx;
-  color: #303133;
-}
-
-.attachment-actions {
-  display: flex;
-}
-
-.attachment-btn {
-  padding: 8rpx 20rpx;
-  font-size: 24rpx;
-  border-radius: 8rpx;
-  margin-left: 16rpx;
-}
-
-.view-btn {
-  background-color: #ecf5ff;
-  color: #2b7de0;
-}
-
-.download-btn {
-  background-color: #f0f9eb;
-  color: #67c23a;
-}
-
-/* 流程信息样式 */
-.process-content {
-  padding: 30rpx 20rpx;
-}
-
-.process-timeline {
-  position: relative;
-}
-
-.timeline-item {
-  display: flex;
-  margin-bottom: 40rpx;
-  position: relative;
-}
-
-.timeline-node {
-  width: 60rpx;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.timeline-dot {
-  width: 20rpx;
-  height: 20rpx;
-  border-radius: 50%;
-  background-color: #dcdfe6;
-  z-index: 1;
-}
-
-.timeline-dot.active {
-  background-color: #2b7de0;
-  width: 24rpx;
-  height: 24rpx;
-}
-
-.timeline-line {
-  position: absolute;
-  top: 20rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2rpx;
-  height: calc(100% + 40rpx);
-  background-color: #dcdfe6;
-}
-
-.timeline-content {
-  flex: 1;
-  padding-left: 20rpx;
-}
-
-.timeline-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12rpx;
-}
-
-.timeline-title {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #303133;
-}
-
-.timeline-time {
-  font-size: 24rpx;
-  color: #909399;
-}
-
-.timeline-body {
-  background-color: #f6f8fa;
-  border-radius: 8rpx;
-  padding: 16rpx;
-}
-
-.timeline-action {
-  margin-bottom: 8rpx;
-}
-
-.timeline-action:last-child {
-  margin-bottom: 0;
-}
-
-.action-title {
-  font-size: 26rpx;
-  color: #606266;
-  margin-right: 8rpx;
-}
-
-.action-value {
-  font-size: 26rpx;
-  color: #303133;
-}
-
-.timeline-item.current .timeline-title {
-  color: #2b7de0;
-}
-
-/* 单孔报验样式 */
-.single-check-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 验收意见样式 */
-.acceptance-list {
-  padding: 0;
-}
-
-.acceptance-item {
-  padding: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.acceptance-item:last-child {
-  border-bottom: none;
-}
-
-.acceptance-label {
-  font-size: 28rpx;
-  color: #606266;
-  font-weight: 500;
-  margin-bottom: 16rpx;
-  display: block;
-}
-
-.acceptance-value {
-  font-size: 28rpx;
-  color: #303133;
-  line-height: 1.6;
-  word-break: break-all;
-}
-
-.radio-group {
-  display: flex;
-  gap: 40rpx;
-}
-
-.radio-item {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.radio-dot {
-  width: 28rpx;
-  height: 28rpx;
-  border: 2rpx solid #dcdfe6;
-  border-radius: 50%;
-  margin-right: 12rpx;
-  position: relative;
-  background-color: #ffffff;
-}
-
-.radio-item.active .radio-dot {
-  border-color: #2b7de0;
-}
-
-.radio-item.active .radio-dot::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 16rpx;
-  height: 16rpx;
-  background-color: #2b7de0;
-  border-radius: 50%;
-}
-
-.radio-text {
-  font-size: 26rpx;
-  color: #606266;
-}
-
-.radio-item.active .radio-text {
-  color: #2b7de0;
-}
-
-/* 封孔验收样式 */
-.seal-check-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.seal-form-content {
-  padding-bottom: 120rpx; /* 为底部按钮留出空间 */
-}
-
-/* 可编辑表单样式 */
-.editable-form-list {
-  padding: 0;
-}
-
-.editable-form-item {
-  padding: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.editable-form-item:last-child {
-  border-bottom: none;
-}
-
-.form-label {
-  font-size: 28rpx;
-  color: #606266;
-  font-weight: 500;
-  margin-bottom: 16rpx;
-  display: block;
-}
-
-.form-input {
-  width: 100%;
-  height: 80rpx;
-  border: 2rpx solid #dcdfe6;
-  border-radius: 8rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
-  color: #303133;
-  background-color: #ffffff;
-  box-sizing: border-box;
-}
-
-.form-input:focus {
-  border-color: #2b7de0;
-}
-
-.form-textarea {
-  width: 100%;
-  min-height: 120rpx;
-  border: 2rpx solid #dcdfe6;
-  border-radius: 8rpx;
-  padding: 20rpx;
-  font-size: 28rpx;
-  color: #303133;
-  background-color: #ffffff;
-  box-sizing: border-box;
-  resize: vertical;
-}
-
-.form-textarea:focus {
-  border-color: #2b7de0;
-}
-
-/* 可编辑复选框样式 */
-.checkbox-group-editable {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20rpx;
-}
-
-.checkbox-item-editable {
-  display: flex;
-  align-items: center;
-  background-color: #f8f9fa;
-  border-radius: 8rpx;
-  padding: 12rpx 16rpx;
-  border: 1rpx solid #e9ecef;
-  cursor: pointer;
-}
-
-.checkbox-editable {
-  width: 28rpx;
-  height: 28rpx;
-  border-radius: 4rpx;
-  margin-right: 12rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 2rpx solid #dee2e6;
-  background-color: #ffffff;
-}
-
-.checkbox-editable.checked {
-  background-color: #2b7de0;
-  border-color: #2b7de0;
-}
-
-.checkbox-label-editable {
-  font-size: 26rpx;
-  color: #495057;
-  line-height: 1.4;
-}
-
-/* 可编辑单选框样式 */
-.radio-group-editable {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-
-.radio-item-editable {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 12rpx 0;
-}
-
-.radio-dot-editable {
-  width: 28rpx;
-  height: 28rpx;
-  border: 2rpx solid #dcdfe6;
-  border-radius: 50%;
-  margin-right: 12rpx;
-  position: relative;
-  background-color: #ffffff;
-}
-
-.radio-dot-editable.active {
-  border-color: #2b7de0;
-}
-
-.radio-dot-editable.active::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 16rpx;
-  height: 16rpx;
-  background-color: #2b7de0;
-  border-radius: 50%;
-}
-
-.radio-text-editable {
-  font-size: 26rpx;
-  color: #606266;
-  line-height: 1.4;
-}
-
-/* 附件上传样式 */
-.upload-attachment {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32rpx;
-  border: 2rpx dashed #dcdfe6;
-  border-radius: 8rpx;
-  margin-top: 20rpx;
-  cursor: pointer;
-  background-color: #fafbfc;
-}
-
-.upload-attachment:hover {
-  border-color: #2b7de0;
-  background-color: #f0f7ff;
-}
-
-.upload-icon {
-  font-size: 32rpx;
-  margin-right: 12rpx;
-  color: #909399;
-}
-
-.upload-text {
-  font-size: 28rpx;
-  color: #909399;
-}
-
-.delete-btn {
-  background-color: #fef0f0;
-  color: #f56c6c;
-}
-
-/* 底部操作按钮 */
-.form-actions {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  padding: 20rpx 32rpx;
-  background-color: #ffffff;
-  border-top: 1rpx solid #e8eaed;
-  gap: 20rpx;
-  z-index: 100;
-}
-
-.action-btn {
-  flex: 1;
-  height: 88rpx;
-  border-radius: 8rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.save-btn {
-  background-color: #f8f9fa;
-  color: #606266;
-  border: 2rpx solid #dcdfe6;
-}
-
-.save-btn:active {
-  background-color: #e9ecef;
-}
-
-.submit-btn {
-  background-color: #2b7de0;
-  color: #ffffff;
-}
-
-.submit-btn:active {
-  background-color: #1c6dd0;
-}
-
-/* 确认弹窗样式 */
-.confirm-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.confirm-dialog {
-  background-color: #ffffff;
-  border-radius: 16rpx;
-  padding: 40rpx;
-  margin: 0 40rpx;
-  min-width: 500rpx;
-  max-width: 80%;
-}
-
-.confirm-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #303133;
-  text-align: center;
-  margin-bottom: 20rpx;
-}
-
-.confirm-content {
-  font-size: 28rpx;
-  color: #606266;
-  text-align: center;
-  margin-bottom: 40rpx;
-  line-height: 1.5;
-}
-
-.confirm-actions {
-  display: flex;
-  gap: 20rpx;
-}
-
-.confirm-btn {
-  flex: 1;
-  height: 80rpx;
-  border-radius: 8rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28rpx;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  background-color: #f8f9fa;
-  color: #606266;
-  border: 2rpx solid #dcdfe6;
-}
-
-.cancel-btn:active {
-  background-color: #e9ecef;
-}
-
-.confirm-btn.confirm-btn {
-  background-color: #2b7de0;
-  color: #ffffff;
-}
-
-.confirm-btn.confirm-btn:active {
-  background-color: #1c6dd0;
 }
 </style>
