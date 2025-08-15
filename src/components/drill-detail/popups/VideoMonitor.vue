@@ -42,7 +42,7 @@ export default {
 <style scoped>
 /* 视频监控样式 */
 .video-monitors {
-  padding: 0;
+  padding: 20rpx;
 }
 
 .video-monitor-item {
