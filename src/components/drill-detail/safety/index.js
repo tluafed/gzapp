@@ -1,0 +1,11 @@
+// 安全施工组件统一导出
+export { default as DrillDisclosure } from './DrillDisclosure.vue'
+export { default as HolePositioning } from './HolePositioning.vue'
+export { default as PipelineDetection } from './PipelineDetection.vue'
+export { default as ExcavationWork } from './ExcavationWork.vue'
+export { default as ProtectionWork } from './ProtectionWork.vue'
+export { default as StrikeWork } from './StrikeWork.vue'
+export { default as DrillingWork } from './DrillingWork.vue'
+export { default as SafetyCheck } from './SafetyCheck.vue'
+export { default as SealRecord } from './SealRecord.vue'
+export { default as QualityCheck } from './QualityCheck.vue'

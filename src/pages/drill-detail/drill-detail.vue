@@ -34,6 +34,37 @@
         <drill-overview
           v-else-if="currentBusinessType === 'overview'"
         />
+        <!-- 安全施工组件 -->
+        <drill-disclosure
+          v-else-if="currentBusinessType === 'disclosure'"
+        />
+        <hole-positioning
+          v-else-if="currentBusinessType === 'positioning'"
+        />
+        <pipeline-detection
+          v-else-if="currentBusinessType === 'pipeline'"
+        />
+        <excavation-work
+          v-else-if="currentBusinessType === 'excavation'"
+        />
+        <protection-work
+          v-else-if="currentBusinessType === 'protection'"
+        />
+        <strike-work
+          v-else-if="currentBusinessType === 'strike'"
+        />
+        <drilling-work
+          v-else-if="currentBusinessType === 'drilling'"
+        />
+        <safety-check
+          v-else-if="currentBusinessType === 'safety-check'"
+        />
+        <seal-record
+          v-else-if="currentBusinessType === 'seal-record'"
+        />
+        <quality-check
+          v-else-if="currentBusinessType === 'quality-check'"
+        />
         <view v-else>
           <text>{{ currentBusinessType }} 的详细内容将在这里显示</text>
         </view>
@@ -252,6 +283,18 @@ import {
   SingleCheck,
   SealCheck
 } from '@/components/drill-detail/popups';
+import {
+  DrillDisclosure,
+  HolePositioning,
+  PipelineDetection,
+  ExcavationWork,
+  ProtectionWork,
+  StrikeWork,
+  DrillingWork,
+  SafetyCheck,
+  SealRecord,
+  QualityCheck
+} from '@/components/drill-detail/safety';
 
 export default {
   name: 'DrillDetail',
@@ -262,7 +305,17 @@ export default {
     ColumnChart,
     StartCheck,
     SingleCheck,
-    SealCheck
+    SealCheck,
+    DrillDisclosure,
+    HolePositioning,
+    PipelineDetection,
+    ExcavationWork,
+    ProtectionWork,
+    StrikeWork,
+    DrillingWork,
+    SafetyCheck,
+    SealRecord,
+    QualityCheck
   },
   data() {
     return {
