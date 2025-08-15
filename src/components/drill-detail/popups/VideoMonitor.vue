@@ -1,12 +1,12 @@
 <template>
   <view class="video-monitors">
     <view v-for="monitor in videoMonitors" :key="monitor.id" class="video-monitor-item">
-      <view class="monitor-title">{{ monitor.name }}</view>
-      <view class="monitor-video">
-        <!-- 视频播放组件 -->
-        <image class="video-placeholder" :src="monitor.thumbnail" mode="aspectFill" />
-        <view class="play-button" @click="playVideo(monitor)">
-          <text class="play-icon">▶</text>
+      <text class="monitor-title">{{ monitor.name }}</text>
+      <view class="video-container">
+        <view class="video-placeholder">
+          <view class="play-button" @click="playVideo(monitor)">
+            <text class="play-icon">▶</text>
+          </view>
         </view>
       </view>
     </view>
@@ -20,9 +20,9 @@ export default {
     videoMonitors: {
       type: Array,
       default: () => [
-        { id: 1, name: '钻机视角', thumbnail: '/static/images/video-thumb-1.jpg' },
-        { id: 2, name: '全景视角', thumbnail: '/static/images/video-thumb-2.jpg' },
-        { id: 3, name: '钻头视角', thumbnail: '/static/images/video-thumb-3.jpg' }
+        { id: 1, name: '监控A' },
+        { id: 2, name: '监控B' },
+        { id: 3, name: '监控C' }
       ]
     }
   },
@@ -42,55 +42,60 @@ export default {
 <style scoped>
 /* 视频监控样式 */
 .video-monitors {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-  padding: 20rpx;
+  padding: 0;
 }
 
 .video-monitor-item {
-  background-color: #f5f5f5;
-  border-radius: 12rpx;
-  overflow: hidden;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 40rpx;
 }
 
 .monitor-title {
-  font-size: 28rpx;
+  font-size: 32rpx;
   font-weight: 500;
-  padding: 16rpx 20rpx;
-  background-color: #eef2f8;
   color: #333;
+  margin-bottom: 20rpx;
+  display: block;
 }
 
-.monitor-video {
-  position: relative;
+.video-container {
   width: 100%;
-  height: 360rpx;
+  height: 420rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 .video-placeholder {
   width: 100%;
   height: 100%;
-  background-color: #000;
-}
-
-.play-button {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80rpx;
-  height: 80rpx;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.play-button {
+  width: 120rpx;
+  height: 120rpx;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10rpx);
+  transition: all 0.3s ease;
+}
+
+.play-button:active {
+  transform: scale(0.95);
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
 .play-icon {
   color: #fff;
-  font-size: 40rpx;
+  font-size: 52rpx;
+  margin-left: 8rpx;
 }
 </style>

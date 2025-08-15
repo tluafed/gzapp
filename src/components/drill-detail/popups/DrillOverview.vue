@@ -1,8 +1,9 @@
 <template>
   <scroll-view class="drill-overview" scroll-y="true">
+    <!-- 基础信息 -->
     <view class="overview-section">
       <view class="section-header">
-        <text class="section-title">基本信息</text>
+        <text class="section-title">基础信息</text>
       </view>
       <view class="info-grid">
         <view class="info-item" v-for="(item, index) in basicInfo" :key="index">
@@ -12,20 +13,28 @@
       </view>
     </view>
     
+    <!-- 坐标与高程 -->
     <view class="overview-section">
       <view class="section-header">
-        <text class="section-title">进度信息</text>
+        <text class="section-title">坐标与高程</text>
       </view>
-      <view class="progress-info">
-        <view class="progress-item" v-for="(item, index) in progressInfo" :key="index">
-          <view class="progress-header">
-            <text class="progress-name">{{ item.name }}</text>
-            <text class="progress-status" :class="item.status">{{ item.statusText }}</text>
-          </view>
-          <view class="progress-bar-container">
-            <view class="progress-bar" :style="{ width: item.progress + '%' }"></view>
-          </view>
-          <text class="progress-text">{{ item.progress }}%</text>
+      <view class="info-grid">
+        <view class="info-item" v-for="(item, index) in coordinateInfo" :key="index">
+          <text class="info-label">{{ item.label }}</text>
+          <text class="info-value">{{ item.value }}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 项目归属 -->
+    <view class="overview-section">
+      <view class="section-header">
+        <text class="section-title">项目归属</text>
+      </view>
+      <view class="info-grid">
+        <view class="info-item" v-for="(item, index) in projectInfo" :key="index">
+          <text class="info-label">{{ item.label }}</text>
+          <text class="info-value">{{ item.value }}</text>
         </view>
       </view>
     </view>
@@ -39,49 +48,33 @@ export default {
     basicInfo: {
       type: Array,
       default: () => [
-        { label: '钻孔编号', value: 'GK01' },
-        { label: '坐标X', value: '123456.78' },
-        { label: '坐标Y', value: '987654.32' },
-        { label: '设计深度', value: '30.5米' },
-        { label: '实际深度', value: '30.5米' },
-        { label: '开工日期', value: '2023-06-15' },
-        { label: '完工日期', value: '2023-08-05' },
-        { label: '施工单位', value: '某某地质勘察公司' }
+        { label: '钻孔编号', value: 'MRNZ23-BF-001' },
+        { label: '钻孔类型', value: '控制孔、取样孔' },
+        { label: '项目负责人', value: '袁柱' },
+        { label: '技术员', value: '陈欣雄' },
+        { label: '终孔日期', value: '2025-02-15' }
       ]
     },
-    progressInfo: {
+    coordinateInfo: {
       type: Array,
       default: () => [
-        { 
-          name: '开工检查', 
-          progress: 100, 
-          status: 'completed', 
-          statusText: '已完成' 
-        },
-        { 
-          name: '钻孔施工', 
-          progress: 100, 
-          status: 'completed', 
-          statusText: '已完成' 
-        },
-        { 
-          name: '取样测试', 
-          progress: 100, 
-          status: 'completed', 
-          statusText: '已完成' 
-        },
-        { 
-          name: '单孔报验', 
-          progress: 100, 
-          status: 'completed', 
-          statusText: '已完成' 
-        },
-        { 
-          name: '封孔验收', 
-          progress: 100, 
-          status: 'completed', 
-          statusText: '已完成' 
-        }
+        { label: '设计坐标X', value: '228136.008' },
+        { label: '设计坐标Y', value: '33932.776' },
+        { label: '设计经度', value: '113.224' },
+        { label: '设计纬度', value: '23.119' },
+        { label: '复测坐标X', value: '228122.137' },
+        { label: '复测坐标Y', value: '33930.266' },
+        { label: '设计孔深(m)', value: '45' },
+        { label: '实际孔深(m)', value: '44.8' },
+        { label: '孔口高程(m)', value: '4.3' }
+      ]
+    },
+    projectInfo: {
+      type: Array,
+      default: () => [
+        { label: '所属项目', value: '粤港澳大湾区城际线路广州东至花都天贵工程' },
+        { label: '', value: '广州东站一京溪站区间详勘' },
+        { label: '工点名称', value: '粤港澳大湾区城际线路广州东至花都天贵工程' }
       ]
     }
   }
@@ -91,110 +84,63 @@ export default {
 <style scoped>
 .drill-overview {
   height: 100%;
-  padding: 20rpx;
+  padding: 0;
+  background-color: #fff;
 }
 
 .overview-section {
   margin-bottom: 30rpx;
   background-color: #fff;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+}
+
+.overview-section:last-child {
+  margin-bottom: 0;
 }
 
 .section-header {
-  padding: 20rpx;
-  border-bottom: 1rpx solid #eee;
+  padding: 30rpx 30rpx 20rpx 30rpx;
+  border-bottom: 2rpx solid #f0f0f0;
 }
 
 .section-title {
-  font-size: 30rpx;
-  font-weight: 500;
+  font-size: 32rpx;
+  font-weight: 600;
   color: #333;
 }
 
 .info-grid {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 10rpx;
+  padding: 20rpx 30rpx 30rpx 30rpx;
 }
 
 .info-item {
-  width: 50%;
-  padding: 15rpx;
-  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+  min-height: 60rpx;
+}
+
+.info-item:last-child {
+  border-bottom: none;
 }
 
 .info-label {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #666;
-  margin-bottom: 8rpx;
-  display: block;
+  flex-shrink: 0;
+  width: 200rpx;
+  line-height: 1.4;
 }
 
 .info-value {
   font-size: 28rpx;
   color: #333;
-  font-weight: 500;
-}
-
-.progress-info {
-  padding: 20rpx;
-}
-
-.progress-item {
-  margin-bottom: 25rpx;
-}
-
-.progress-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10rpx;
-}
-
-.progress-name {
-  font-size: 26rpx;
-  color: #333;
-}
-
-.progress-status {
-  font-size: 24rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 20rpx;
-}
-
-.progress-status.completed {
-  background-color: #e6f7e6;
-  color: #52c41a;
-}
-
-.progress-status.in-progress {
-  background-color: #e6f7ff;
-  color: #1890ff;
-}
-
-.progress-status.pending {
-  background-color: #fff7e6;
-  color: #fa8c16;
-}
-
-.progress-bar-container {
-  height: 16rpx;
-  background-color: #f5f5f5;
-  border-radius: 8rpx;
-  overflow: hidden;
-  margin-bottom: 8rpx;
-}
-
-.progress-bar {
-  height: 100%;
-  background-color: #1890ff;
-  border-radius: 8rpx;
-}
-
-.progress-text {
-  font-size: 24rpx;
-  color: #999;
   text-align: right;
+  flex: 1;
+  line-height: 1.4;
+  word-wrap: break-word;
+  word-break: break-all;
+  margin-left: 20rpx;
 }
 </style>
