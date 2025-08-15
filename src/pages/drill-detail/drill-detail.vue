@@ -46,147 +46,154 @@
         <text class="card-title">钻孔概况</text>
         <view class="feature-grid three-columns">
           <view class="grid-item" @click="handleItemClick('video')">
-            <view class="custom-icon blue">
+            <view class="icon-only blue">
               <text class="icon-text">📹</text>
             </view>
             <text class="grid-item-label">视频监控</text>
           </view>
           <view class="grid-item" @click="handleItemClick('overview')">
-            <view class="custom-icon green">
-              <text class="icon-text">📊</text>
+            <view class="icon-only blue">
+              <text class="icon-text">📄</text>
             </view>
             <text class="grid-item-label">钻孔概况</text>
           </view>
           <view class="grid-item" @click="handleItemClick('chart')">
-            <view class="custom-icon orange">
-              <text class="icon-text">📈</text>
+            <view class="icon-only blue">
+              <text class="icon-text">🖼️</text>
             </view>
             <text class="grid-item-label">柱状图</text>
           </view>
         </view>
       </view>
 
-      <!-- 施工过程 -->
+      <!-- 报审流程 -->
       <view class="feature-card">
-        <text class="card-title">施工过程</text>
-        <view class="feature-grid four-columns">
+        <text class="card-title">报审流程</text>
+        <view class="feature-grid three-columns">
           <view class="grid-item" @click="handleItemClick('start-check')">
-            <view class="custom-icon purple">
-              <text class="icon-text">🔍</text>
+            <view class="custom-icon green">
+              <text class="icon-text">A7</text>
             </view>
             <text class="grid-item-label">开工检查</text>
           </view>
           <view class="grid-item" @click="handleItemClick('single-check')">
-            <view class="custom-icon blue">
-              <text class="icon-text">📝</text>
+            <view class="custom-icon orange">
+              <text class="icon-text">A8</text>
             </view>
             <text class="grid-item-label">单孔报验</text>
           </view>
           <view class="grid-item" @click="handleItemClick('seal-check')">
-            <view class="custom-icon green">
-              <text class="icon-text">✅</text>
+            <view class="custom-icon light">
+              <text class="icon-text">A9</text>
             </view>
             <text class="grid-item-label">封孔验收</text>
           </view>
+        </view>
+      </view>
+
+      <!-- 安全施工 -->
+      <view class="feature-card">
+        <text class="card-title">安全施工</text>
+        <view class="feature-grid four-columns">
           <view class="grid-item" @click="handleItemClick('disclosure')">
-            <view class="custom-icon orange">
-              <text class="icon-text">📄</text>
+            <view class="custom-icon green">
+              <text class="icon-text">交</text>
             </view>
             <text class="grid-item-label">钻孔交底</text>
           </view>
           <view class="grid-item" @click="handleItemClick('positioning')">
-            <view class="custom-icon purple">
-              <text class="icon-text">📍</text>
+            <view class="custom-icon green">
+              <text class="icon-text">开</text>
             </view>
             <text class="grid-item-label">开孔定位</text>
           </view>
           <view class="grid-item" @click="handleItemClick('pipeline')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🔌</text>
+            <view class="custom-icon green">
+              <text class="icon-text">管</text>
             </view>
             <text class="grid-item-label">管线探测</text>
           </view>
           <view class="grid-item" @click="handleItemClick('excavation')">
             <view class="custom-icon green">
-              <text class="icon-text">⛏️</text>
+              <text class="icon-text">挖</text>
             </view>
             <text class="grid-item-label">开挖0-3米</text>
           </view>
           <view class="grid-item" @click="handleItemClick('protection')">
-            <view class="custom-icon orange">
-              <text class="icon-text">🛡️</text>
+            <view class="custom-icon green">
+              <text class="icon-text">围</text>
             </view>
             <text class="grid-item-label">围蔽防护</text>
           </view>
           <view class="grid-item" @click="handleItemClick('strike')">
-            <view class="custom-icon purple">
-              <text class="icon-text">🔨</text>
+            <view class="custom-icon green">
+              <text class="icon-text">击</text>
             </view>
             <text class="grid-item-label">击进3-6米</text>
           </view>
           <view class="grid-item" @click="handleItemClick('drilling')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🔄</text>
+            <view class="custom-icon orange">
+              <text class="icon-text">钻</text>
             </view>
             <text class="grid-item-label">机钻施工</text>
           </view>
           <view class="grid-item" @click="handleItemClick('safety-check')">
-            <view class="custom-icon green">
-              <text class="icon-text">🔒</text>
+            <view class="custom-icon light">
+              <text class="icon-text">安</text>
             </view>
             <text class="grid-item-label">安全检查</text>
           </view>
           <view class="grid-item" @click="handleItemClick('seal-record')">
-            <view class="custom-icon orange">
-              <text class="icon-text">📝</text>
+            <view class="custom-icon light">
+              <text class="icon-text">封</text>
             </view>
             <text class="grid-item-label">封孔记录</text>
           </view>
           <view class="grid-item" @click="handleItemClick('quality-check')">
-            <view class="custom-icon purple">
-              <text class="icon-text">🏆</text>
+            <view class="custom-icon light">
+              <text class="icon-text">验</text>
             </view>
             <text class="grid-item-label">质量验收</text>
           </view>
         </view>
       </view>
 
-      <!-- 地质信息 -->
+      <!-- 编录数据 -->
       <view class="feature-card">
-        <text class="card-title">地质信息</text>
+        <text class="card-title">编录数据</text>
         <view class="feature-grid four-columns">
           <view class="grid-item" @click="handleItemClick('stratum')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🌍</text>
+            <view class="icon-only blue">
+              <text class="icon-text">🏔️</text>
             </view>
             <text class="grid-item-label">地层</text>
           </view>
           <view class="grid-item" @click="handleItemClick('standard-penetration')">
-            <view class="custom-icon green">
-              <text class="icon-text">📏</text>
+            <view class="icon-only blue">
+              <text class="icon-text">🔨</text>
             </view>
             <text class="grid-item-label">标贯</text>
           </view>
           <view class="grid-item" @click="handleItemClick('dynamic-probe')">
-            <view class="custom-icon orange">
-              <text class="icon-text">🔍</text>
+            <view class="icon-only blue">
+              <text class="icon-text">⚡</text>
             </view>
             <text class="grid-item-label">动探</text>
           </view>
           <view class="grid-item" @click="handleItemClick('in-situ-test')">
-            <view class="custom-icon purple">
-              <text class="icon-text">🧪</text>
+            <view class="icon-only blue">
+              <text class="icon-text">🔬</text>
             </view>
             <text class="grid-item-label">原位测试</text>
           </view>
           <view class="grid-item" @click="handleItemClick('sampling')">
-            <view class="custom-icon blue">
-              <text class="icon-text">🧫</text>
+            <view class="icon-only blue">
+              <text class="icon-text">🪨</text>
             </view>
             <text class="grid-item-label">取样</text>
           </view>
           <view class="grid-item" @click="handleItemClick('water-level')">
-            <view class="custom-icon green">
+            <view class="icon-only blue">
               <text class="icon-text">💧</text>
             </view>
             <text class="grid-item-label">水位</text>
@@ -194,24 +201,24 @@
         </view>
       </view>
 
-      <!-- 影像资料 -->
+      <!-- 钻孔影像 -->
       <view class="feature-card">
-        <text class="card-title">影像资料</text>
-        <view class="feature-grid three-columns">
+        <text class="card-title">钻孔影像</text>
+        <view class="feature-grid four-columns">
           <view class="grid-item" @click="handleItemClick('single-box')">
-            <view class="custom-icon blue">
+            <view class="icon-only blue">
               <text class="icon-text">📦</text>
             </view>
             <text class="grid-item-label">单箱</text>
           </view>
           <view class="grid-item" @click="handleItemClick('overall')">
-            <view class="custom-icon green">
-              <text class="icon-text">🖼️</text>
+            <view class="icon-only blue">
+              <text class="icon-text">📚</text>
             </view>
             <text class="grid-item-label">整体</text>
           </view>
           <view class="grid-item" @click="handleItemClick('ground')">
-            <view class="custom-icon orange">
+            <view class="icon-only blue">
               <text class="icon-text">🏞️</text>
             </view>
             <text class="grid-item-label">地面</text>
@@ -222,10 +229,10 @@
       <!-- 班报表 -->
       <view class="feature-card">
         <text class="card-title">班报表</text>
-        <view class="feature-grid three-columns">
+        <view class="feature-grid four-columns">
           <view class="grid-item" @click="handleItemClick('shift-report')">
-            <view class="custom-icon purple">
-              <text class="icon-text">📊</text>
+            <view class="icon-only blue">
+              <text class="icon-text">📋</text>
             </view>
             <text class="grid-item-label">班报表</text>
           </view>
@@ -408,11 +415,11 @@ export default {
 
 /* 顶部导航栏样式 */
 .app-header {
-  height: 90rpx;
+  height: 130rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 30rpx;
+  padding: 0 50rpx;
   background-color: #fff;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
   position: relative;
@@ -496,24 +503,37 @@ export default {
   margin-bottom: 10rpx;
 }
 
+.icon-only {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10rpx;
+}
+
 .blue {
-  background-color: #e6f7ff;
   color: #1890ff;
 }
 
 .green {
-  background-color: #e6f7e6;
-  color: #52c41a;
+  background-color: #7ed321;
+  color: #ffffff;
 }
 
 .orange {
-  background-color: #fff7e6;
-  color: #fa8c16;
+  background-color: #f5a623;
+  color: #ffffff;
 }
 
 .purple {
   background-color: #f5e6ff;
   color: #722ed1;
+}
+
+.light {
+  background-color: #f5f5f5;
+  color: #999999;
 }
 
 .icon-text {
