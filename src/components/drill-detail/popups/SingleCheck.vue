@@ -10,58 +10,330 @@
       </view>
       <view 
         class="tab-item" 
-        :class="{ active: activeTab === 'photos' }" 
-        @click="activeTab = 'photos'"
+        :class="{ active: activeTab === 'process' }" 
+        @click="activeTab = 'process'"
       >
-        现场照片
+        流程信息
       </view>
     </view>
     
     <view class="tab-content">
       <!-- 表单信息 -->
       <view v-if="activeTab === 'form'" class="form-content">
-        <view class="form-group">
-          <view class="group-title">单孔报验信息</view>
-          <view class="form-items">
-            <view class="form-item" v-for="(item, itemIndex) in formData" :key="itemIndex">
-              <text class="item-label">{{ item.label }}</text>
-              <text class="item-value">{{ item.value }}</text>
+        <!-- 基本信息 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">基本信息</text>
+          </view>
+          <view class="form-list">
+            <view class="form-item">
+              <text class="form-label required">标段</text>
+              <picker mode="selector" :value="0" :range="['粤港澳大湾区城际线路广州东至花都天贵工程 初步勘察-1标']">
+                <view class="form-value">粤港澳大湾区城际线路广州东至花都天贵工程 初步勘察-1标</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">工点</text>
+              <picker mode="selector" :value="0" :range="['广州东至石牌']">
+                <view class="form-value">广州东至石牌</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">工程项目</text>
+              <view class="form-value multiline">粤港澳大湾区城际线路广州东至花都天贵工程详勘车站段及出入段线初步勘察</view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">编号</text>
+              <input class="form-input" value="L018B-Z2-1-A8-0312" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">钻孔编号</text>
+              <picker mode="selector" :value="0" :range="['MRNZ2-A256S']">
+                <view class="form-value">MRNZ2-A256S</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">地质编录人</text>
+              <picker mode="selector" :value="0" :range="['刘振军']">
+                <view class="form-value">刘振军</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">钻机机长</text>
+              <picker mode="selector" :value="0" :range="['--请选择--']">
+                <view class="form-value">--请选择--</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">钻机编号</text>
+              <input class="form-input" value="7" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">钻机型号</text>
+              <input class="form-input" value="" />
             </view>
           </view>
         </view>
-        
-        <view class="check-result">
-          <view class="result-title">验收结果</view>
-          <view class="result-content">
-            <view class="result-status" :class="checkResult.status">
-              {{ checkResult.statusText }}
+
+        <!-- 自检意见 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">自检意见</text>
+          </view>
+          <view class="form-list">
+            <view class="form-item">
+              <text class="form-label required">开孔日期</text>
+              <picker mode="date" :value="startDate">
+                <view class="form-value">2021-04-10</view>
+              </picker>
             </view>
-            <view class="result-comments">
-              <text class="comments-label">验收意见：</text>
-              <text class="comments-text">{{ checkResult.comments }}</text>
+            
+            <view class="form-item">
+              <text class="form-label required">终孔日期</text>
+              <picker mode="date" :value="endDate">
+                <view class="form-value">2021-04-15</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">终孔深度(m)</text>
+              <input class="form-input" value="16" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">班组记录人</text>
+              <picker mode="selector" :value="0" :range="['凡从良']">
+                <view class="form-value">凡从良</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">钻机类型</text>
+              <picker mode="selector" :value="0" :range="['一般孔,非取样孔']">
+                <view class="form-value">一般孔,非取样孔</view>
+              </picker>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">岩心采取率(%)</text>
+              <input class="form-input" value="90" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">岩心照片(张)</text>
+              <input class="form-input" value="4" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">原状土样(组)</text>
+              <input class="form-input" value="0" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">扰动土样(组)</text>
+              <input class="form-input" value="0" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">岩样(组)</text>
+              <input class="form-input" value="0" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">水样(组)</text>
+              <input class="form-input" value="3" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">标贯试验(次)</text>
+              <input class="form-input" value="0" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">其它原位测试</text>
+              <input class="form-input" value="" />
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label required">自检意见</text>
+              <picker mode="selector" :value="0" :range="['同意验收']">
+                <view class="form-value">同意验收</view>
+              </picker>
             </view>
           </view>
         </view>
-        
-        <view class="signature-section">
-          <view class="signature-title">签名确认</view>
-          <view class="signatures">
-            <view class="signature-item" v-for="(sig, sigIndex) in signatures" :key="sigIndex">
-              <text class="signature-role">{{ sig.role }}</text>
-              <image class="signature-image" :src="sig.image" mode="aspectFit" />
-              <text class="signature-name">{{ sig.name }}</text>
-              <text class="signature-date">{{ sig.date }}</text>
+
+        <!-- 验收意见 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">验收意见</text>
+          </view>
+          <view class="business-content">
+            <view class="business-row">
+              <view class="business-label">钻孔孔深符合钻孔技术要求</view>
+              <view class="option-group">
+                <view class="option-item checked radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">符合</text>
+                </view>
+                <view class="option-item radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">不符合</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="business-row">
+              <view class="business-label">岩心采取率符合技术要求</view>
+              <view class="option-group">
+                <view class="option-item checked radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">符合</text>
+                </view>
+                <view class="option-item radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">不符合</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="business-row">
+              <view class="business-label">岩心照片符合技术要求</view>
+              <view class="option-group">
+                <view class="option-item checked radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">符合</text>
+                </view>
+                <view class="option-item radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">不符合</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="business-row">
+              <view class="business-label">取土、原位测试符合技术要求</view>
+              <view class="option-group">
+                <view class="option-item checked radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">符合</text>
+                </view>
+                <view class="option-item radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">不符合</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="business-row">
+              <view class="business-label">封孔符合技术要求</view>
+              <view class="option-group">
+                <view class="option-item checked radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">符合</text>
+                </view>
+                <view class="option-item radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">不符合</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">其他</text>
+              <textarea class="form-textarea" placeholder="请输入其他意见"></textarea>
+            </view>
+            
+            <view class="business-row">
+              <view class="business-label">验收结论</view>
+              <view class="option-group">
+                <view class="option-item checked radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">同意自检意见，通过该孔验收</text>
+                </view>
+                <view class="option-item radio">
+                  <view class="option-icon radio-icon"></view>
+                  <text class="option-text">不同意自检意见，该孔不予验收，移位后重钻</text>
+                </view>
+              </view>
+            </view>
+            
+            <view class="form-item">
+              <text class="form-label">验收意见</text>
+              <textarea class="form-textarea" value="符合要求"></textarea>
+            </view>
+          </view>
+        </view>
+
+        <!-- 附件 -->
+        <view class="info-section">
+          <view class="section-header">
+            <view class="section-indicator"></view>
+            <text class="section-title">附件</text>
+          </view>
+          <view class="attachment-list">
+            <view class="attachment-item" v-for="(file, index) in attachments" :key="index">
+              <view class="file-icon">📄</view>
+              <view class="file-info">
+                <text class="file-name">{{ file.name }}</text>
+                <text class="file-size">{{ file.size }}</text>
+              </view>
+              <view class="file-actions">
+                <text class="action-btn" @click="previewFile(file)">查看</text>
+                <text class="action-btn" @click="downloadFile(file)">下载</text>
+              </view>
             </view>
           </view>
         </view>
       </view>
       
-      <!-- 现场照片 -->
-      <view v-else-if="activeTab === 'photos'" class="photos-content">
-        <view class="photo-grid">
-          <view class="photo-item" v-for="(photo, photoIndex) in photos" :key="photoIndex" @click="previewPhoto(photo)">
-            <image class="photo-image" :src="photo.url" mode="aspectFill" />
-            <text class="photo-desc">{{ photo.description }}</text>
+      <!-- 流程信息 -->
+      <view v-else-if="activeTab === 'process'" class="process-content">
+        <view class="process-list">
+          <view class="process-item current">
+            <view class="process-dot current"></view>
+            <view class="process-info">
+              <view class="process-title">监理审批</view>
+              <view class="process-status current">进行中</view>
+              <view class="process-detail">
+                <text class="process-user">操作人：王监理</text>
+              </view>
+            </view>
+          </view>
+          
+          <view class="process-item completed">
+            <view class="process-dot completed"></view>
+            <view class="process-info">
+              <view class="process-title">项目总工审批</view>
+              <view class="process-status completed">已同意</view>
+              <view class="process-detail">
+                <text class="process-user">操作人：李总工</text>
+                <text class="process-time">完成时间：2025-02-01 10:30:05</text>
+              </view>
+            </view>
+          </view>
+          
+          <view class="process-item completed">
+            <view class="process-dot completed"></view>
+            <view class="process-info">
+              <view class="process-title">发起申请</view>
+              <view class="process-status completed">已提交</view>
+              <view class="process-detail">
+                <text class="process-user">操作人：陈欣雄</text>
+                <text class="process-time">完成时间：2025-02-01 08:18:00</text>
+              </view>
+            </view>
           </view>
         </view>
       </view>
@@ -73,42 +345,6 @@
 export default {
   name: 'SingleCheck',
   props: {
-    formData: {
-      type: Array,
-      default: () => [
-        { label: '钻孔编号', value: 'GK01' },
-        { label: '报验日期', value: '2023-07-20' },
-        { label: '钻孔深度', value: '30.5米' },
-        { label: '施工单位', value: '某某地质勘察公司' },
-        { label: '施工负责人', value: '张工' },
-        { label: '监理单位', value: '某某监理公司' },
-        { label: '监理工程师', value: '王工' }
-      ]
-    },
-    checkResult: {
-      type: Object,
-      default: () => ({
-        status: 'passed',
-        statusText: '验收通过',
-        comments: '钻孔施工符合设计要求，各项指标达标，准予通过。'
-      })
-    },
-    signatures: {
-      type: Array,
-      default: () => [
-        { role: '施工负责人', name: '张工', date: '2023-07-20', image: '/static/images/signature-3.png' },
-        { role: '监理工程师', name: '王工', date: '2023-07-20', image: '/static/images/signature-2.png' },
-        { role: '业主代表', name: '刘总', date: '2023-07-20', image: '/static/images/signature-4.png' }
-      ]
-    },
-    photos: {
-      type: Array,
-      default: () => [
-        { url: '/static/images/single-check-1.jpg', description: '钻孔全景' },
-        { url: '/static/images/single-check-2.jpg', description: '钻孔测量' },
-        { url: '/static/images/single-check-3.jpg', description: '取样展示' }
-      ]
-    },
     activeTabProp: {
       type: String,
       default: 'form'
@@ -116,7 +352,14 @@ export default {
   },
   data() {
     return {
-      activeTab: this.activeTabProp
+      activeTab: this.activeTabProp,
+      startDate: '2021-04-10',
+      endDate: '2021-04-15',
+      attachments: [
+        { name: '单孔报验表.pdf', size: '1.8MB' },
+        { name: '钻孔记录表.doc', size: '2.3MB' },
+        { name: '岩心照片.zip', size: '12.5MB' }
+      ]
     }
   },
   watch: {
@@ -125,13 +368,18 @@ export default {
     }
   },
   methods: {
-    previewPhoto(photo) {
-      // 预览照片
-      uni.previewImage({
-        urls: [photo.url],
-        current: photo.url
+    previewFile(file) {
+      uni.showToast({
+        title: `预览 ${file.name}`,
+        icon: 'none'
       })
-      this.$emit('preview-photo', photo)
+    },
+    
+    downloadFile(file) {
+      uni.showToast({
+        title: `下载 ${file.name}`,
+        icon: 'none'
+      })
     }
   }
 }
@@ -147,12 +395,15 @@ export default {
 .tab-header {
   display: flex;
   border-bottom: 1rpx solid #eee;
+  background-color: #fff;
+  margin-top: -0;
+  padding-top: 0;
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: 20rpx 0;
+  padding: 16rpx 0;
   font-size: 28rpx;
   color: #666;
   position: relative;
@@ -178,37 +429,67 @@ export default {
 .tab-content {
   flex: 1;
   overflow-y: auto;
+  background-color: #fff;
 }
 
-/* 表单样式 */
+/* 表单信息样式 */
 .form-content {
-  padding: 20rpx;
+  padding: 12rpx;
+  background-color: #fff;
 }
 
-.form-group {
-  margin-bottom: 30rpx;
+.info-section {
+  margin-bottom: 40rpx;
   background-color: #fff;
   border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  position: relative;
 }
 
-.group-title {
-  padding: 20rpx;
-  font-size: 28rpx;
-  font-weight: 500;
+.info-section:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, #e8e8e8, transparent);
+}
+
+.info-section:last-child {
+  margin-bottom: 30rpx;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.section-indicator {
+  width: 8rpx;
+  height: 32rpx;
+  background-color: #1890ff;
+  border-radius: 4rpx;
+  margin-right: 16rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
   color: #333;
-  background-color: #f5f7fa;
-  border-bottom: 1rpx solid #eee;
 }
 
-.form-items {
-  padding: 10rpx 0;
+.form-list {
+  padding: 0;
 }
 
 .form-item {
   display: flex;
-  padding: 15rpx 20rpx;
+  flex-direction: column;
+  padding: 20rpx 30rpx;
   border-bottom: 1rpx solid #f5f5f5;
 }
 
@@ -216,164 +497,286 @@ export default {
   border-bottom: none;
 }
 
-.item-label {
-  width: 200rpx;
-  font-size: 26rpx;
-  color: #666;
-}
-
-.item-value {
-  flex: 1;
-  font-size: 26rpx;
-  color: #333;
-}
-
-/* 验收结果 */
-.check-result {
-  margin-bottom: 30rpx;
-  background-color: #fff;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.result-title {
-  padding: 20rpx;
+.form-label {
   font-size: 28rpx;
-  font-weight: 500;
   color: #333;
-  background-color: #f5f7fa;
-  border-bottom: 1rpx solid #eee;
+  margin-bottom: 12rpx;
+  position: relative;
 }
 
-.result-content {
+.form-label.required::before {
+  content: '*';
+  color: #ff4d4f;
+  margin-right: 8rpx;
+}
+
+.form-value {
+  font-size: 28rpx;
+  color: #666;
+  background-color: #f8f9fa;
   padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #e8e8e8;
+  min-height: 24rpx;
+  line-height: 1.4;
 }
 
-.result-status {
-  display: inline-block;
-  padding: 8rpx 20rpx;
-  border-radius: 30rpx;
-  font-size: 26rpx;
-  margin-bottom: 20rpx;
+.form-value.multiline {
+  line-height: 1.6;
+  min-height: 60rpx;
 }
 
-.result-status.passed {
-  background-color: #e6f7e6;
-  color: #52c41a;
+.form-input {
+  font-size: 28rpx;
+  color: #333;
+  background-color: #f8f9fa;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #e8e8e8;
 }
 
-.result-status.failed {
-  background-color: #fff1f0;
-  color: #f5222d;
-}
-
-.result-status.pending {
-  background-color: #fff7e6;
-  color: #fa8c16;
-}
-
-.result-comments {
-  font-size: 26rpx;
+.form-textarea {
+  font-size: 28rpx;
+  color: #333;
+  background-color: #f8f9fa;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #e8e8e8;
+  min-height: 120rpx;
   line-height: 1.6;
 }
 
-.comments-label {
-  color: #666;
+/* 相关业务样式 */
+.business-content {
+  padding: 20rpx 30rpx 30rpx 30rpx;
 }
 
-.comments-text {
-  color: #333;
+.business-row {
+  margin-bottom: 40rpx;
 }
 
-/* 签名区域 */
-.signature-section {
-  margin-top: 30rpx;
-  background-color: #fff;
-  border-radius: 12rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.signature-title {
-  padding: 20rpx;
+.business-label {
   font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
   font-weight: 500;
-  color: #333;
-  background-color: #f5f7fa;
-  border-bottom: 1rpx solid #eee;
 }
 
-.signatures {
+.option-group {
   display: flex;
   flex-wrap: wrap;
-  padding: 20rpx;
+  gap: 20rpx;
 }
 
-.signature-item {
-  width: 33.33%;
-  padding: 10rpx;
-  box-sizing: border-box;
+.option-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-}
-
-.signature-role {
-  font-size: 24rpx;
-  color: #666;
-  margin-bottom: 10rpx;
-}
-
-.signature-image {
-  width: 120rpx;
-  height: 80rpx;
-  margin-bottom: 10rpx;
-  border-bottom: 1rpx solid #ddd;
-}
-
-.signature-name {
   font-size: 26rpx;
-  color: #333;
-  margin-bottom: 5rpx;
+  color: #666;
+  margin-right: 30rpx;
+  margin-bottom: 15rpx;
 }
 
-.signature-date {
-  font-size: 22rpx;
-  color: #999;
+.option-item.checked {
+  color: #1890ff;
 }
 
-/* 照片样式 */
-.photos-content {
-  padding: 20rpx;
-}
-
-.photo-grid {
+.option-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border: 2rpx solid #d9d9d9;
+  border-radius: 4rpx;
+  margin-right: 12rpx;
   display: flex;
-  flex-wrap: wrap;
-  margin: 0 -10rpx;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  font-weight: bold;
+  background-color: #fff;
 }
 
-.photo-item {
-  width: 33.33%;
-  padding: 10rpx;
-  box-sizing: border-box;
+.option-item.checked .option-icon {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: #fff;
 }
 
-.photo-image {
-  width: 100%;
-  height: 200rpx;
-  border-radius: 8rpx;
+.radio-icon {
+  border-radius: 50% !important;
+  font-size: 24rpx;
+}
+
+.option-item.radio .option-icon {
+  border-radius: 50%;
+}
+
+.option-item.radio.checked .option-icon {
+  background-color: #fff;
+  border-color: #1890ff;
+  border-width: 6rpx;
+  position: relative;
+}
+
+.option-item.radio.checked .option-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12rpx;
+  height: 12rpx;
+  background-color: #1890ff;
+  border-radius: 50%;
+}
+
+.option-text {
+  flex: 1;
+}
+
+/* 附件样式 */
+.attachment-list {
+  padding: 20rpx 30rpx 30rpx 30rpx;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.attachment-item:last-child {
+  border-bottom: none;
+}
+
+.file-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-name {
+  font-size: 28rpx;
+  color: #333;
+  display: block;
   margin-bottom: 8rpx;
 }
 
-.photo-desc {
+.file-size {
   font-size: 24rpx;
+  color: #999;
+}
+
+.file-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-btn {
+  font-size: 26rpx;
+  color: #1890ff;
+  padding: 8rpx 16rpx;
+  border: 1rpx solid #1890ff;
+  border-radius: 6rpx;
+  background-color: transparent;
+}
+
+/* 流程信息样式 */
+.process-content {
+  padding: 30rpx;
+  background-color: #fff;
+}
+
+.process-list {
+  position: relative;
+}
+
+.process-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 50rpx;
+  position: relative;
+}
+
+.process-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 22rpx;
+  top: 44rpx;
+  bottom: -50rpx;
+  width: 2rpx;
+  background-color: #e8e8e8;
+}
+
+.process-dot {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.process-dot.current {
+  background-color: #1890ff;
+  border: 4rpx solid #e6f7ff;
+}
+
+.process-dot.completed {
+  background-color: #52c41a;
+  border: 4rpx solid #f6ffed;
+}
+
+.process-info {
+  flex: 1;
+  padding-top: 4rpx;
+}
+
+.process-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.process-status {
+  font-size: 28rpx;
+  margin-bottom: 12rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  display: inline-block;
+}
+
+.process-status.current {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.process-status.completed {
+  background-color: #f6ffed;
+  color: #52c41a;
+}
+
+.process-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.process-user {
+  font-size: 26rpx;
   color: #666;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+}
+
+.process-time {
+  font-size: 24rpx;
+  color: #999;
 }
 </style>

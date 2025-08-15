@@ -163,11 +163,11 @@
               <view class="business-label">人工挖探</view>
               <view class="option-group">
                 <view class="option-item checked radio">
-                  <view class="option-icon radio-icon">●</view>
+                  <view class="option-icon radio-icon"></view>
                   <text class="option-text">洛阳铲挖探</text>
                 </view>
                 <view class="option-item radio">
-                  <view class="option-icon radio-icon">○</view>
+                  <view class="option-icon radio-icon"></view>
                   <text class="option-text">坑探</text>
                 </view>
               </view>
@@ -176,7 +176,7 @@
               <view class="business-label">封孔准备</view>
               <view class="option-group">
                 <view class="option-item checked radio">
-                  <view class="option-icon radio-icon">●</view>
+                  <view class="option-icon radio-icon"></view>
                   <text class="option-text">黄泥到位</text>
                 </view>
               </view>
@@ -506,9 +506,22 @@ export default {
 }
 
 .option-item.radio.checked .option-icon {
-  background-color: #1890ff;
+  background-color: #fff;
   border-color: #1890ff;
-  color: #fff;
+  border-width: 6rpx;
+  position: relative;
+}
+
+.option-item.radio.checked .option-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12rpx;
+  height: 12rpx;
+  background-color: #1890ff;
+  border-radius: 50%;
 }
 
 .option-text {
