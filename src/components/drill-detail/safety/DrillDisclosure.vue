@@ -1,5 +1,5 @@
 <template>
-  <view class="drill-disclosure-container">
+  <view class="drill-disclosure-container" :class="{ readonly: isReadonly, editable: !isReadonly }">
     <view class="form-content">
       <!-- 项目信息 -->
       <view class="info-section">
@@ -436,13 +436,26 @@
     </view>
     
     <!-- 安全施工底栏 -->
-    <!-- 底部功能栏 -->
     <safety-bottom-bar
       :statusConfig="statusConfig"
       :buttonConfig="buttonConfig"
       :visible="bottomBarVisible"
       @action="handleAction"
     />
+    
+    <!-- 右侧状态切换按钮 -->
+    <view class="status-switch-panel">
+      <view class="switch-title">状态切换</view>
+      <button 
+        v-for="(state, index) in stateOptions"
+        :key="index"
+        class="switch-btn"
+        :class="{ active: currentStateIndex === index }"
+        @click="switchToState(index)"
+      >
+        {{ state.name }}
+      </button>
+    </view>
   </view>
 </template>
 
@@ -453,6 +466,14 @@ export default {
   name: 'DrillDisclosure',
   components: {
     SafetyBottomBar
+  },
+  props: {
+    // 页面模式：readonly(只读) 或 editable(可编辑)
+    mode: {
+      type: String,
+      default: 'readonly',
+      validator: value => ['readonly', 'editable'].includes(value)
+    }
   },
   data() {
     return {
@@ -481,18 +502,72 @@ export default {
         testItems: ['动探', '旁压', '静探']
       },
       
-      // 当前用户角色和状态（示例：技术员+未提交状态）
+      // 当前用户角色和状态
       currentUser: {
-        role: 'technician', // technician(技术员), reviewer(审核员)
+        role: 'technician', // technician(技术员), reviewer(审核员), other(其他)
         status: 'unsubmitted' // unsubmitted(未提交), submitted(已提交), reviewed(已审核)
       },
       
       // 提交时间（示例）
       submitTime: '',
-      reviewTime: ''
+      reviewTime: '',
+      
+      // 当前状态索引
+      currentStateIndex: 0,
+      
+      // 状态选项
+      stateOptions: [
+        {
+          name: '状态1：技术员+未提交',
+          role: 'technician',
+          status: 'unsubmitted',
+          mode: 'editable'
+        },
+        {
+          name: '状态2：技术员+已提交',
+          role: 'technician',
+          status: 'submitted',
+          mode: 'readonly'
+        },
+        {
+          name: '状态3：审核员+未提交',
+          role: 'reviewer',
+          status: 'unsubmitted',
+          mode: 'readonly'
+        },
+        {
+          name: '状态4：审核员+已提交',
+          role: 'reviewer',
+          status: 'submitted',
+          mode: 'readonly'
+        },
+        {
+          name: '状态5：已审核',
+          role: 'reviewer',
+          status: 'reviewed',
+          mode: 'readonly'
+        },
+        {
+          name: '状态6：其他用户',
+          role: 'other',
+          status: 'unsubmitted',
+          mode: 'readonly'
+        }
+      ]
     }
   },
   computed: {
+    // 当前页面模式
+    currentMode() {
+      return this.stateOptions[this.currentStateIndex].mode;
+    },
+    
+    // 是否为只读模式
+    isReadonly() {
+      return this.currentMode === 'readonly';
+    },
+    
+    // 底栏是否可见
     // 底栏是否可见
     bottomBarVisible() {
       const { role } = this.currentUser;
@@ -552,6 +627,7 @@ export default {
         };
       }
       
+      // 状态3：审核员+未提交
       // 状态3：审核员+未提交
       if (role === 'reviewer' && status === 'unsubmitted') {
         return {
@@ -670,6 +746,31 @@ export default {
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       return `${year}-${month}-${day} ${hours}:${minutes}`;
+    },
+    
+    // 切换到指定状态
+    switchToState(index) {
+      this.currentStateIndex = index;
+      const state = this.stateOptions[index];
+      
+      // 更新用户角色和状态
+      this.currentUser.role = state.role;
+      this.currentUser.status = state.status;
+      
+      // 根据状态设置时间
+      if (state.status === 'submitted' && !this.submitTime) {
+        this.submitTime = this.getCurrentTime();
+      } else if (state.status === 'reviewed' && !this.reviewTime) {
+        this.reviewTime = this.getCurrentTime();
+      } else if (state.status === 'unsubmitted') {
+        this.submitTime = '';
+        this.reviewTime = '';
+      }
+      
+      uni.showToast({
+        title: `已切换到${state.name}`,
+        icon: 'none'
+      });
     }
   }
 }
@@ -804,5 +905,105 @@ export default {
 .signature-image {
   max-width: 80%;
   max-height: 80%;
+}
+
+/* 只读模式样式 */
+.readonly .tag {
+  cursor: default;
+  pointer-events: none;
+}
+
+.readonly .form-value {
+  background-color: #fafafa;
+  border-color: #f0f0f0;
+  color: #999;
+}
+
+.readonly .signature-box {
+  background-color: #fafafa;
+  border-color: #f0f0f0;
+}
+
+/* 编辑模式样式 */
+.editable .tag {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editable .tag:hover {
+  transform: translateY(-1rpx);
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.editable .form-value {
+  cursor: text;
+}
+
+.editable .signature-box {
+  cursor: pointer;
+}
+
+.editable .signature-box:hover {
+  border-color: #1890ff;
+}
+
+/* 右侧状态切换面板 */
+.status-switch-panel {
+  position: fixed;
+  top: 50%;
+  right: 20rpx;
+  transform: translateY(-50%);
+  width: 300rpx;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  padding: 20rpx;
+  z-index: 999;
+}
+
+.switch-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.switch-btn {
+  width: 100%;
+  height: 64rpx;
+  margin-bottom: 12rpx;
+  border: 1rpx solid #d9d9d9;
+  border-radius: 8rpx;
+  background-color: #ffffff;
+  color: #666666;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.switch-btn:last-child {
+  margin-bottom: 0;
+}
+
+.switch-btn.active {
+  background-color: #1890ff;
+  color: #ffffff;
+  border-color: #1890ff;
+}
+
+.switch-btn:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.switch-btn.active:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+  color: #ffffff;
 }
 </style>
