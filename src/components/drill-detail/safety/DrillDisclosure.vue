@@ -1,13 +1,70 @@
 <template>
   <view class="drill-disclosure-container" :class="{ readonly: isReadonly, editable: !isReadonly }">
     <view class="form-content">
+      <!-- 流程信息 -->
+      <view class="info-section">
+        <view class="section-header" @click="toggleSection('processInfo')">
+          <view class="section-indicator"></view>
+          <text class="section-title">流程信息</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.processInfo }">
+            <text class="toggle-icon">{{ collapsedSections.processInfo ? '▶' : '▼' }}</text>
+          </view>
+        </view>
+        <view class="form-list" v-show="!collapsedSections.processInfo">
+          <view class="form-item">
+            <text class="form-label">孔号</text>
+            <view class="form-value">JFGC-005</view>
+          </view>
+          
+          <view class="form-item">
+            <text class="form-label">技术员</text>
+            <view class="form-value">王伟奇</view>
+          </view>
+          
+          <view class="form-item">
+            <text class="form-label">上传日期</text>
+            <view class="form-value">2022-06-22 11:05</view>
+          </view>
+          
+          <view class="form-item">
+            <text class="form-label">审批人</text>
+            <view class="form-value">谭土贵</view>
+          </view>
+          
+          <view class="form-item">
+            <text class="form-label">审批日期</text>
+            <view class="form-value">2022-06-22 11:06</view>
+          </view>
+          
+          <view class="form-item">
+            <text class="form-label">审核意见</text>
+            <view class="form-value">同意</view>
+          </view>
+          
+          <view class="form-item">
+            <text class="form-label">备注</text>
+            <view class="form-value" v-if="isReadonly">{{ formData.remark || '无' }}</view>
+            <textarea 
+              v-else
+              class="form-input"
+              v-model="formData.remark"
+              placeholder="请输入备注信息"
+              maxlength="200"
+            ></textarea>
+          </view>
+        </view>
+      </view>
+
       <!-- 项目信息 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('projectInfo')">
           <view class="section-indicator"></view>
           <text class="section-title">项目信息</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.projectInfo }">
+            <text class="toggle-icon">{{ collapsedSections.projectInfo ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.projectInfo">
           <view class="form-item">
             <text class="form-label">项目名称</text>
             <view class="form-value">粤港澳大湾区城际线路广州东至花都天贵工程</view>
@@ -22,11 +79,14 @@
 
       <!-- 钻孔基本信息 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('drillBasicInfo')">
           <view class="section-indicator"></view>
           <text class="section-title">钻孔基本信息</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.drillBasicInfo }">
+            <text class="toggle-icon">{{ collapsedSections.drillBasicInfo ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.drillBasicInfo">
           <view class="form-item">
             <text class="form-label">钻孔编号</text>
             <view class="form-value">MRNZ2-A256S</view>
@@ -75,11 +135,14 @@
 
       <!-- 管线探测 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('pipelineDetection')">
           <view class="section-indicator"></view>
           <text class="section-title">管线探测</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.pipelineDetection }">
+            <text class="toggle-icon">{{ collapsedSections.pipelineDetection ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.pipelineDetection">
           <view class="form-item">
             <text class="form-label">管线探测</text>
             <view class="form-value-tags">
@@ -94,11 +157,14 @@
 
       <!-- 围蔽要求 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('enclosure')">
           <view class="section-indicator"></view>
           <text class="section-title">围蔽要求</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.enclosure }">
+            <text class="toggle-icon">{{ collapsedSections.enclosure ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.enclosure">
           <view class="form-item">
             <text class="form-label">围蔽要求</text>
             <view class="form-value-tags">
@@ -112,11 +178,14 @@
 
       <!-- 交通安全 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('trafficSafety')">
           <view class="section-indicator"></view>
           <text class="section-title">交通安全</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.trafficSafety }">
+            <text class="toggle-icon">{{ collapsedSections.trafficSafety ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.trafficSafety">
           <view class="form-item">
             <text class="form-label">交通安全</text>
             <view class="form-value-tags">
@@ -136,11 +205,14 @@
 
       <!-- 水上作业 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('waterWork')">
           <view class="section-indicator"></view>
           <text class="section-title">水上作业</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.waterWork }">
+            <text class="toggle-icon">{{ collapsedSections.waterWork ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.waterWork">
           <view class="form-item">
             <text class="form-label">水上作业</text>
             <view class="form-value-tags">
@@ -154,11 +226,14 @@
 
       <!-- 文明措施 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('civilizedMeasures')">
           <view class="section-indicator"></view>
           <text class="section-title">文明措施</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.civilizedMeasures }">
+            <text class="toggle-icon">{{ collapsedSections.civilizedMeasures ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.civilizedMeasures">
           <view class="form-item">
             <text class="form-label">文明措施</text>
             <view class="form-value-tags">
@@ -173,11 +248,14 @@
 
       <!-- 安全措施 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('safetyMeasures')">
           <view class="section-indicator"></view>
           <text class="section-title">安全措施</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.safetyMeasures }">
+            <text class="toggle-icon">{{ collapsedSections.safetyMeasures ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.safetyMeasures">
           <view class="form-item">
             <text class="form-label">安全措施</text>
             <view class="form-value-tags">
@@ -193,11 +271,14 @@
 
       <!-- 开孔要求 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('holeOpening')">
           <view class="section-indicator"></view>
           <text class="section-title">开孔要求</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.holeOpening }">
+            <text class="toggle-icon">{{ collapsedSections.holeOpening ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.holeOpening">
           <view class="form-item">
             <text class="form-label">开孔要求</text>
             <view class="form-value-tags">
@@ -214,11 +295,14 @@
 
       <!-- 渣土处理 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('waste')">
           <view class="section-indicator"></view>
           <text class="section-title">渣土处理</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.waste }">
+            <text class="toggle-icon">{{ collapsedSections.waste ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.waste">
           <view class="form-item">
             <text class="form-label">渣土处理</text>
             <view class="form-value-tags">
@@ -231,11 +315,14 @@
 
       <!-- 其它要求 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('otherRequirements')">
           <view class="section-indicator"></view>
           <text class="section-title">其它要求</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.otherRequirements }">
+            <text class="toggle-icon">{{ collapsedSections.otherRequirements ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.otherRequirements">
           <view class="form-item">
             <text class="form-label">其它要求</text>
             <view class="form-value-tags">
@@ -249,11 +336,14 @@
 
       <!-- 技术要点 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('technicalPoints')">
           <view class="section-indicator"></view>
           <text class="section-title">技术要点</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.technicalPoints }">
+            <text class="toggle-icon">{{ collapsedSections.technicalPoints ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.technicalPoints">
           <view class="form-item">
             <text class="form-label">预计孔深</text>
             <view class="form-value">16.5米</view>
@@ -319,11 +409,14 @@
 
       <!-- 参与交底人员签名 -->
       <view class="info-section">
-        <view class="section-header">
+        <view class="section-header" @click="toggleSection('signatures')">
           <view class="section-indicator"></view>
           <text class="section-title">参与交底人员签名</text>
+          <view class="section-toggle" :class="{ collapsed: collapsedSections.signatures }">
+            <text class="toggle-icon">{{ collapsedSections.signatures ? '▶' : '▼' }}</text>
+          </view>
         </view>
-        <view class="form-list">
+        <view class="form-list" v-show="!collapsedSections.signatures">
           <!-- 挖探人1 -->
           <view class="form-item">
             <text class="form-label">挖探人1姓名</text>
@@ -499,7 +592,26 @@ export default {
         holeOpening: ['管线权属单位访问', '开挖前完成管线仪探测'],
         waste: ['集中收集后外运'],
         otherRequirements: ['地面清洗', '孔洞修复'],
-        testItems: ['动探', '旁压', '静探']
+        testItems: ['动探', '旁压', '静探'],
+        remark: '' // 备注字段
+      },
+      
+      // 分组收起/展开状态
+      collapsedSections: {
+        processInfo: false,
+        projectInfo: true,
+        drillBasicInfo: false,
+        pipelineDetection: true,
+        enclosure: true,
+        trafficSafety: true,
+        waterWork: true,
+        civilizedMeasures: true,
+        safetyMeasures: true,
+        holeOpening: true,
+        waste: true,
+        otherRequirements: true,
+        technicalPoints: false,
+        signatures: true
       },
       
       // 当前用户角色和状态
@@ -568,7 +680,6 @@ export default {
     },
     
     // 底栏是否可见
-    // 底栏是否可见
     bottomBarVisible() {
       const { role } = this.currentUser;
       // 只有技术员和审核员才显示底栏，其他角色不显示
@@ -627,7 +738,6 @@ export default {
         };
       }
       
-      // 状态3：审核员+未提交
       // 状态3：审核员+未提交
       if (role === 'reviewer' && status === 'unsubmitted') {
         return {
@@ -771,6 +881,11 @@ export default {
         title: `已切换到${state.name}`,
         icon: 'none'
       });
+    },
+    
+    // 切换分组展开/收起状态
+    toggleSection(sectionKey) {
+      this.collapsedSections[sectionKey] = !this.collapsedSections[sectionKey];
     }
   }
 }
@@ -818,6 +933,32 @@ export default {
   align-items: center;
   padding: 20rpx 30rpx;
   border-bottom: 1rpx solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.section-header:hover {
+  background-color: #f8f9fa;
+}
+
+.section-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  transition: transform 0.3s ease;
+}
+
+.section-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+.toggle-icon {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: bold;
 }
 
 .section-indicator {
@@ -864,6 +1005,31 @@ export default {
   border: 1rpx solid #e8e8e8;
   min-height: 24rpx;
   line-height: 1.4;
+}
+
+.form-input {
+  font-size: 28rpx;
+  color: #333;
+  background-color: #ffffff;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid #d9d9d9;
+  min-height: 120rpx;
+  line-height: 1.4;
+  resize: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.form-input:focus {
+  border-color: #1890ff;
+  outline: none;
+}
+
+.readonly .form-input {
+  background-color: #fafafa;
+  border-color: #f0f0f0;
+  color: #999;
 }
 
 /* 标签样式 */
