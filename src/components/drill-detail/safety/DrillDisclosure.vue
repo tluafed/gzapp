@@ -434,12 +434,26 @@
         </view>
       </view>
     </view>
+    
+    <!-- 安全施工底栏 -->
+    <!-- 底部功能栏 -->
+    <safety-bottom-bar
+      :statusConfig="statusConfig"
+      :buttonConfig="buttonConfig"
+      :visible="bottomBarVisible"
+      @action="handleAction"
+    />
   </view>
 </template>
 
 <script>
+import { SafetyBottomBar } from './common';
+
 export default {
   name: 'DrillDisclosure',
+  components: {
+    SafetyBottomBar
+  },
   data() {
     return {
       drillTypes: ['非取样', '控制孔', '一般孔'],
@@ -465,7 +479,197 @@ export default {
         waste: ['集中收集后外运'],
         otherRequirements: ['地面清洗', '孔洞修复'],
         testItems: ['动探', '旁压', '静探']
+      },
+      
+      // 当前用户角色和状态（示例：技术员+未提交状态）
+      currentUser: {
+        role: 'technician', // technician(技术员), reviewer(审核员)
+        status: 'unsubmitted' // unsubmitted(未提交), submitted(已提交), reviewed(已审核)
+      },
+      
+      // 提交时间（示例）
+      submitTime: '',
+      reviewTime: ''
+    }
+  },
+  computed: {
+    // 底栏是否可见
+    bottomBarVisible() {
+      const { role } = this.currentUser;
+      // 只有技术员和审核员才显示底栏，其他角色不显示
+      return role === 'technician' || role === 'reviewer';
+    },
+    
+    // 状态配置
+    statusConfig() {
+      const { role, status } = this.currentUser;
+      
+      if (status === 'unsubmitted') {
+        return {
+          type: 'unsubmitted',
+          text: '未提交'
+        };
+      } else if (status === 'submitted') {
+        return {
+          type: 'submitted',
+          text: '已提交',
+          time: this.submitTime
+        };
+      } else if (status === 'reviewed') {
+        return {
+          type: 'reviewed',
+          text: '已审核',
+          time: this.reviewTime
+        };
       }
+      
+      return {
+        type: 'unsubmitted',
+        text: '未提交'
+      };
+    },
+    
+    // 按钮配置
+    buttonConfig() {
+      const { role, status } = this.currentUser;
+      
+      // 状态1：技术员+未提交
+      if (role === 'technician' && status === 'unsubmitted') {
+        return {
+          buttons: [
+            { text: '保存', action: 'save' },
+            { text: '提交', action: 'submit', primary: true }
+          ]
+        };
+      }
+      
+      // 状态2：技术员+已提交
+      if (role === 'technician' && status === 'submitted') {
+        return {
+          buttons: [
+            { text: '撤回', action: 'withdraw' }
+          ]
+        };
+      }
+      
+      // 状态3：审核员+未提交
+      if (role === 'reviewer' && status === 'unsubmitted') {
+        return {
+          buttons: []
+        };
+      }
+      
+      // 状态4：审核员+已提交
+      if (role === 'reviewer' && status === 'submitted') {
+        return {
+          buttons: [
+            { text: '审核不通过', action: 'reject', danger: true },
+            { text: '审核通过', action: 'approve', primary: true }
+          ]
+        };
+      }
+      
+      // 状态5：已审核
+      if (status === 'reviewed') {
+        return {
+          buttons: []
+        };
+      }
+      
+      return {
+        buttons: []
+      };
+    }
+  },
+  methods: {
+    // 处理底栏按钮操作
+    handleAction(action, reviewOpinion = '') {
+      switch (action) {
+        case 'save':
+          this.handleSave();
+          break;
+        case 'submit':
+          this.handleSubmit();
+          break;
+        case 'withdraw':
+          this.handleWithdraw();
+          break;
+        case 'reject':
+          this.handleReject(reviewOpinion);
+          break;
+        case 'approve':
+          this.handleApprove(reviewOpinion);
+          break;
+      }
+    },
+    
+    // 保存
+    handleSave() {
+      uni.showToast({
+        title: '保存成功',
+        icon: 'success'
+      });
+    },
+    
+    // 提交
+    handleSubmit() {
+      this.currentUser.status = 'submitted';
+      this.submitTime = this.getCurrentTime();
+      uni.showToast({
+        title: '提交成功',
+        icon: 'success'
+      });
+    },
+    
+    // 撤回
+    handleWithdraw() {
+      uni.showModal({
+        title: '确认撤回',
+        content: '确定要撤回此钻孔交底吗？',
+        success: (res) => {
+          if (res.confirm) {
+            this.currentUser.status = 'unsubmitted';
+            this.submitTime = '';
+            uni.showToast({
+              title: '撤回成功',
+              icon: 'success'
+            });
+          }
+        }
+      });
+    },
+    
+    // 审核不通过
+    handleReject(reviewOpinion) {
+      console.log('审核不通过，审核意见：', reviewOpinion);
+      this.currentUser.status = 'unsubmitted';
+      this.submitTime = '';
+      uni.showToast({
+        title: '审核不通过',
+        icon: 'success'
+      });
+    },
+    
+    // 审核通过
+    handleApprove(reviewOpinion) {
+      console.log('审核通过，审核意见：', reviewOpinion);
+      this.currentUser.status = 'reviewed';
+      this.reviewTime = this.getCurrentTime();
+      uni.showToast({
+        title: '审核通过',
+        icon: 'success'
+      });
+    },
+    
+    // 获取当前时间
+    getCurrentTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
   }
 }

@@ -43,9 +43,35 @@
       <text class="empty-text">{{ emptyText }}</text>
     </view>
     
-    <!-- 新增按钮 -->
-    <view class="add-button" @click="addItem">
-      <text class="add-icon">+</text>
+    <!-- 底部功能栏 -->
+    <view class="bottom-toolbar">
+      <!-- 编录状态 -->
+      <view class="status-section">
+        <view class="status-indicator" :class="statusConfig.type">
+          <text class="status-dot"></text>
+        </view>
+        <text class="status-text">{{ statusConfig.text }}</text>
+      </view>
+      
+      <!-- 功能按钮 -->
+      <view class="action-buttons">
+        <button 
+          class="action-btn"
+          :class="{ 'disabled': buttonConfig.leftButton.disabled }"
+          :disabled="buttonConfig.leftButton.disabled"
+          @click="handleLeftAction"
+        >
+          {{ buttonConfig.leftButton.text }}
+        </button>
+        <button 
+          class="action-btn primary"
+          :class="{ 'disabled': buttonConfig.rightButton.disabled }"
+          :disabled="buttonConfig.rightButton.disabled"
+          @click="handleRightAction"
+        >
+          {{ buttonConfig.rightButton.text }}
+        </button>
+      </view>
     </view>
   </view>
 </template>
@@ -63,26 +89,33 @@ export default {
     cardConfig: {
       type: Object,
       required: true
-      // 格式：
-      // {
-      //   titleField: 'standardStratum', // 标题字段
-      //   subtitleField: 'depth', // 副标题字段（可选）
-      //   subtitleFormat: (item) => `${item.topDepth}m - ${item.bottomDepth}m`, // 副标题格式化函数
-      //   fields: [
-      //     [
-      //       { key: 'mainLayerNo', label: '主层编号' },
-      //       { key: 'subLayerNo', label: '亚层编号' }
-      //     ],
-      //     [
-      //       { key: 'description', label: '描述', fullWidth: true, isDescription: true }
-      //     ]
-      //   ]
-      // }
     },
     // 空状态文本
     emptyText: {
       type: String,
-      default: '暂无数据，请点击右下角按钮添加'
+      default: '暂无数据'
+    },
+    // 编录状态配置
+    statusConfig: {
+      type: Object,
+      default: () => ({
+        type: 'pending', // pending(待编录-灰色), recorded(已编录-橙色), approved(校核通过-绿色)
+        text: '待编录'
+      })
+    },
+    // 按钮配置
+    buttonConfig: {
+      type: Object,
+      default: () => ({
+        leftButton: {
+          text: '提交',
+          disabled: false
+        },
+        rightButton: {
+          text: '添加',
+          disabled: false
+        }
+      })
     }
   },
   methods: {
@@ -124,9 +157,18 @@ export default {
       this.$emit('edit-item', item);
     },
     
-    // 新增项目
-    addItem() {
-      this.$emit('add-item');
+    // 处理左侧按钮点击
+    handleLeftAction() {
+      if (!this.buttonConfig.leftButton.disabled) {
+        this.$emit('left-action');
+      }
+    },
+    
+    // 处理右侧按钮点击
+    handleRightAction() {
+      if (!this.buttonConfig.rightButton.disabled) {
+        this.$emit('right-action');
+      }
     }
   }
 }
@@ -145,7 +187,7 @@ export default {
 .card-list {
   width: 100%;
   background-color: #e8e8e8 !important;
-  padding: 24rpx 20rpx 120rpx 20rpx;
+  padding: 24rpx 20rpx 160rpx 20rpx;
   box-sizing: border-box;
   min-height: 100vh;
 }
@@ -246,26 +288,96 @@ export default {
   color: #999999;
 }
 
-/* 新增按钮 */
-.add-button {
+/* 底部功能栏 */
+.bottom-toolbar {
   position: fixed;
-  right: 40rpx;
-  bottom: 40rpx;
-  width: 112rpx;
-  height: 112rpx;
-  border-radius: 56rpx;
-  background-color: #1890ff;
-  box-shadow: 0 6rpx 20rpx rgba(24, 144, 255, 0.4);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120rpx;
+  background-color: #ffffff;
+  border-top: 1rpx solid #e8e8e8;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.06);
   z-index: 100;
 }
 
-.add-icon {
-  font-size: 56rpx;
+/* 状态区域 */
+.status-section {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  margin-right: 16rpx;
+}
+
+.status-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+}
+
+.status-indicator.pending .status-dot {
+  background-color: #999999;
+}
+
+.status-indicator.recorded .status-dot {
+  background-color: #fa8c16;
+}
+
+.status-indicator.approved .status-dot {
+  background-color: #52c41a;
+}
+
+.status-text {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+/* 按钮区域 */
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-btn {
+  height: 64rpx;
+  padding: 0 32rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  border: 1rpx solid #d9d9d9;
+  background-color: #ffffff;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120rpx;
+}
+
+.action-btn.primary {
+  background-color: #1890ff;
   color: #ffffff;
-  font-weight: 300;
-  line-height: 1;
+  border-color: #1890ff;
+}
+
+.action-btn.disabled {
+  background-color: #f5f5f5;
+  color: #cccccc;
+  border-color: #e8e8e8;
+  cursor: not-allowed;
+}
+
+.action-btn.primary.disabled {
+  background-color: #f5f5f5;
+  color: #cccccc;
+  border-color: #e8e8e8;
 }
 </style>

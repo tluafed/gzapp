@@ -6,8 +6,11 @@
         :dataList="dataList"
         :cardConfig="cardConfig"
         :emptyText="emptyText"
+        :statusConfig="statusConfig"
+        :buttonConfig="buttonConfig"
         @edit-item="handleEditItem"
-        @add-item="handleAddItem"
+        @left-action="handleLeftAction"
+        @right-action="handleRightAction"
       />
       
       <!-- 编辑/新增二级弹窗 -->
@@ -69,6 +72,28 @@ export default {
     editTitle: {
       type: String,
       default: '编辑'
+    },
+    // 编录状态配置
+    statusConfig: {
+      type: Object,
+      default: () => ({
+        type: 'pending', // pending(待编录-灰色), recorded(已编录-橙色), approved(校核通过-绿色)
+        text: '待编录'
+      })
+    },
+    // 按钮配置
+    buttonConfig: {
+      type: Object,
+      default: () => ({
+        leftButton: {
+          text: '提交',
+          disabled: false
+        },
+        rightButton: {
+          text: '添加',
+          disabled: false
+        }
+      })
     }
   },
   data() {
@@ -89,12 +114,17 @@ export default {
       this.$emit('edit-item', item);
     },
     
-    // 处理新增项目
-    handleAddItem() {
+    // 处理左侧按钮点击
+    handleLeftAction() {
+      this.$emit('left-action');
+    },
+    
+    // 处理右侧按钮点击（通常是添加）
+    handleRightAction() {
       this.isEdit = false;
       this.currentFormData = this.getEmptyFormData();
       this.showFormPopup = true;
-      this.$emit('add-item');
+      this.$emit('right-action');
     },
     
     // 获取空表单数据
