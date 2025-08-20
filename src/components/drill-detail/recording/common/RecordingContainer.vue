@@ -6,11 +6,12 @@
         :dataList="dataList"
         :cardConfig="cardConfig"
         :emptyText="emptyText"
-        :statusConfig="statusConfig"
-        :buttonConfig="buttonConfig"
+        :recordingStatus="recordingStatus"
+        :submitTime="submitTime"
+        :approveTime="approveTime"
+        :userRole="userRole"
         @edit-item="handleEditItem"
-        @left-action="handleLeftAction"
-        @right-action="handleRightAction"
+        @add-action="handleAddAction"
       />
       
       <!-- 编辑/新增二级弹窗 -->
@@ -73,27 +74,25 @@ export default {
       type: String,
       default: '编辑'
     },
-    // 编录状态配置
-    statusConfig: {
-      type: Object,
-      default: () => ({
-        type: 'pending', // pending(待编录-灰色), recorded(已编录-橙色), approved(校核通过-绿色)
-        text: '待编录'
-      })
+    // 编录状态：unsubmitted(未提交), submitted(已提交), approved(已审核)
+    recordingStatus: {
+      type: String,
+      default: 'unsubmitted'
     },
-    // 按钮配置
-    buttonConfig: {
-      type: Object,
-      default: () => ({
-        leftButton: {
-          text: '提交',
-          disabled: false
-        },
-        rightButton: {
-          text: '添加',
-          disabled: false
-        }
-      })
+    // 提交时间戳
+    submitTime: {
+      type: String,
+      default: ''
+    },
+    // 审核时间戳
+    approveTime: {
+      type: String,
+      default: ''
+    },
+    // 用户角色：technician(技术员), other(其他)
+    userRole: {
+      type: String,
+      default: 'technician'
     }
   },
   data() {
@@ -114,17 +113,12 @@ export default {
       this.$emit('edit-item', item);
     },
     
-    // 处理左侧按钮点击
-    handleLeftAction() {
-      this.$emit('left-action');
-    },
-    
-    // 处理右侧按钮点击（通常是添加）
-    handleRightAction() {
+    // 处理添加按钮点击
+    handleAddAction() {
       this.isEdit = false;
       this.currentFormData = this.getEmptyFormData();
       this.showFormPopup = true;
-      this.$emit('right-action');
+      this.$emit('add-action');
     },
     
     // 获取空表单数据

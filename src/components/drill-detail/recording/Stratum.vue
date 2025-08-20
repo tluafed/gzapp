@@ -3,14 +3,15 @@
     :dataList="stratumList"
     :cardConfig="cardConfig"
     :formConfig="formConfig"
-    :statusConfig="statusConfig"
-    :buttonConfig="buttonConfig"
+    :recordingStatus="recordingStatus"
+    :submitTime="submitTime"
+    :approveTime="approveTime"
+    :userRole="userRole"
     :emptyText="emptyText"
     :addTitle="addTitle"
     :editTitle="editTitle"
     @edit-item="handleEditItem"
-    @left-action="handleSubmit"
-    @right-action="handleAddItem"
+    @add-action="handleAddItem"
     @save="handleSave"
   />
 </template>
@@ -22,6 +23,18 @@ export default {
   name: 'Stratum',
   components: {
     RecordingContainer
+  },
+  props: {
+    // 编录状态：unsubmitted(未提交), submitted(已提交), approved(已审核)
+    recordingStatus: {
+      type: String,
+      default: 'unsubmitted'
+    },
+    // 用户角色：technician(技术员), auditor(审核员), other(其他)
+    userRole: {
+      type: String,
+      default: 'technician'
+    }
   },
   data() {
     return {
@@ -186,23 +199,9 @@ export default {
         ]
       },
       
-      // 编录状态配置 - 已编录状态（橙色）
-      statusConfig: {
-        type: 'recorded',
-        text: '已编录'
-      },
-      
-      // 按钮配置 - 提交和添加
-      buttonConfig: {
-        leftButton: {
-          text: '提交',
-          disabled: false
-        },
-        rightButton: {
-          text: '添加',
-          disabled: false
-        }
-      },
+      // 时间戳（可以根据实际需求从后端获取）
+      submitTime: '',
+      approveTime: '',
       
       // 其他配置
       emptyText: '暂无地层数据',
@@ -216,13 +215,6 @@ export default {
       console.log('编辑地层:', item);
     },
     
-    // 处理提交按钮
-    handleSubmit() {
-      uni.showToast({
-        title: '地层数据已提交',
-        icon: 'success'
-      });
-    },
     
     // 处理添加按钮
     handleAddItem() {

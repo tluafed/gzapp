@@ -6,9 +6,13 @@
     <view class="popup-content" :style="{ transform: show ? 'translateY(0)' : 'translateY(100%)' }">
       <!-- 标题栏 -->
       <view class="popup-header">
-        <text class="popup-title">{{ title }}</text>
-        <view class="close-btn" @click="closePopup">
-          <text class="close-icon">×</text>
+        <view class="header-left">
+          <text class="popup-title">{{ title }}</text>
+        </view>
+        <view class="header-right">
+          <view class="close-btn" @click="closePopup">
+            <text class="close-icon">×</text>
+          </view>
         </view>
       </view>
       <!-- 内容区域 -->
@@ -52,10 +56,10 @@ export default {
 
 .mask {
   position: absolute;
-  top: 0; /* 从屏幕顶部开始 */
+  top: 0;
   left: 0;
   width: 100%;
-  height: 100%; /* 全屏蒙版 */
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
@@ -65,29 +69,40 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 110rpx); /* 调整弹窗高度，刚好在标题栏下方 */
+  height: calc(100% - 110rpx);
   background-color: #fff;
-  border-radius: 30rpx 30rpx 0 0; /* 顶部圆角 */
+  border-radius: 30rpx 30rpx 0 0;
   box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
-  z-index: 1001; /* 确保弹窗在蒙版上方 */
+  z-index: 1001;
 }
 
 .popup-header {
-  height: 100rpx;
+  min-height: 100rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 30rpx;
+  padding: 20rpx 30rpx;
   border-bottom: 1rpx solid #eee;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
 .popup-title {
   font-size: 32rpx;
   font-weight: 500;
   color: #333;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .close-btn {

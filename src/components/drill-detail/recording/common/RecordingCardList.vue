@@ -47,29 +47,22 @@
     <view class="bottom-toolbar">
       <!-- 编录状态 -->
       <view class="status-section">
-        <view class="status-indicator" :class="statusConfig.type">
+        <view class="status-indicator" :class="currentStatus.type">
           <text class="status-dot"></text>
         </view>
-        <text class="status-text">{{ statusConfig.text }}</text>
+        <view class="status-info">
+          <text class="status-text" :class="currentStatus.type">{{ currentStatus.text }}</text>
+          <text class="status-time" v-if="currentStatus.timestamp">{{ currentStatus.timestamp }}</text>
+        </view>
       </view>
       
       <!-- 功能按钮 -->
-      <view class="action-buttons">
-        <button 
-          class="action-btn"
-          :class="{ 'disabled': buttonConfig.leftButton.disabled }"
-          :disabled="buttonConfig.leftButton.disabled"
-          @click="handleLeftAction"
-        >
-          {{ buttonConfig.leftButton.text }}
-        </button>
+      <view class="action-buttons" v-if="shouldShowButtons">
         <button 
           class="action-btn primary"
-          :class="{ 'disabled': buttonConfig.rightButton.disabled }"
-          :disabled="buttonConfig.rightButton.disabled"
-          @click="handleRightAction"
+          @click="handleAddAction"
         >
-          {{ buttonConfig.rightButton.text }}
+          添加
         </button>
       </view>
     </view>
@@ -95,27 +88,60 @@ export default {
       type: String,
       default: '暂无数据'
     },
-    // 编录状态配置
-    statusConfig: {
-      type: Object,
-      default: () => ({
-        type: 'pending', // pending(待编录-灰色), recorded(已编录-橙色), approved(校核通过-绿色)
-        text: '待编录'
-      })
+    // 编录状态：unsubmitted(未提交), submitted(已提交), approved(已审核)
+    recordingStatus: {
+      type: String,
+      default: 'unsubmitted'
     },
-    // 按钮配置
-    buttonConfig: {
-      type: Object,
-      default: () => ({
-        leftButton: {
-          text: '提交',
-          disabled: false
-        },
-        rightButton: {
-          text: '添加',
-          disabled: false
-        }
-      })
+    // 提交时间戳
+    submitTime: {
+      type: String,
+      default: ''
+    },
+    // 审核时间戳
+    approveTime: {
+      type: String,
+      default: ''
+    },
+    // 用户角色：technician(技术员), other(其他)
+    userRole: {
+      type: String,
+      default: 'technician'
+    }
+  },
+  computed: {
+    // 当前状态配置
+    currentStatus() {
+      switch (this.recordingStatus) {
+        case 'unsubmitted':
+          return {
+            type: 'unsubmitted',
+            text: '未提交',
+            timestamp: ''
+          };
+        case 'submitted':
+          return {
+            type: 'submitted',
+            text: '已提交',
+            timestamp: this.submitTime
+          };
+        case 'approved':
+          return {
+            type: 'approved',
+            text: '已审核',
+            timestamp: this.approveTime
+          };
+        default:
+          return {
+            type: 'unsubmitted',
+            text: '未提交',
+            timestamp: ''
+          };
+      }
+    },
+    // 是否显示按钮
+    shouldShowButtons() {
+      return this.userRole === 'technician' && this.recordingStatus === 'unsubmitted';
     }
   },
   methods: {
@@ -157,18 +183,9 @@ export default {
       this.$emit('edit-item', item);
     },
     
-    // 处理左侧按钮点击
-    handleLeftAction() {
-      if (!this.buttonConfig.leftButton.disabled) {
-        this.$emit('left-action');
-      }
-    },
-    
-    // 处理右侧按钮点击
-    handleRightAction() {
-      if (!this.buttonConfig.rightButton.disabled) {
-        this.$emit('right-action');
-      }
+    // 处理添加按钮点击
+    handleAddAction() {
+      this.$emit('add-action');
     }
   }
 }
@@ -268,6 +285,7 @@ export default {
 .info-value.description {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -325,11 +343,11 @@ export default {
   margin-right: 8rpx;
 }
 
-.status-indicator.pending .status-dot {
+.status-indicator.unsubmitted .status-dot {
   background-color: #999999;
 }
 
-.status-indicator.recorded .status-dot {
+.status-indicator.submitted .status-dot {
   background-color: #fa8c16;
 }
 
@@ -337,9 +355,35 @@ export default {
   background-color: #52c41a;
 }
 
+.status-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .status-text {
   font-size: 26rpx;
-  color: #666666;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.status-text.unsubmitted {
+  color: #999999;
+}
+
+.status-text.submitted {
+  color: #fa8c16;
+}
+
+.status-text.approved {
+  color: #52c41a;
+}
+
+.status-time {
+  font-size: 22rpx;
+  color: #999999;
+  margin-top: 2rpx;
+  line-height: 1.2;
 }
 
 /* 按钮区域 */
