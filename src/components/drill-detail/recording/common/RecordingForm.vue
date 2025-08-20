@@ -161,6 +161,11 @@ export default {
       const index = event.detail.value;
       this.pickerIndexes[field.key] = index;
       this.localFormData[field.key] = field.options[index];
+      
+      // 如果是作业类型字段，触发onChange回调
+      if (field.key === 'reportType' && field.onChange) {
+        field.onChange(field.options[index]);
+      }
     },
     
     // 日期变化事件

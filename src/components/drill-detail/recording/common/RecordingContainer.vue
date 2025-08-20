@@ -159,10 +159,17 @@ export default {
     // 获取空表单数据
     getEmptyFormData() {
       const emptyData = { id: null };
-      const config = typeof this.formConfig === 'function' ? this.formConfig({}) : this.formConfig;
+      // 为新增设置默认的作业类型
+      if (this.$parent && this.$parent.reportTypes && this.$parent.reportTypes.length > 0) {
+        emptyData.reportType = this.$parent.reportTypes[0].name;
+        emptyData.workType = this.$parent.reportTypes[0].key;
+      }
+      const config = typeof this.formConfig === 'function' ? this.formConfig(emptyData) : this.formConfig;
       if (config && config.fields) {
         config.fields.forEach(field => {
-          emptyData[field.key] = field.defaultValue || '';
+          if (!emptyData.hasOwnProperty(field.key)) {
+            emptyData[field.key] = field.defaultValue || '';
+          }
         });
       }
       return emptyData;

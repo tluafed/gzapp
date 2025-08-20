@@ -563,7 +563,8 @@ export default {
     
     // 处理新增项目
     handleAddItem() {
-      this.showTypeSelector = true;
+      // 直接设置默认类型为第一个，不显示类型选择器
+      this.currentReportType = this.reportTypes[0].key;
     },
     
     // 关闭类型选择器
