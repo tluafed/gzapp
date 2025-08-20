@@ -1,56 +1,38 @@
 <template>
   <view class="overall-container">
-    <view class="content-card">
-      <view class="section-title">整体影像</view>
-      
-      <view class="image-gallery">
-        <scroll-view scroll-x="true" class="gallery-scroll">
-          <view class="gallery-item">
-            <image src="/static/images/placeholder.png" mode="aspectFill" class="gallery-image"></image>
-            <text class="image-depth">0-1.5m</text>
-          </view>
-          <view class="gallery-item">
-            <image src="/static/images/placeholder.png" mode="aspectFill" class="gallery-image"></image>
-            <text class="image-depth">1.5-3.0m</text>
-          </view>
-          <view class="gallery-item">
-            <image src="/static/images/placeholder.png" mode="aspectFill" class="gallery-image"></image>
-            <text class="image-depth">3.0-4.5m</text>
-          </view>
-          <view class="gallery-item">
-            <image src="/static/images/placeholder.png" mode="aspectFill" class="gallery-image"></image>
-            <text class="image-depth">4.5-6.0m</text>
-          </view>
-        </scroll-view>
+    <!-- 影像列表 -->
+    <scroll-view scroll-y class="image-list" :style="{ height: scrollHeight + 'px' }">
+      <view class="image-item" v-for="(image, index) in imageList" :key="index" @click="previewImage(image)">
+        <image 
+          :src="image.url" 
+          mode="aspectFill" 
+          class="overall-image"
+          :lazy-load="true"
+        ></image>
       </view>
       
-      <view class="drill-info">
-        <view class="info-row">
-          <view class="info-item">
-            <text class="label">钻孔编号：</text>
-            <text class="value">GK01</text>
-          </view>
-          <view class="info-item">
-            <text class="label">总深度：</text>
-            <text class="value">15.6m</text>
-          </view>
-        </view>
-        <view class="info-row">
-          <view class="info-item">
-            <text class="label">开始日期：</text>
-            <text class="value">2023-06-15</text>
-          </view>
-          <view class="info-item">
-            <text class="label">完成日期：</text>
-            <text class="value">2023-06-18</text>
-          </view>
-        </view>
+      <!-- 空状态 -->
+      <view v-if="imageList.length === 0" class="empty-state">
+        <text class="empty-text">暂无整体影像</text>
+        <text class="empty-hint">点击右下角按钮添加照片</text>
       </view>
-      
-      <view class="action-bar">
-        <button class="action-button primary">上传照片</button>
-        <button class="action-button">导出报告</button>
-      </view>
+    </scroll-view>
+    
+    <!-- 添加按钮 -->
+    <view class="add-button" @click="addImage">
+      <text class="add-icon">+</text>
+    </view>
+    
+    <!-- 全屏图片预览 -->
+    <view v-if="showPreview" class="fullscreen-preview" @click="closePreview">
+      <image 
+        :src="currentPreviewImage.url" 
+        mode="widthFix" 
+        class="fullscreen-image"
+        @click.stop
+        :enable-zoom="true"
+        :show-menu-by-longpress="false"
+      ></image>
     </view>
   </view>
 </template>
@@ -60,123 +42,174 @@ export default {
   name: 'Overall',
   data() {
     return {
-      // 组件数据
+      scrollHeight: 0,
+      showPreview: false,
+      currentPreviewImage: {},
+      imageList: [
+        {
+          id: 1,
+          url: '/static/images/overall1.jpg'
+        },
+        {
+          id: 2,
+          url: '/static/images/overall2.jpg'
+        }
+      ]
     }
   },
+  mounted() {
+    this.calculateScrollHeight()
+  },
   methods: {
-    // 组件方法
+    // 计算滚动区域高度
+    calculateScrollHeight() {
+      const systemInfo = uni.getSystemInfoSync()
+      const windowHeight = systemInfo.windowHeight
+      // 减去顶部导航栏和标签页的高度
+      this.scrollHeight = windowHeight - 200
+    },
+    
+    // 预览图片
+    previewImage(image) {
+      this.currentPreviewImage = image
+      this.showPreview = true
+    },
+    
+    // 关闭预览
+    closePreview() {
+      this.showPreview = false
+      this.currentPreviewImage = {}
+    },
+    
+    // 添加图片
+    addImage() {
+      uni.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['camera', 'album'],
+        success: (res) => {
+          const tempFilePath = res.tempFilePaths[0]
+          this.uploadImage(tempFilePath)
+        },
+        fail: (err) => {
+          console.error('选择图片失败:', err)
+          uni.showToast({
+            title: '选择图片失败',
+            icon: 'none'
+          })
+        }
+      })
+    },
+    
+    // 上传图片
+    uploadImage(filePath) {
+      uni.showLoading({
+        title: '上传中...'
+      })
+      
+      // 模拟上传过程
+      setTimeout(() => {
+        const newImage = {
+          id: Date.now(),
+          url: filePath
+        }
+        
+        this.imageList.push(newImage)
+        
+        uni.hideLoading()
+        uni.showToast({
+          title: '保存成功',
+          icon: 'success'
+        })
+      }, 1500)
+    }
   }
 }
 </script>
 
-<style>
+<style scoped>
 .overall-container {
+  position: relative;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.image-list {
   padding: 20rpx;
 }
 
-.content-card {
-  background-color: #fff;
-  border-radius: 12rpx;
-  padding: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 30rpx;
-  border-left: 8rpx solid #1890ff;
-  padding-left: 20rpx;
-}
-
-.image-gallery {
-  margin-bottom: 30rpx;
-}
-
-.gallery-scroll {
-  white-space: nowrap;
-  height: 300rpx;
-}
-
-.gallery-item {
-  display: inline-block;
-  width: 280rpx;
-  height: 280rpx;
-  margin-right: 20rpx;
+.image-item {
   position: relative;
-  border-radius: 8rpx;
+  width: 100%;
+  height: 400rpx;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
   overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
-.gallery-image {
+.overall-image {
   width: 100%;
   height: 100%;
+  background-color: #f0f0f0;
 }
 
-.image-depth {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font-size: 24rpx;
-  padding: 8rpx 0;
-  text-align: center;
-}
-
-.drill-info {
-  background-color: #f9f9f9;
-  border-radius: 8rpx;
-  padding: 20rpx;
-  margin-bottom: 30rpx;
-}
-
-.info-row {
+.empty-state {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400rpx;
+  color: #999;
+}
+
+.empty-text {
+  font-size: 32rpx;
   margin-bottom: 20rpx;
 }
 
-.info-row:last-child {
-  margin-bottom: 0;
-}
-
-.info-item {
-  flex: 1;
-  display: flex;
-}
-
-.label {
-  color: #666;
+.empty-hint {
   font-size: 28rpx;
-  width: 160rpx;
 }
 
-.value {
-  color: #333;
-  font-size: 28rpx;
-  flex: 1;
-}
-
-.action-bar {
-  display: flex;
-  justify-content: space-between;
-}
-
-.action-button {
-  width: 48%;
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-  border-radius: 8rpx;
-  font-size: 28rpx;
-  background-color: #f5f5f5;
-  color: #666;
-}
-
-.action-button.primary {
+.add-button {
+  position: fixed;
+  bottom: 100rpx;
+  right: 40rpx;
+  width: 120rpx;
+  height: 120rpx;
   background-color: #1890ff;
-  color: #fff;
+  border-radius: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 20rpx rgba(24, 144, 255, 0.3);
+  z-index: 100;
+}
+
+.add-icon {
+  color: white;
+  font-size: 60rpx;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.fullscreen-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.fullscreen-image {
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 </style>
