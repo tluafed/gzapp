@@ -20,8 +20,8 @@
 
     <recording-container
       :dataList="shiftReportList"
-      :cardConfig="currentCardConfig"
-      :formConfig="currentFormConfig"
+      :cardConfig="getCardConfigForItem"
+      :formConfig="getFormConfigForItem"
       :emptyText="'暂无班报表数据，请点击右下角按钮添加'"
       :addTitle="'新增班报表'"
       :editTitle="'编辑班报表'"
@@ -52,10 +52,10 @@ export default {
           id: 1,
           reportType: '人工挖深',
           workType: 'manual',
-          startDepth: 25,
-          holeDepth: '钻具全长25.5m与上余0.5m',
-          advance: '1.2m',
-          rockCoreLength: '1.1m',
+          startDepth: 20,
+          holeDepth: '钻具全长20.5m与上余0.3m',
+          advance: '1.0m',
+          rockCoreLength: '0.9m',
           holeCondition: '进尺正常，土质较软，无塌孔现象'
         },
         {
@@ -83,17 +83,19 @@ export default {
           id: 4,
           reportType: '标贯试验',
           workType: 'standard',
-          startDepth: 15,
-          drillToolLength: '16.2m',
-          remainder: '0.8m',
-          standardDepthFrom: '15.0',
-          standardDepthTo: '15.45',
+          startDepth: 25,
+          drillToolLength: '26.2',
+          remainder: '0.8',
+          holeDepth: '25.4',
+          advance: '0.45',
+          rodLength: '25.0',
+          standardDepthFrom: '25.0',
+          standardDepthTo: '25.45',
           hit15cm: '8',
           hit10cm1: '12',
           hit10cm2: '15',
           hit10cm3: '18',
-          hitCount: '8-12-15-18',
-          rockCoreLength: '0.4m',
+          rockCoreLength: '0.4',
           holeCondition: '标贯正常，土质为中密砂土'
         },
         {
@@ -311,18 +313,34 @@ export default {
         standard: {
           cardConfig: {
             titleField: 'reportType',
-            subtitleFormat: (item) => `标贯深度: ${item.standardDepthFrom || ''}m - ${item.standardDepthTo || ''}m`,
+            subtitleFormat: (item) => `起始深度: ${item.startDepth}m | 标贯深度: ${item.standardDepthFrom || ''}m - ${item.standardDepthTo || ''}m`,
             fields: [
               [
                 { key: 'startDepth', label: '起始深度', suffix: 'm' },
                 { key: 'drillToolLength', label: '钻具全长', suffix: 'm' }
               ],
               [
+                { key: 'remainder', label: '上余', suffix: 'm' },
+                { key: 'holeDepth', label: '孔深', suffix: 'm' }
+              ],
+              [
+                { key: 'advance', label: '进尺', suffix: 'm' },
+                { key: 'rodLength', label: '杆长', suffix: 'm' }
+              ],
+              [
                 { key: 'standardDepthFrom', label: '标贯深度自', suffix: 'm' },
                 { key: 'standardDepthTo', label: '标贯深度至', suffix: 'm' }
               ],
               [
-                { key: 'hitCount', label: '击数统计', fullWidth: true },
+                { key: 'hit15cm', label: '击数15cm' },
+                { key: 'hit10cm1', label: '击数10cm' }
+              ],
+              [
+                { key: 'hit10cm2', label: '击数10cm' },
+                { key: 'hit10cm3', label: '击数10cm' }
+              ],
+              [
+                { key: 'rockCoreLength', label: '岩(土)芯长度', suffix: 'm' },
                 { key: 'holeCondition', label: '孔内情况', isDescription: true }
               ]
             ]
@@ -333,19 +351,19 @@ export default {
                 key: 'startDepth',
                 label: '起始深度',
                 type: 'number',
-                placeholder: '请输入起始深度(m)',
+                placeholder: '请输入起始深度',
                 required: true
               },
               {
                 key: 'drillToolLength',
-                label: '钻具全长',
+                label: '钻具全长(m)',
                 type: 'input',
                 placeholder: '填写钻具全长(m)',
                 required: true
               },
               {
                 key: 'remainder',
-                label: '上余',
+                label: '上余(m)',
                 type: 'input',
                 placeholder: '填写上余',
                 required: true
@@ -359,21 +377,28 @@ export default {
               },
               {
                 key: 'advance',
-                label: '进尺',
+                label: '进尺(m)',
                 type: 'input',
                 placeholder: '填写进尺',
                 required: true
               },
               {
+                key: 'rodLength',
+                label: '杆长',
+                type: 'input',
+                placeholder: '填写杆长',
+                required: false
+              },
+              {
                 key: 'standardDepthFrom',
-                label: '标贯深度自',
+                label: '标贯深度自(m)',
                 type: 'input',
                 placeholder: '填写标贯深度自(m)',
                 required: true
               },
               {
                 key: 'standardDepthTo',
-                label: '标贯深度至',
+                label: '标贯深度至(m)',
                 type: 'input',
                 placeholder: '填写标贯深度至(m)',
                 required: true
@@ -387,21 +412,21 @@ export default {
               },
               {
                 key: 'hit10cm1',
-                label: '击数10cm(1)',
+                label: '击数10cm',
                 type: 'input',
                 placeholder: '击数10cm',
                 required: false
               },
               {
                 key: 'hit10cm2',
-                label: '击数10cm(2)',
+                label: '击数10cm',
                 type: 'input',
                 placeholder: '击数10cm',
                 required: false
               },
               {
                 key: 'hit10cm3',
-                label: '击数10cm(3)',
+                label: '击数10cm',
                 type: 'input',
                 placeholder: '击数10cm',
                 required: false
@@ -507,12 +532,18 @@ export default {
       }
     }
   },
-  computed: {
-    currentCardConfig() {
-      return this.reportConfigs[this.currentReportType].cardConfig;
+  methods: {
+    // 根据数据项获取卡片配置
+    getCardConfigForItem(item) {
+      const workType = item.workType || 'manual';
+      return this.reportConfigs[workType]?.cardConfig || this.reportConfigs.manual.cardConfig;
     },
-    currentFormConfig() {
-      const baseConfig = this.reportConfigs[this.currentReportType].formConfig;
+    
+    // 根据数据项获取表单配置
+    getFormConfigForItem(item) {
+      const workType = item.workType || this.currentReportType;
+      const baseConfig = this.reportConfigs[workType]?.formConfig || this.reportConfigs.manual.formConfig;
+      
       // 在表单配置前添加报表类型选择，支持动态切换
       return {
         fields: [
@@ -528,9 +559,8 @@ export default {
           ...baseConfig.fields
         ]
       };
-    }
-  },
-  methods: {
+    },
+    
     // 处理新增项目
     handleAddItem() {
       this.showTypeSelector = true;

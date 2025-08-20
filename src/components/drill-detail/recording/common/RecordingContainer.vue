@@ -5,6 +5,7 @@
       <recording-card-list
         :dataList="dataList"
         :cardConfig="cardConfig"
+        :getCardConfigForItem="getCardConfigForItem"
         :emptyText="emptyText"
         :recordingStatus="recordingStatus"
         :submitTime="submitTime"
@@ -21,7 +22,7 @@
         @close="closePopup"
       >
         <recording-form
-          :formConfig="formConfig"
+          :formConfig="currentFormConfig"
           :formData="currentFormData"
           :isEdit="isEdit"
           @save="handleSave"
@@ -50,14 +51,14 @@ export default {
       type: Array,
       default: () => []
     },
-    // 卡片配置
+    // 卡片配置 - 支持单个配置或多个配置对象
     cardConfig: {
-      type: Object,
+      type: [Object, Function],
       required: true
     },
-    // 表单配置
+    // 表单配置 - 支持单个配置或多个配置对象
     formConfig: {
-      type: Object,
+      type: [Object, Function],
       required: true
     },
     // 空状态文本
@@ -103,7 +104,41 @@ export default {
       editIndex: -1
     }
   },
+  computed: {
+    // 获取当前表单配置
+    currentFormConfig() {
+      if (typeof this.formConfig === 'function') {
+        return this.formConfig(this.currentFormData);
+      }
+      return this.formConfig;
+    }
+  },
+  watch: {
+    // 监听表单数据变化，重新获取配置
+    currentFormData: {
+      handler() {
+        this.$forceUpdate();
+      },
+      deep: true
+    }
+  },
   methods: {
+    // 根据数据项获取卡片配置
+    getCardConfigForItem(item) {
+      if (typeof this.cardConfig === 'function') {
+        return this.cardConfig(item);
+      }
+      return this.cardConfig;
+    },
+    
+    // 根据数据项获取表单配置
+    getFormConfigForItem(item) {
+      if (typeof this.formConfig === 'function') {
+        return this.formConfig(item);
+      }
+      return this.formConfig;
+    },
+    
     // 处理编辑项目
     handleEditItem(item) {
       this.isEdit = true;
@@ -118,15 +153,18 @@ export default {
       this.isEdit = false;
       this.currentFormData = this.getEmptyFormData();
       this.showFormPopup = true;
-      this.$emit('add-action');
+      this.$emit('add-item');
     },
     
     // 获取空表单数据
     getEmptyFormData() {
       const emptyData = { id: null };
-      this.formConfig.fields.forEach(field => {
-        emptyData[field.key] = field.defaultValue || '';
-      });
+      const config = typeof this.formConfig === 'function' ? this.formConfig({}) : this.formConfig;
+      if (config && config.fields) {
+        config.fields.forEach(field => {
+          emptyData[field.key] = field.defaultValue || '';
+        });
+      }
       return emptyData;
     },
     

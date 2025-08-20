@@ -80,8 +80,13 @@ export default {
     },
     // 卡片配置
     cardConfig: {
-      type: Object,
+      type: [Object, Function],
       required: true
+    },
+    // 获取卡片配置的函数
+    getCardConfigForItem: {
+      type: Function,
+      default: null
     },
     // 空状态文本
     emptyText: {
@@ -145,25 +150,39 @@ export default {
     }
   },
   methods: {
+    // 获取当前项目的卡片配置
+    getItemCardConfig(item) {
+      if (this.getCardConfigForItem) {
+        return this.getCardConfigForItem(item);
+      }
+      if (typeof this.cardConfig === 'function') {
+        return this.cardConfig(item);
+      }
+      return this.cardConfig;
+    },
+    
     // 获取卡片标题
     getCardTitle(item) {
-      return item[this.cardConfig.titleField] || '';
+      const config = this.getItemCardConfig(item);
+      return item[config.titleField] || '';
     },
     
     // 获取卡片副标题
     getCardSubtitle(item) {
-      if (this.cardConfig.subtitleFormat) {
-        return this.cardConfig.subtitleFormat(item);
+      const config = this.getItemCardConfig(item);
+      if (config.subtitleFormat) {
+        return config.subtitleFormat(item);
       }
-      if (this.cardConfig.subtitleField) {
-        return item[this.cardConfig.subtitleField] || '';
+      if (config.subtitleField) {
+        return item[config.subtitleField] || '';
       }
       return '';
     },
     
     // 获取卡片行数据
     getCardRows(item) {
-      return this.cardConfig.fields || [];
+      const config = this.getItemCardConfig(item);
+      return config.fields || [];
     },
     
     // 获取字段值
