@@ -50,34 +50,41 @@ export default {
       shiftReportList: [
         {
           id: 1,
-          reportType: '人工挖深',
+          reportType: '人工挖探',
           workType: 'manual',
-          startDepth: 20,
-          holeDepth: '钻具全长20.5m与上余0.3m',
-          advance: '1.0m',
-          rockCoreLength: '0.9m',
+          startDepth: 25,
+          holeDepth: '钻具全长与上余',
+          advance: '1.0',
+          rockCoreLength: '0.9',
           holeCondition: '进尺正常，土质较软，无塌孔现象'
         },
         {
           id: 2,
-          reportType: '机械开挖',
-          workType: 'mechanical',
-          machineType: '挖掘机',
-          excavationDepth: 3.5,
-          soilType: '粘土夹砂层',
-          workEfficiency: '良好',
-          workCondition: '机械运行正常，开挖效率高，土质稳定'
+          reportType: '锤击贯入',
+          workType: 'hammer',
+          drillType: '合金',
+          drillSpec: '110mm',
+          startDepth: 25,
+          drillToolLength: '26.2',
+          remainder: '0.8',
+          holeDepth: '25.4',
+          advance: '0.45',
+          rockCoreLength: '0.4',
+          holeCondition: '锤击贯入正常，土质为中密砂土'
         },
         {
           id: 3,
-          reportType: '管线探测',
-          workType: 'pipeline',
-          detectionMethod: '电磁感应法',
-          detectionDepth: 2.0,
-          pipelineFound: '是',
-          pipelineType: '给水管',
-          pipelineDepth: '1.8m',
-          detectionResult: '发现DN200给水管，埋深1.8m，管线完好'
+          reportType: '回转钻进',
+          workType: 'rotary',
+          drillType: '合金',
+          drillSpec: '110mm',
+          startDepth: 25,
+          drillToolLength: '26.2',
+          remainder: '0.8',
+          holeDepth: '25.4',
+          advance: '0.45',
+          rockCoreLength: '0.4',
+          holeCondition: '回转钻进正常，土质为中密砂土'
         },
         {
           id: 4,
@@ -102,13 +109,14 @@ export default {
           id: 5,
           reportType: '取样',
           workType: 'sampling',
-          startDepth: 8,
+          startDepth: 25,
+          remainder: '0.8',
+          holeDepth: '25.4',
+          advance: '0.45',
           sampleType: '原状土',
           samplingDepthFrom: '8.0',
           samplingDepthTo: '8.5',
-          sampleQuantity: '3组',
-          sampleCondition: '土样完整，颜色为灰褐色，质地均匀',
-          rockCoreLength: '0.5m',
+          rockCoreLength: '0.4',
           holeCondition: '取样顺利，土层稳定'
         }
       ],
@@ -116,8 +124,8 @@ export default {
       // 报表类型配置
       reportTypes: [
         { key: 'manual', name: '人工挖深' },
-        { key: 'mechanical', name: '机械开挖' },
-        { key: 'pipeline', name: '管线探测' },
+        { key: 'hammer', name: '锤击贯入' },
+        { key: 'rotary', name: '回转钻进' },
         { key: 'standard', name: '标贯试验' },
         { key: 'sampling', name: '取样' }
       ],
@@ -127,18 +135,18 @@ export default {
         manual: {
           cardConfig: {
             titleField: 'reportType',
-            subtitleFormat: (item) => `起始深度: ${item.startDepth}m | 进尺: ${item.advance}`,
+            subtitleFormat: (item) => `起始深度: ${item.startDepth}m | 进尺: ${item.advance}m`,
             fields: [
               [
                 { key: 'startDepth', label: '起始深度', suffix: 'm' },
-                { key: 'advance', label: '进尺' }
+                { key: 'holeDepth', label: '孔深' }
               ],
               [
-                { key: 'holeDepth', label: '孔深', fullWidth: true }
+                { key: 'advance', label: '进尺', suffix: 'm' },
+                { key: 'rockCoreLength', label: '岩(土)芯长度', suffix: 'm' }
               ],
               [
-                { key: 'rockCoreLength', label: '岩(土)芯长度' },
-                { key: 'holeCondition', label: '孔内情况', isDescription: true }
+                { key: 'holeCondition', label: '孔内情况', isDescription: true, fullWidth: true }
               ]
             ]
           },
@@ -148,7 +156,7 @@ export default {
                 key: 'startDepth',
                 label: '起始深度',
                 type: 'number',
-                placeholder: '请输入起始深度(m)',
+                placeholder: '请输入起始深度',
                 required: true
               },
               {
@@ -160,9 +168,9 @@ export default {
               },
               {
                 key: 'advance',
-                label: '进尺',
+                label: '进尺(m)',
                 type: 'input',
-                placeholder: '填写进尺(m)',
+                placeholder: '填写进尺',
                 required: true
               },
               {
@@ -182,129 +190,193 @@ export default {
             ]
           }
         },
-        mechanical: {
+        hammer: {
           cardConfig: {
             titleField: 'reportType',
-            subtitleFormat: (item) => `机械类型: ${item.machineType || ''} | 开挖深度: ${item.excavationDepth || ''}m`,
+            subtitleFormat: (item) => `钻头类型: ${item.drillType || ''} | 钻头规格: ${item.drillSpec || ''}`,
             fields: [
               [
-                { key: 'machineType', label: '机械类型' },
-                { key: 'excavationDepth', label: '开挖深度', suffix: 'm' }
+                { key: 'drillType', label: '钻头类型' },
+                { key: 'drillSpec', label: '钻头规格' }
               ],
               [
-                { key: 'soilType', label: '土质情况', fullWidth: true }
+                { key: 'startDepth', label: '起始深度', suffix: 'm' },
+                { key: 'drillToolLength', label: '钻具全长', suffix: 'm' }
               ],
               [
-                { key: 'workEfficiency', label: '作业效率' },
-                { key: 'workCondition', label: '作业情况', isDescription: true }
+                { key: 'remainder', label: '上余', suffix: 'm' },
+                { key: 'holeDepth', label: '孔深', suffix: 'm' }
+              ],
+              [
+                { key: 'advance', label: '进尺', suffix: 'm' },
+                { key: 'rockCoreLength', label: '岩(土)芯长度', suffix: 'm' }
+              ],
+              [
+                { key: 'holeCondition', label: '孔内情况', isDescription: true, fullWidth: true }
               ]
             ]
           },
           formConfig: {
             fields: [
               {
-                key: 'machineType',
-                label: '机械类型',
+                key: 'drillType',
+                label: '钻头类型',
                 type: 'picker',
-                options: ['挖掘机', '推土机', '装载机', '其他'],
-                placeholder: '请选择机械类型',
+                options: ['合金', '钢粒', '金刚石', '其他'],
+                placeholder: '请选择钻头类型',
                 required: true
               },
               {
-                key: 'excavationDepth',
-                label: '开挖深度',
+                key: 'drillSpec',
+                label: '钻头规格',
+                type: 'picker',
+                options: ['110mm', '130mm', '150mm', '其他'],
+                placeholder: '请选择钻头规格',
+                required: true
+              },
+              {
+                key: 'startDepth',
+                label: '起始深度',
                 type: 'number',
-                placeholder: '请输入开挖深度(m)',
+                placeholder: '请输入起始深度',
                 required: true
               },
               {
-                key: 'soilType',
-                label: '土质情况',
+                key: 'drillToolLength',
+                label: '钻具全长(m)',
                 type: 'input',
-                placeholder: '描述土质情况',
+                placeholder: '填写钻具全长(m)',
                 required: true
               },
               {
-                key: 'workEfficiency',
-                label: '作业效率',
+                key: 'remainder',
+                label: '上余(m)',
                 type: 'input',
-                placeholder: '填写作业效率',
+                placeholder: '填写上余',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺(m)',
+                type: 'input',
+                placeholder: '填写进尺',
+                required: true
+              },
+              {
+                key: 'rockCoreLength',
+                label: '岩(土)芯长度',
+                type: 'input',
+                placeholder: '填写岩(土)芯长度',
                 required: false
               },
               {
-                key: 'workCondition',
-                label: '作业情况',
+                key: 'holeCondition',
+                label: '孔内情况',
                 type: 'textarea',
-                placeholder: '填写作业过程中的具体情况',
+                placeholder: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等',
                 required: false
               }
             ]
           }
         },
-        pipeline: {
+        rotary: {
           cardConfig: {
             titleField: 'reportType',
-            subtitleFormat: (item) => `探测方法: ${item.detectionMethod || ''} | 探测深度: ${item.detectionDepth || ''}m`,
+            subtitleFormat: (item) => `钻头类型: ${item.drillType || ''} | 钻头规格: ${item.drillSpec || ''}`,
             fields: [
               [
-                { key: 'detectionMethod', label: '探测方法' },
-                { key: 'detectionDepth', label: '探测深度', suffix: 'm' }
+                { key: 'drillType', label: '钻头类型' },
+                { key: 'drillSpec', label: '钻头规格' }
               ],
               [
-                { key: 'pipelineFound', label: '发现管线' },
-                { key: 'pipelineType', label: '管线类型' }
+                { key: 'startDepth', label: '起始深度', suffix: 'm' },
+                { key: 'drillToolLength', label: '钻具全长', suffix: 'm' }
               ],
               [
-                { key: 'pipelineDepth', label: '管线埋深' },
-                { key: 'detectionResult', label: '探测结果', isDescription: true }
+                { key: 'remainder', label: '上余', suffix: 'm' },
+                { key: 'holeDepth', label: '孔深', suffix: 'm' }
+              ],
+              [
+                { key: 'advance', label: '进尺', suffix: 'm' },
+                { key: 'rockCoreLength', label: '岩(土)芯长度', suffix: 'm' }
+              ],
+              [
+                { key: 'holeCondition', label: '孔内情况', isDescription: true, fullWidth: true }
               ]
             ]
           },
           formConfig: {
             fields: [
               {
-                key: 'detectionMethod',
-                label: '探测方法',
+                key: 'drillType',
+                label: '钻头类型',
                 type: 'picker',
-                options: ['电磁感应法', '探地雷达法', '管线仪探测', '人工探测'],
-                placeholder: '请选择探测方法',
+                options: ['合金', '钢粒', '金刚石', '其他'],
+                placeholder: '请选择钻头类型',
                 required: true
               },
               {
-                key: 'detectionDepth',
-                label: '探测深度',
+                key: 'drillSpec',
+                label: '钻头规格',
+                type: 'picker',
+                options: ['110mm', '130mm', '150mm', '其他'],
+                placeholder: '请选择钻头规格',
+                required: true
+              },
+              {
+                key: 'startDepth',
+                label: '起始深度',
                 type: 'number',
-                placeholder: '请输入探测深度(m)',
+                placeholder: '请输入起始深度',
                 required: true
               },
               {
-                key: 'pipelineFound',
-                label: '发现管线',
-                type: 'picker',
-                options: ['是', '否'],
-                placeholder: '是否发现管线',
-                required: true
-              },
-              {
-                key: 'pipelineType',
-                label: '管线类型',
-                type: 'picker',
-                options: ['给水管', '排水管', '燃气管', '电力管', '通信管', '其他'],
-                placeholder: '请选择管线类型',
-                required: false
-              },
-              {
-                key: 'pipelineDepth',
-                label: '管线埋深',
+                key: 'drillToolLength',
+                label: '钻具全长(m)',
                 type: 'input',
-                placeholder: '填写管线埋深(m)',
+                placeholder: '填写钻具全长(m)',
+                required: true
+              },
+              {
+                key: 'remainder',
+                label: '上余(m)',
+                type: 'input',
+                placeholder: '填写上余',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺(m)',
+                type: 'input',
+                placeholder: '填写进尺',
+                required: true
+              },
+              {
+                key: 'rockCoreLength',
+                label: '岩(土)芯长度',
+                type: 'input',
+                placeholder: '填写岩(土)芯长度',
                 required: false
               },
               {
-                key: 'detectionResult',
-                label: '探测结果',
+                key: 'holeCondition',
+                label: '孔内情况',
                 type: 'textarea',
-                placeholder: '详细描述探测结果和发现的情况',
+                placeholder: '填写进尺快慢、缩径、塌孔、掉块、掉钻、溶洞、漏水等',
                 required: false
               }
             ]
@@ -451,19 +523,26 @@ export default {
         sampling: {
           cardConfig: {
             titleField: 'reportType',
-            subtitleFormat: (item) => `样品类型: ${item.sampleType || ''} | 取样深度: ${item.samplingDepthFrom || ''}m - ${item.samplingDepthTo || ''}m`,
+            subtitleFormat: (item) => `起始深度: ${item.startDepth}m | 样品类型: ${item.sampleType || ''}`,
             fields: [
               [
                 { key: 'startDepth', label: '起始深度', suffix: 'm' },
-                { key: 'sampleType', label: '样品类型' }
+                { key: 'remainder', label: '上余', suffix: 'm' }
               ],
               [
-                { key: 'samplingDepthFrom', label: '取样深度自', suffix: 'm' },
-                { key: 'samplingDepthTo', label: '取样深度至', suffix: 'm' }
+                { key: 'holeDepth', label: '孔深', suffix: 'm' },
+                { key: 'advance', label: '进尺', suffix: 'm' }
               ],
               [
-                { key: 'sampleQuantity', label: '样品数量' },
-                { key: 'sampleCondition', label: '样品状况', isDescription: true }
+                { key: 'sampleType', label: '样品类型' },
+                { key: 'samplingDepthFrom', label: '取样深度自', suffix: 'm' }
+              ],
+              [
+                { key: 'samplingDepthTo', label: '取样深度至', suffix: 'm' },
+                { key: 'rockCoreLength', label: '岩(土)芯长度', suffix: 'm' }
+              ],
+              [
+                { key: 'holeCondition', label: '孔内情况', isDescription: true, fullWidth: true }
               ]
             ]
           },
@@ -473,7 +552,28 @@ export default {
                 key: 'startDepth',
                 label: '起始深度',
                 type: 'number',
-                placeholder: '请输入起始深度(m)',
+                placeholder: '请输入起始深度',
+                required: true
+              },
+              {
+                key: 'remainder',
+                label: '上余(m)',
+                type: 'input',
+                placeholder: '填写上余',
+                required: true
+              },
+              {
+                key: 'holeDepth',
+                label: '孔深',
+                type: 'input',
+                placeholder: '填写钻具全长与上余',
+                required: true
+              },
+              {
+                key: 'advance',
+                label: '进尺(m)',
+                type: 'input',
+                placeholder: '填写进尺',
                 required: true
               },
               {
@@ -486,31 +586,17 @@ export default {
               },
               {
                 key: 'samplingDepthFrom',
-                label: '取样深度自',
+                label: '取样深度自(m)',
                 type: 'input',
                 placeholder: '填写取样深度自(m)',
                 required: true
               },
               {
                 key: 'samplingDepthTo',
-                label: '取样深度至',
+                label: '取样深度至(m)',
                 type: 'input',
                 placeholder: '填写取样深度至(m)',
                 required: true
-              },
-              {
-                key: 'sampleQuantity',
-                label: '样品数量',
-                type: 'input',
-                placeholder: '填写样品数量',
-                required: false
-              },
-              {
-                key: 'sampleCondition',
-                label: '样品状况',
-                type: 'textarea',
-                placeholder: '描述样品的完整性、颜色、质地等状况',
-                required: false
               },
               {
                 key: 'rockCoreLength',
