@@ -115,15 +115,87 @@
 				
 				<!-- 图片标签页 -->
 				<view v-if="activeTab === 'photos'" class="tab-content">
-					<view class="empty-content">
-						<text class="empty-text">图片功能开发中...</text>
+					<view class="photos-container">
+						<!-- 单箱图片 -->
+						<view class="photo-category">
+							<view class="category-title">
+								<text class="title-text">单箱图片</text>
+								<text class="count-text">({{ singleBoxPhotos.length }}张)</text>
+							</view>
+							<view class="photo-grid">
+								<view 
+									class="photo-item" 
+									v-for="(photo, index) in singleBoxPhotos" 
+									:key="'single-' + index"
+									@click="previewPhoto(photo, 'single', index)"
+								>
+									<image :src="photo.url" class="photo-image" mode="aspectFill"></image>
+									<view class="photo-overlay">
+										<text class="photo-name">{{ photo.name }}</text>
+									</view>
+								</view>
+							</view>
+						</view>
+
+						<!-- 整体图片 -->
+						<view class="photo-category">
+							<view class="category-title">
+								<text class="title-text">整体图片</text>
+								<text class="count-text">({{ overallPhotos.length }}张)</text>
+							</view>
+							<view class="photo-grid">
+								<view 
+									class="photo-item" 
+									v-for="(photo, index) in overallPhotos" 
+									:key="'overall-' + index"
+									@click="previewPhoto(photo, 'overall', index)"
+								>
+									<image :src="photo.url" class="photo-image" mode="aspectFill"></image>
+									<view class="photo-overlay">
+										<text class="photo-name">{{ photo.name }}</text>
+									</view>
+								</view>
+							</view>
+						</view>
+
+						<!-- 地面图片 -->
+						<view class="photo-category">
+							<view class="category-title">
+								<text class="title-text">地面图片</text>
+								<text class="count-text">({{ groundPhotos.length }}张)</text>
+							</view>
+							<view class="photo-grid">
+								<view 
+									class="photo-item" 
+									v-for="(photo, index) in groundPhotos" 
+									:key="'ground-' + index"
+									@click="previewPhoto(photo, 'ground', index)"
+								>
+									<image :src="photo.url" class="photo-image" mode="aspectFill"></image>
+									<view class="photo-overlay">
+										<text class="photo-name">{{ photo.name }}</text>
+									</view>
+								</view>
+							</view>
+						</view>
 					</view>
 				</view>
 				
 				<!-- 视频标签页 -->
 				<view v-if="activeTab === 'videos'" class="tab-content">
-					<view class="empty-content">
-						<text class="empty-text">视频功能开发中...</text>
+					<view class="videos-container">
+						<view v-for="monitor in videoMonitors" :key="monitor.id" class="video-monitor-item">
+							<view class="monitor-header">
+								<text class="monitor-title">{{ monitor.name }}</text>
+							</view>
+							<view class="video-container">
+								<view class="video-placeholder" @click="playVideo(monitor)">
+									<view class="play-button">
+										<text class="play-icon">▶</text>
+									</view>
+								</view>
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -154,6 +226,11 @@
 				startY: 0,
 				lastX: 0,
 				lastY: 0,
+				showPhotoPreview: false,
+				currentPhoto: {},
+				currentPhotoIndex: 0,
+				currentPhotoList: [],
+				currentPhotoType: '',
 				layerData: [
 					{
 						depth: '0',
@@ -203,6 +280,66 @@
 						water: '',
 						blow: ''
 					}
+				],
+				// 单箱图片数据
+				singleBoxPhotos: [
+					{
+						name: '单箱施工图1',
+						url: 'https://picsum.photos/400/300?random=1'
+					},
+					{
+						name: '单箱施工图2',
+						url: 'https://picsum.photos/400/300?random=2'
+					},
+					{
+						name: '单箱施工图3',
+						url: 'https://picsum.photos/400/300?random=3'
+					}
+				],
+				// 整体图片数据
+				overallPhotos: [
+					{
+						name: '整体施工图1',
+						url: 'https://picsum.photos/400/300?random=4'
+					},
+					{
+						name: '整体施工图2',
+						url: 'https://picsum.photos/400/300?random=5'
+					}
+				],
+				// 地面图片数据
+				groundPhotos: [
+					{
+						name: '地面施工图1',
+						url: 'https://picsum.photos/400/300?random=6'
+					},
+					{
+						name: '地面施工图2',
+						url: 'https://picsum.photos/400/300?random=7'
+					},
+					{
+						name: '地面施工图3',
+						url: 'https://picsum.photos/400/300?random=8'
+					},
+					{
+						name: '地面施工图4',
+						url: 'https://picsum.photos/400/300?random=9'
+					}
+				],
+				// 视频监控数据
+				videoMonitors: [
+					{
+						id: 1,
+						name: '监控A'
+					},
+					{
+						id: 2,
+						name: '监控B'
+					},
+					{
+						id: 3,
+						name: '监控C'
+					}
 				]
 			}
 		},
@@ -224,18 +361,6 @@
 			switchTab(tab) {
 				this.activeTab = tab;
 			},
-			// 缩放控制
-			zoomIn() {
-				this.scale = Math.min(this.scale * 1.2, 3);
-			},
-			zoomOut() {
-				this.scale = Math.max(this.scale / 1.2, 0.5);
-			},
-			resetZoom() {
-				this.scale = 1;
-				this.translateX = 0;
-				this.translateY = 0;
-			},
 			// 触摸事件处理
 			onTouchStart(e) {
 				if (e.touches.length === 1) {
@@ -255,14 +380,57 @@
 				}
 			},
 			onTouchEnd(e) {
-				// 触摸结束，可以在这里添加惯性滑动等效果
+				// 触摸结束
+			},
+			// 图片预览相关方法
+			previewPhoto(photo, type, index) {
+				this.currentPhoto = photo;
+				this.currentPhotoIndex = index;
+				this.currentPhotoType = type;
+				
+				// 根据类型设置当前图片列表
+				switch(type) {
+					case 'single':
+						this.currentPhotoList = this.singleBoxPhotos;
+						break;
+					case 'overall':
+						this.currentPhotoList = this.overallPhotos;
+						break;
+					case 'ground':
+						this.currentPhotoList = this.groundPhotos;
+						break;
+				}
+				
+				this.showPhotoPreview = true;
+			},
+			closePhotoPreview() {
+				this.showPhotoPreview = false;
+			},
+			prevPhoto() {
+				if (this.currentPhotoIndex > 0) {
+					this.currentPhotoIndex--;
+					this.currentPhoto = this.currentPhotoList[this.currentPhotoIndex];
+				}
+			},
+			nextPhoto() {
+				if (this.currentPhotoIndex < this.currentPhotoList.length - 1) {
+					this.currentPhotoIndex++;
+					this.currentPhoto = this.currentPhotoList[this.currentPhotoIndex];
+				}
+			},
+			// 视频播放方法
+			playVideo(monitor) {
+				uni.showToast({
+					title: `正在播放${monitor.name}`,
+					icon: 'none'
+				});
 			}
 		}
 	}
 </script>
 
 <style scoped>
-	/* 浅色系主题 */
+	/* 浅色系主题 - 完全使用工点弹窗的样式框架 */
 	.popup-overlay {
 		position: fixed;
 		top: 0;
@@ -287,8 +455,6 @@
 		overflow: hidden;
 		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
 		border: 1rpx solid rgba(255, 255, 255, 0.8);
-		display: flex;
-		flex-direction: column;
 	}
 
 	.popup-header {
@@ -300,7 +466,6 @@
 		padding: 0 32rpx;
 		border-bottom: 1rpx solid #e2e8f0;
 		position: relative;
-		flex-shrink: 0;
 	}
 
 	.popup-header::before {
@@ -347,7 +512,6 @@
 		display: flex;
 		background: rgba(255, 255, 255, 0.9);
 		border-bottom: 1rpx solid #e2e8f0;
-		flex-shrink: 0;
 	}
 
 	.tab-item {
@@ -380,16 +544,15 @@
 		background-color: #f8fafc;
 	}
 
-	/* 内容区域 */
 	.popup-content {
-		flex: 1;
-		overflow: hidden;
+		padding: 24rpx;
+		max-height: calc(90vh - 100rpx);
+		overflow-y: auto;
 		background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 	}
 
 	.tab-content {
 		height: 100%;
-		padding: 24rpx;
 	}
 
 	/* 柱状图容器 */
@@ -399,13 +562,13 @@
 		border-radius: 12rpx;
 		overflow: hidden;
 		position: relative;
-		display: flex;
-		flex-direction: column;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+		border: 1rpx solid rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(10rpx);
 	}
 
-
 	.chart-wrapper {
-		flex: 1;
+		height: 100%;
 		overflow: hidden;
 		position: relative;
 	}
@@ -519,15 +682,17 @@
 		border-radius: 4rpx;
 	}
 
-
 	/* 空内容 */
 	.empty-content {
-		height: 100%;
+		height: 400rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background: rgba(255, 255, 255, 0.9);
 		border-radius: 12rpx;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+		border: 1rpx solid rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(10rpx);
 	}
 
 	.empty-text {
@@ -555,5 +720,389 @@
 			font-size: 20rpx;
 			padding: 10rpx 6rpx;
 		}
+	}
+
+	/* 滚动条样式 */
+	.popup-content::-webkit-scrollbar {
+		width: 6rpx;
+	}
+
+	.popup-content::-webkit-scrollbar-track {
+		background: rgba(241, 245, 249, 0.5);
+		border-radius: 3rpx;
+	}
+
+	.popup-content::-webkit-scrollbar-thumb {
+		background: rgba(148, 163, 184, 0.6);
+		border-radius: 3rpx;
+	}
+
+	.popup-content::-webkit-scrollbar-thumb:hover {
+		background: rgba(100, 116, 139, 0.8);
+	}
+
+	/* 图片标签页样式 */
+	.photos-container {
+		height: 100%;
+	}
+
+	.photo-category {
+		margin-bottom: 32rpx;
+		background: rgba(255, 255, 255, 0.9);
+		border-radius: 12rpx;
+		padding: 24rpx;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+		border: 1rpx solid rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(10rpx);
+	}
+
+	.photo-category:last-child {
+		margin-bottom: 0;
+	}
+
+	.category-title {
+		display: flex;
+		align-items: center;
+		margin-bottom: 20rpx;
+		padding-bottom: 16rpx;
+		border-bottom: 1rpx solid #e2e8f0;
+	}
+
+	.title-text {
+		font-size: 28rpx;
+		font-weight: 600;
+		color: #1e293b;
+		margin-right: 12rpx;
+	}
+
+	.count-text {
+		font-size: 24rpx;
+		color: #64748b;
+		background: #f1f5f9;
+		padding: 4rpx 12rpx;
+		border-radius: 12rpx;
+	}
+
+	.photo-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200rpx, 1fr));
+		gap: 16rpx;
+	}
+
+	.photo-item {
+		position: relative;
+		aspect-ratio: 4/3;
+		border-radius: 8rpx;
+		overflow: hidden;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+	}
+
+	.photo-item:hover {
+		transform: translateY(-4rpx);
+		box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+	}
+
+	.photo-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.photo-overlay {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+		padding: 16rpx 12rpx 12rpx;
+		color: white;
+	}
+
+	.photo-name {
+		font-size: 22rpx;
+		font-weight: 500;
+		line-height: 1.2;
+	}
+
+	/* 全屏预览样式 */
+	.photo-preview-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.9);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10000;
+	}
+
+	.photo-preview-container {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		background: #000000;
+	}
+
+	.preview-header {
+		height: 100rpx;
+		background: rgba(0, 0, 0, 0.8);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 32rpx;
+		border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+	}
+
+	.preview-title {
+		color: #ffffff;
+		font-size: 32rpx;
+		font-weight: 600;
+	}
+
+	.preview-close {
+		width: 60rpx;
+		height: 60rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 0.1);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.preview-close:hover {
+		background-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.preview-content {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20rpx;
+	}
+
+	.preview-image {
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+	}
+
+	.preview-footer {
+		height: 120rpx;
+		background: rgba(0, 0, 0, 0.8);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-top: 1rpx solid rgba(255, 255, 255, 0.1);
+	}
+
+	.photo-nav {
+		display: flex;
+		align-items: center;
+		gap: 32rpx;
+	}
+
+	.nav-btn {
+		padding: 16rpx 32rpx;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 8rpx;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.nav-btn:hover:not(.disabled) {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.nav-btn.disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	.nav-text {
+		color: #ffffff;
+		font-size: 28rpx;
+	}
+
+	.photo-counter {
+		color: #ffffff;
+		font-size: 28rpx;
+		font-weight: 500;
+	}
+
+	/* 响应式设计 */
+	@media (max-width: 750rpx) {
+		.photo-grid {
+			grid-template-columns: repeat(auto-fill, minmax(150rpx, 1fr));
+			gap: 12rpx;
+		}
+		
+		.photo-name {
+			font-size: 20rpx;
+		}
+		
+		.preview-header {
+			height: 80rpx;
+			padding: 0 20rpx;
+		}
+		
+		.preview-title {
+			font-size: 28rpx;
+		}
+		
+		.preview-footer {
+			height: 100rpx;
+		}
+		
+		.photo-nav {
+			gap: 20rpx;
+		}
+		
+		.nav-btn {
+			padding: 12rpx 24rpx;
+		}
+		
+		.nav-text, .photo-counter {
+			font-size: 24rpx;
+		}
+	}
+
+	/* 视频标签页样式 */
+	.videos-container {
+		height: 100%;
+	}
+
+	.video-monitor-item {
+		margin-bottom: 32rpx;
+		background: rgba(255, 255, 255, 0.9);
+		border-radius: 12rpx;
+		padding: 24rpx;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+		border: 1rpx solid rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(10rpx);
+	}
+
+	.video-monitor-item:last-child {
+		margin-bottom: 0;
+	}
+
+	.monitor-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 20rpx;
+		padding-bottom: 16rpx;
+		border-bottom: 1rpx solid #e2e8f0;
+	}
+
+	.monitor-title {
+		font-size: 28rpx;
+		font-weight: 600;
+		color: #1e293b;
+	}
+
+
+	.video-container {
+		width: 100%;
+		height: 420rpx;
+		border-radius: 12rpx;
+		overflow: hidden;
+		box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.video-container:hover {
+		transform: translateY(-2rpx);
+		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+	}
+
+	.video-placeholder {
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.play-button {
+		width: 120rpx;
+		height: 120rpx;
+		background-color: rgba(255, 255, 255, 0.15);
+		border: 4rpx solid rgba(255, 255, 255, 0.3);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		backdrop-filter: blur(10rpx);
+		transition: all 0.3s ease;
+		z-index: 2;
+	}
+
+	.play-button:active {
+		transform: scale(0.95);
+		background-color: rgba(255, 255, 255, 0.25);
+	}
+
+	.play-icon {
+		color: #fff;
+		font-size: 52rpx;
+		margin-left: 8rpx;
+	}
+
+	.video-info {
+		position: absolute;
+		bottom: 20rpx;
+		left: 20rpx;
+		right: 20rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		z-index: 1;
+	}
+
+	.video-resolution {
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 24rpx;
+		font-weight: 500;
+		background: rgba(0, 0, 0, 0.3);
+		padding: 8rpx 16rpx;
+		border-radius: 20rpx;
+		backdrop-filter: blur(10rpx);
+	}
+
+	.video-time {
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 22rpx;
+		background: rgba(0, 0, 0, 0.3);
+		padding: 8rpx 16rpx;
+		border-radius: 20rpx;
+		backdrop-filter: blur(10rpx);
+	}
+
+	/* 响应式设计 */
+	@media (max-width: 750rpx) {
+		.video-container {
+			height: 350rpx;
+		}
+		
+		.play-button {
+			width: 100rpx;
+			height: 100rpx;
+		}
+		
+		.play-icon {
+			font-size: 44rpx;
+		}
+		
 	}
 </style>
