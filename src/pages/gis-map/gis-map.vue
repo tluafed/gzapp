@@ -23,13 +23,13 @@
 				<text class="line-name name-2">广花城际线</text>
 				
 				<!-- 地铁站点 -->
-				<view class="metro-station station-1">
+				<view class="metro-station station-1" @click="showWorkSiteInfo('马务站')">
 					<view class="work-icon"></view>
 					<text class="work-label">马务站</text>
 				</view>
 				
 				<!-- 工点位置 -->
-				<view class="work-site site-1">
+				<view class="work-site site-1" @click="showWorkSiteInfo('新市墟站-马务区间')">
 					<view class="work-icon"></view>
 					<text class="work-label">新市墟站-马务区间</text>
 				</view>
@@ -49,14 +49,28 @@
 				</view>
 			</view>
 		</view>
+		
+		<!-- 工点信息弹窗 -->
+		<WorkSiteInfo 
+			:show="showPopup" 
+			:workSiteData="currentWorkSite"
+			@close="closePopup"
+		/>
 	</view>
 </template>
 
 <script>
+	import WorkSiteInfo from '@/components/gis/WorkSiteInfo.vue'
+	
 	export default {
+		components: {
+			WorkSiteInfo
+		},
 		data() {
 			return {
-				title: 'GIS地图'
+				title: 'GIS地图',
+				showPopup: false,
+				currentWorkSite: {}
 			}
 		},
 		onLoad() {
@@ -65,6 +79,100 @@
 		methods: {
 			goBack() {
 				uni.navigateBack();
+			},
+			showWorkSiteInfo(siteName) {
+				console.log('点击工点:', siteName);
+				// 根据工点名称获取对应的数据
+				this.currentWorkSite = this.getWorkSiteData(siteName);
+				this.showPopup = true;
+				console.log('弹窗状态:', this.showPopup);
+				console.log('工点数据:', this.currentWorkSite);
+			},
+			closePopup() {
+				this.showPopup = false;
+			},
+			getWorkSiteData(siteName) {
+				// 模拟工点数据
+				const workSiteData = {
+					'马务站': {
+						workNumber: 'L022A-S010',
+						workName: '机场站',
+						completionRate: '94.94%',
+						布置钻孔: '593个',
+						完成钻孔: '563个',
+						完成进尺: '24515.6米',
+						机台数量: '0个',
+						勘察技术人员: '13个',
+						监理技术人员: '0个',
+						建设单位: {
+							name: '广州地铁集团有限公司',
+							representative: '陈树亮',
+							phone: '13380019775'
+						},
+						总体单位: {
+							name: '广州地铁设计研究院股份有限公司',
+							representative: '潘勇',
+							phone: '13822152531'
+						},
+						勘察单位: {
+							name: '广州地铁设计研究院股份有限公司',
+							representative: '赵广辉',
+							phone: '15920489690'
+						},
+						设计单位: {
+							representative: '',
+							phone: ''
+						},
+						监理单位: {
+							representative: '',
+							phone: ''
+						},
+						施工单位: {
+							representative: '',
+							phone: ''
+						}
+					},
+					'新市墟站-马务区间': {
+						workNumber: 'L022A-S011',
+						workName: '新市墟站-马务区间',
+						completionRate: '87.32%',
+						布置钻孔: '425个',
+						完成钻孔: '371个',
+						完成进尺: '18650.3米',
+						机台数量: '2个',
+						勘察技术人员: '8个',
+						监理技术人员: '2个',
+						建设单位: {
+							name: '广州地铁集团有限公司',
+							representative: '李明华',
+							phone: '13800138000'
+						},
+						总体单位: {
+							name: '广州地铁设计研究院股份有限公司',
+							representative: '王建国',
+							phone: '13900139000'
+						},
+						勘察单位: {
+							name: '广州地铁设计研究院股份有限公司',
+							representative: '张伟民',
+							phone: '13700137000'
+						},
+						设计单位: {
+							representative: '刘德华',
+							phone: '13600136000'
+						},
+						监理单位: {
+							representative: '陈小明',
+							phone: '13500135000'
+						},
+						施工单位: {
+							representative: '黄志强',
+							phone: '13400134000'
+						}
+					}
+				};
+				
+				return workSiteData[siteName] || {};
 			}
 		}
 	}
@@ -189,6 +297,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		cursor: pointer;
+		z-index: 100;
+		padding: 10rpx;
 	}
 
 	.station-1 {
@@ -221,6 +332,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		cursor: pointer;
+		z-index: 100;
+		padding: 10rpx;
 	}
 
 	.site-1 {
@@ -260,6 +374,13 @@
 		border-radius: 8rpx;
 		white-space: nowrap;
 		box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+	}
+
+	/* 增加点击效果 */
+	.metro-station:active,
+	.work-site:active {
+		transform: scale(0.95);
+		opacity: 0.8;
 	}
 
 	/* 钻孔位置 */
