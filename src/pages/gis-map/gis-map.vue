@@ -1,26 +1,18 @@
 <template>
-	<view class="gis-container">
+	<view class="drill-detail">
+		<!-- 顶部标题栏 -->
 		<view class="header">
-			<text class="header-title">GIS地图</text>
-		</view>
-		
-		<view class="map-container">
-			<!-- 地图容器，后续可以集成地图组件 -->
-			<view class="map-placeholder">
-				<text class="placeholder-text">地图加载中...</text>
-				<text class="placeholder-desc">此处将显示GIS地图内容</text>
+			<view class="back-btn" @click="goBack">
+				<text class="back-icon">&lt;</text>
+			</view>
+			<view class="title">
+				<text class="title-text">GIS地图</text>
 			</view>
 		</view>
 		
-		<view class="toolbar">
-			<button class="tool-btn" @click="onLocationClick">定位</button>
-			<button class="tool-btn" @click="onLayerClick">图层</button>
-			<button class="tool-btn" @click="onMeasureClick">测量</button>
-			<button class="tool-btn" @click="onSearchClick">搜索</button>
-		</view>
-		
-		<view class="back-btn" @click="goBack">
-			<text class="back-text">返回</text>
+		<!-- 内容区域 -->
+		<view class="content">
+			<!-- 暂时空白，后续完善 -->
 		</view>
 	</view>
 </template>
@@ -38,135 +30,63 @@
 		methods: {
 			goBack() {
 				uni.navigateBack();
-			},
-			onLocationClick() {
-				uni.showToast({
-					title: '定位功能待开发',
-					icon: 'none'
-				});
-			},
-			onLayerClick() {
-				uni.showToast({
-					title: '图层功能待开发',
-					icon: 'none'
-				});
-			},
-			onMeasureClick() {
-				uni.showToast({
-					title: '测量功能待开发',
-					icon: 'none'
-				});
-			},
-			onSearchClick() {
-				uni.showToast({
-					title: '搜索功能待开发',
-					icon: 'none'
-				});
 			}
 		}
 	}
 </script>
 
-<style>
-	.gis-container {
+<style scoped>
+	.drill-detail {
 		width: 100%;
 		height: 100vh;
+		background-color: #f5f5f5;
 		display: flex;
 		flex-direction: column;
-		background-color: #f5f5f5;
 	}
 
 	.header {
-		height: 100rpx;
-		background-color: #28a745;
+		height: 88rpx;
+		background-color: #ffffff;
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
-	}
-
-	.header-title {
-		color: white;
-		font-size: 36rpx;
-		font-weight: bold;
-	}
-
-	.map-container {
-		flex: 1;
 		position: relative;
-		margin: 20rpx;
-		border-radius: 10rpx;
-		overflow: hidden;
-		box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-	}
-
-	.map-placeholder {
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.placeholder-text {
-		font-size: 32rpx;
-		color: #1976d2;
-		font-weight: bold;
-		margin-bottom: 20rpx;
-	}
-
-	.placeholder-desc {
-		font-size: 28rpx;
-		color: #666;
-	}
-
-	.toolbar {
-		height: 120rpx;
-		background-color: white;
-		display: flex;
-		align-items: center;
-		justify-content: space-around;
-		padding: 0 20rpx;
-		box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.1);
-	}
-
-	.tool-btn {
-		width: 140rpx;
-		height: 70rpx;
-		background-color: #28a745;
-		color: white;
-		border-radius: 35rpx;
-		font-size: 28rpx;
-		border: none;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.tool-btn:active {
-		background-color: #218838;
+		border-bottom: 1rpx solid #e5e5e5;
 	}
 
 	.back-btn {
 		position: absolute;
-		top: 120rpx;
-		left: 20rpx;
-		width: 120rpx;
-		height: 60rpx;
-		background-color: rgba(255, 255, 255, 0.9);
-		border-radius: 30rpx;
+		left: 0;
+		top: 0;
+		width: 88rpx;
+		height: 88rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
-		z-index: 100;
+		z-index: 10;
 	}
 
-	.back-text {
-		color: #28a745;
-		font-size: 28rpx;
+	.back-icon {
+		font-size: 36rpx;
+		color: #333333;
 		font-weight: bold;
+	}
+
+	.title {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.title-text {
+		font-size: 32rpx;
+		color: #333333;
+		font-weight: 500;
+	}
+
+	.content {
+		flex: 1;
+		padding: 20rpx;
+		background-color: #f5f5f5;
 	}
 </style>
