@@ -39,7 +39,6 @@
 				<!-- 柱状图标签页 -->
 				<view v-if="activeTab === 'column'" class="tab-content">
 					<view class="column-chart-container">
-						<text class="chart-title">钻孔柱状图</text>
 						<view class="chart-wrapper" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
 							<view class="chart-content" :style="chartStyle">
 								<!-- 钻孔柱状图内容 -->
@@ -109,19 +108,6 @@
 										</view>
 									</view>
 								</view>
-							</view>
-						</view>
-						
-						<!-- 缩放控制按钮 -->
-						<view class="zoom-controls">
-							<view class="zoom-btn" @click="zoomIn">
-								<text class="zoom-icon">+</text>
-							</view>
-							<view class="zoom-btn" @click="zoomOut">
-								<text class="zoom-icon">-</text>
-							</view>
-							<view class="zoom-btn" @click="resetZoom">
-								<text class="zoom-text">重置</text>
 							</view>
 						</view>
 					</view>
@@ -294,7 +280,7 @@
 
 	.popup-container {
 		width: 100%;
-		max-width: 900rpx;
+		max-width: 750rpx;
 		max-height: 90vh;
 		background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 		border-radius: 16rpx;
@@ -417,15 +403,6 @@
 		flex-direction: column;
 	}
 
-	.chart-title {
-		text-align: center;
-		font-size: 32rpx;
-		font-weight: 600;
-		color: #1e293b;
-		padding: 24rpx;
-		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-		border-bottom: 1rpx solid #e2e8f0;
-	}
 
 	.chart-wrapper {
 		flex: 1;
@@ -542,47 +519,6 @@
 		border-radius: 4rpx;
 	}
 
-	/* 缩放控制 */
-	.zoom-controls {
-		position: absolute;
-		top: 80rpx;
-		right: 20rpx;
-		display: flex;
-		flex-direction: column;
-		gap: 8rpx;
-		z-index: 10;
-	}
-
-	.zoom-btn {
-		width: 60rpx;
-		height: 60rpx;
-		background: rgba(255, 255, 255, 0.9);
-		border: 1rpx solid #d1d5db;
-		border-radius: 8rpx;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-	}
-
-	.zoom-btn:hover {
-		background-color: #f3f4f6;
-		transform: scale(1.05);
-	}
-
-	.zoom-icon {
-		font-size: 32rpx;
-		font-weight: bold;
-		color: #374151;
-	}
-
-	.zoom-text {
-		font-size: 20rpx;
-		color: #374151;
-		font-weight: 500;
-	}
 
 	/* 空内容 */
 	.empty-content {
