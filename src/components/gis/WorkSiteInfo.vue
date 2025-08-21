@@ -3,7 +3,6 @@
 		<view class="popup-container" @click.stop>
 			<!-- 标题栏 -->
 			<view class="popup-header">
-				<view class="header-icon">💎</view>
 				<text class="header-title">{{ workSiteData.workName || '机场北站' }}基本信息</text>
 				<view class="close-btn" @click="closePopup">
 					<text class="close-icon">×</text>
@@ -14,17 +13,27 @@
 			<view class="popup-content">
 				<!-- 第1组：基本信息 -->
 				<view class="info-section section-1">
-					<view class="section-item">
-						<text class="item-label">工点编号</text>
-						<text class="item-value">{{ workSiteData.workNumber || 'L022A-S010' }}</text>
+					<!-- 标题信息区域 -->
+					<view class="title-info">
+						<view class="title-item">
+							<text class="title-label">工点编号</text>
+							<text class="title-value">{{ workSiteData.workNumber || 'L022A-S010' }}</text>
+						</view>
+						<view class="title-item">
+							<text class="title-label">工点名称</text>
+							<text class="title-value">{{ workSiteData.workName || '机场北站' }}</text>
+						</view>
 					</view>
-					<view class="section-item">
-						<text class="item-label">工点名称</text>
-						<text class="item-value">{{ workSiteData.workName || '机场北站' }}</text>
-					</view>
-					<view class="section-item">
-						<text class="item-label">完成进度</text>
-						<text class="item-value highlight">{{ workSiteData.completionRate || '94.94%' }}</text>
+					
+					<!-- 进度展示区域 -->
+					<view class="progress-container">
+						<view class="progress-header">
+							<text class="progress-label">完成进度</text>
+							<text class="progress-percent">{{ workSiteData.completionRate || '94.94%' }}</text>
+						</view>
+						<view class="progress-bar">
+							<view class="progress-fill" :style="{ width: workSiteData.completionRate || '94.94%' }"></view>
+						</view>
 					</view>
 				</view>
 
@@ -197,6 +206,15 @@
 			},
 			handleOverlayClick() {
 				this.closePopup();
+			},
+			getProgressStatus(percent) {
+				const num = parseFloat(percent);
+				if (num >= 95) return '即将完工';
+				if (num >= 80) return '进展顺利';
+				if (num >= 60) return '稳步推进';
+				if (num >= 40) return '正在进行';
+				if (num >= 20) return '刚刚起步';
+				return '准备阶段';
 			}
 		}
 	}
@@ -251,11 +269,6 @@
 		background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
 	}
 
-	.header-icon {
-		font-size: 32rpx;
-		margin-right: 16rpx;
-	}
-
 	.header-title {
 		color: #1e293b;
 		font-size: 32rpx;
@@ -307,8 +320,104 @@
 		margin-bottom: 0;
 	}
 
-	/* 第1-3组：网格布局 */
-	.section-1, .section-2, .section-3 {
+	/* 第1组：特殊布局 */
+	.section-1 {
+		display: flex;
+		flex-direction: column;
+		gap: 24rpx;
+	}
+
+	/* 标题信息区域 */
+	.title-info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 32rpx;
+		padding: 20rpx;
+		background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+		border-radius: 8rpx;
+		border: 1rpx solid #cbd5e1;
+	}
+
+	.title-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8rpx;
+	}
+
+	.title-label {
+		font-size: 24rpx;
+		color: #64748b;
+		font-weight: 500;
+	}
+
+	.title-value {
+		font-size: 28rpx;
+		font-weight: 700;
+		color: #1e293b;
+		padding: 8rpx 16rpx;
+		background: rgba(255, 255, 255, 0.8);
+		border-radius: 20rpx;
+		border: 1rpx solid rgba(30, 41, 59, 0.1);
+	}
+
+	/* 进度展示区域 */
+	.progress-container {
+		padding: 20rpx;
+		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+		border-radius: 8rpx;
+		border: 1rpx solid #e2e8f0;
+	}
+
+	.progress-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16rpx;
+	}
+
+	.progress-label {
+		font-size: 26rpx;
+		color: #64748b;
+		font-weight: 500;
+	}
+
+	.progress-percent {
+		font-size: 32rpx;
+		font-weight: 700;
+		color: #3b82f6;
+	}
+
+	.progress-bar {
+		height: 12rpx;
+		background-color: #e2e8f0;
+		border-radius: 6rpx;
+		overflow: hidden;
+		margin-bottom: 12rpx;
+	}
+
+	.progress-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+		border-radius: 6rpx;
+		transition: width 0.3s ease;
+	}
+
+	.progress-status {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.status-text {
+		font-size: 24rpx;
+		color: #10b981;
+		font-weight: 600;
+	}
+
+	/* 第2-3组：网格布局 */
+	.section-2, .section-3 {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 24rpx;
@@ -473,7 +582,7 @@
 			padding: 10rpx;
 		}
 		
-		.section-1, .section-2, .section-3 {
+		.section-2, .section-3 {
 			grid-template-columns: 1fr;
 			gap: 16rpx;
 		}
@@ -485,6 +594,11 @@
 		
 		.contact-label {
 			width: 100rpx;
+		}
+		
+		.title-info {
+			flex-direction: column;
+			gap: 16rpx;
 		}
 	}
 
