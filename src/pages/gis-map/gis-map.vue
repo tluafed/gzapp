@@ -35,15 +35,15 @@
 				</view>
 				
 				<!-- 钻孔位置 -->
-				<view class="drill-hole hole-1">
+				<view class="drill-hole hole-1" @click="showDrillHoleInfo('MNZ3-XM-14')">
 					<view class="drill-dot"></view>
 					<text class="drill-label">MNZ3-XM-14</text>
 				</view>
-				<view class="drill-hole hole-2">
+				<view class="drill-hole hole-2" @click="showDrillHoleInfo('MNZ3-XM-15')">
 					<view class="drill-dot"></view>
 					<text class="drill-label">MNZ3-XM-15</text>
 				</view>
-				<view class="drill-hole hole-3">
+				<view class="drill-hole hole-3" @click="showDrillHoleInfo('MNZ3-XM-16')">
 					<view class="drill-dot"></view>
 					<text class="drill-label">MNZ3-XM-16</text>
 				</view>
@@ -52,25 +52,36 @@
 		
 		<!-- 工点信息弹窗 -->
 		<WorkSiteInfo 
-			:show="showPopup" 
+			:show="showWorkSitePopup" 
 			:workSiteData="currentWorkSite"
-			@close="closePopup"
+			@close="closeWorkSitePopup"
+		/>
+		
+		<!-- 钻孔信息弹窗 -->
+		<DrillHoleInfo 
+			:show="showDrillHolePopup" 
+			:drillHoleData="currentDrillHole"
+			@close="closeDrillHolePopup"
 		/>
 	</view>
 </template>
 
 <script>
 	import WorkSiteInfo from '@/components/gis/WorkSiteInfo.vue'
+	import DrillHoleInfo from '@/components/gis/DrillHoleInfo.vue'
 	
 	export default {
 		components: {
-			WorkSiteInfo
+			WorkSiteInfo,
+			DrillHoleInfo
 		},
 		data() {
 			return {
 				title: 'GIS地图',
-				showPopup: false,
-				currentWorkSite: {}
+				showWorkSitePopup: false,
+				showDrillHolePopup: false,
+				currentWorkSite: {},
+				currentDrillHole: {}
 			}
 		},
 		onLoad() {
@@ -84,12 +95,23 @@
 				console.log('点击工点:', siteName);
 				// 根据工点名称获取对应的数据
 				this.currentWorkSite = this.getWorkSiteData(siteName);
-				this.showPopup = true;
-				console.log('弹窗状态:', this.showPopup);
+				this.showWorkSitePopup = true;
+				console.log('工点弹窗状态:', this.showWorkSitePopup);
 				console.log('工点数据:', this.currentWorkSite);
 			},
-			closePopup() {
-				this.showPopup = false;
+			closeWorkSitePopup() {
+				this.showWorkSitePopup = false;
+			},
+			showDrillHoleInfo(holeName) {
+				console.log('点击钻孔:', holeName);
+				// 根据钻孔名称获取对应的数据
+				this.currentDrillHole = this.getDrillHoleData(holeName);
+				this.showDrillHolePopup = true;
+				console.log('钻孔弹窗状态:', this.showDrillHolePopup);
+				console.log('钻孔数据:', this.currentDrillHole);
+			},
+			closeDrillHolePopup() {
+				this.showDrillHolePopup = false;
 			},
 			getWorkSiteData(siteName) {
 				// 模拟工点数据
@@ -173,6 +195,52 @@
 				};
 				
 				return workSiteData[siteName] || {};
+			},
+			getDrillHoleData(holeName) {
+				// 模拟钻孔数据
+				const drillHoleData = {
+					'MNZ3-XM-14': {
+						holeName: 'MNZ3-XM-14',
+						projectName: '14号线一期工程地质勘察',
+						surveyUnit: '广州地铁设计研究院股份有限公司',
+						depth: '80.10m',
+						elevation: '+13.25',
+						startDate: '2023-6-13',
+						waterLevel: '2.30m',
+						diameter: '0.00m',
+						endElevation: '+28.19',
+						endDate: '2023-6-13',
+						stableWaterLevel: '5.40m'
+					},
+					'MNZ3-XM-15': {
+						holeName: 'MNZ3-XM-15',
+						projectName: '14号线一期工程地质勘察',
+						surveyUnit: '广州地铁设计研究院股份有限公司',
+						depth: '75.50m',
+						elevation: '+12.80',
+						startDate: '2023-6-14',
+						waterLevel: '2.10m',
+						diameter: '0.00m',
+						endElevation: '+26.70',
+						endDate: '2023-6-14',
+						stableWaterLevel: '5.20m'
+					},
+					'MNZ3-XM-16': {
+						holeName: 'MNZ3-XM-16',
+						projectName: '14号线一期工程地质勘察',
+						surveyUnit: '广州地铁设计研究院股份有限公司',
+						depth: '82.30m',
+						elevation: '+14.15',
+						startDate: '2023-6-15',
+						waterLevel: '2.50m',
+						diameter: '0.00m',
+						endElevation: '+29.85',
+						endDate: '2023-6-15',
+						stableWaterLevel: '5.60m'
+					}
+				};
+				
+				return drillHoleData[holeName] || {};
 			}
 		}
 	}
@@ -378,7 +446,8 @@
 
 	/* 增加点击效果 */
 	.metro-station:active,
-	.work-site:active {
+	.work-site:active,
+	.drill-hole:active {
 		transform: scale(0.95);
 		opacity: 0.8;
 	}
@@ -389,6 +458,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		cursor: pointer;
+		z-index: 100;
+		padding: 10rpx;
 	}
 
 	.hole-1 {
