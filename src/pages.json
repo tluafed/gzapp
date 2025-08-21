@@ -12,6 +12,13 @@
 				"navigationBarTitleText": "钻孔详情",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/gis-map/gis-map",
+			"style": {
+				"navigationBarTitleText": "GIS地图",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {

@@ -5,6 +5,7 @@
 			<text class="title">钻孔管理系统</text>
 		</view>
 		<button class="drill-btn" @click="goToDrillDetail">查看钻孔详情</button>
+		<button class="gis-btn" @click="goToGisMap">GIS地图</button>
 	</view>
 </template>
 
@@ -22,6 +23,11 @@
 			goToDrillDetail() {
 				uni.navigateTo({
 					url: '/pages/drill-detail/drill-detail'
+				});
+			},
+			goToGisMap() {
+				uni.navigateTo({
+					url: '/pages/gis-map/gis-map'
 				});
 			}
 		}
@@ -57,6 +63,17 @@
 		width: 300rpx;
 		height: 80rpx;
 		background-color: #007aff;
+		color: white;
+		border-radius: 40rpx;
+		font-size: 32rpx;
+		border: none;
+	}
+
+	.gis-btn {
+		margin-top: 30rpx;
+		width: 300rpx;
+		height: 80rpx;
+		background-color: #28a745;
 		color: white;
 		border-radius: 40rpx;
 		font-size: 32rpx;
