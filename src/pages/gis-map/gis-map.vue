@@ -12,6 +12,13 @@
 		
 		<!-- 内容区域 -->
 		<view class="content">
+			<!-- 地图控制组件 -->
+			<MapControls 
+				@layerToggle="handleLayerToggle"
+				@mapReset="handleMapReset"
+				@mapLocate="handleMapLocate"
+			/>
+			
 			<!-- 地图背景 -->
 			<view class="map-background">
 				<!-- 地铁线路1 -->
@@ -69,11 +76,13 @@
 <script>
 	import WorkSiteInfo from '@/components/gis/WorkSiteInfo.vue'
 	import DrillHoleInfo from '@/components/gis/DrillHoleInfo.vue'
+	import MapControls from '@/components/gis/MapControls.vue'
 	
 	export default {
 		components: {
 			WorkSiteInfo,
-			DrillHoleInfo
+			DrillHoleInfo,
+			MapControls
 		},
 		data() {
 			return {
@@ -241,6 +250,16 @@
 				};
 				
 				return drillHoleData[holeName] || {};
+			},
+			// MapControls组件事件处理
+			handleLayerToggle(show) {
+				console.log('图层侧边栏状态:', show);
+			},
+			handleMapReset() {
+				console.log('地图复位');
+			},
+			handleMapLocate() {
+				console.log('地图定位');
 			}
 		}
 	}
@@ -498,4 +517,5 @@
 		white-space: nowrap;
 		box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.1);
 	}
+
 </style>
