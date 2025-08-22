@@ -10,15 +10,9 @@
 			<view class="drag-indicator"></view>
 		</view>
 		
-		<!-- 窗口头部 -->
-		<view class="panel-header">
-			<!-- 线路统计状态 -->
-			<view v-if="currentMode === 'route'" class="header-content">
-				<text class="header-title">线路统计</text>
-			</view>
-			
-			<!-- 工点统计状态 -->
-			<view v-else class="header-content">
+		<!-- 窗口头部 - 仅在工点统计模式显示 -->
+		<view v-if="currentMode === 'workSite'" class="panel-header">
+			<view class="header-content">
 				<view class="back-btn" @click="backToRoute">
 					<text class="back-icon">←</text>
 				</view>
@@ -219,7 +213,7 @@ export default {
 
 /* 拖拽手柄 */
 .drag-handle {
-	height: 40rpx;
+	height: 24rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -231,10 +225,10 @@ export default {
 }
 
 .drag-indicator {
-	width: 80rpx;
-	height: 8rpx;
+	width: 60rpx;
+	height: 6rpx;
 	background-color: #cbd5e1;
-	border-radius: 4rpx;
+	border-radius: 3rpx;
 }
 
 /* 窗口头部 */
@@ -246,17 +240,6 @@ export default {
 	justify-content: space-between;
 	padding: 0 32rpx;
 	border-bottom: 1rpx solid #e2e8f0;
-	position: relative;
-}
-
-.panel-header::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 2rpx;
-	background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
 }
 
 .header-content {
