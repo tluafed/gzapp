@@ -70,6 +70,12 @@
 			:drillHoleData="currentDrillHole"
 			@close="closeDrillHolePopup"
 		/>
+		
+		<!-- 统计窗口 -->
+		<StatisticsPanel 
+			:show="showStatisticsPanel"
+			@modeChange="handleStatisticsModeChange"
+		/>
 	</view>
 </template>
 
@@ -77,18 +83,21 @@
 	import WorkSiteInfo from '@/components/gis/WorkSiteInfo.vue'
 	import DrillHoleInfo from '@/components/gis/DrillHoleInfo.vue'
 	import MapControls from '@/components/gis/MapControls.vue'
+	import StatisticsPanel from '@/components/gis/StatisticsPanel.vue'
 	
 	export default {
 		components: {
 			WorkSiteInfo,
 			DrillHoleInfo,
-			MapControls
+			MapControls,
+			StatisticsPanel
 		},
 		data() {
 			return {
 				title: 'GIS地图',
 				showWorkSitePopup: false,
 				showDrillHolePopup: false,
+				showStatisticsPanel: true,
 				currentWorkSite: {},
 				currentDrillHole: {}
 			}
@@ -254,6 +263,9 @@
 			// MapControls组件事件处理
 			handleLayerToggle(show) {
 				console.log('图层侧边栏状态:', show);
+			},
+			handleStatisticsModeChange(data) {
+				console.log('统计窗口模式变化:', data);
 			},
 			handleMapReset() {
 				console.log('地图复位');
