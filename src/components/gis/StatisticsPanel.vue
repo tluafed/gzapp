@@ -46,18 +46,56 @@
 		<!-- 内容区域 -->
 		<view class="panel-content">
 			<!-- 线路信息 TAB -->
-			<view v-if="activeTab === 'routeInfo'" class="tab-content">
-				<view class="content-placeholder">
-					<text class="placeholder-text">线路信息内容</text>
+			<scroll-view 
+				v-if="activeTab === 'routeInfo'" 
+				class="tab-content"
+				scroll-y="true"
+				@scrolltolower="loadMoreRoutes"
+			>
+				<InfoCard
+					v-for="route in displayedRoutes"
+					:key="route.id"
+					:title="route.name"
+					:progress="route.progress"
+					:drill-data="route.drillData"
+					:depth-data="route.depthData"
+				/>
+				
+				<!-- 加载更多提示 -->
+				<view v-if="routeLoading" class="loading-tip">
+					<text class="loading-text">加载中...</text>
 				</view>
-			</view>
+				
+				<view v-if="routeNoMore" class="no-more-tip">
+					<text class="no-more-text">没有更多数据了</text>
+				</view>
+			</scroll-view>
 			
 			<!-- 工点信息 TAB -->
-			<view v-if="activeTab === 'workSiteInfo'" class="tab-content">
-				<view class="content-placeholder">
-					<text class="placeholder-text">工点信息内容</text>
+			<scroll-view 
+				v-if="activeTab === 'workSiteInfo'" 
+				class="tab-content"
+				scroll-y="true"
+				@scrolltolower="loadMoreWorkSites"
+			>
+				<InfoCard
+					v-for="workSite in displayedWorkSites"
+					:key="workSite.id"
+					:title="workSite.name"
+					:progress="workSite.progress"
+					:drill-data="workSite.drillData"
+					:depth-data="workSite.depthData"
+				/>
+				
+				<!-- 加载更多提示 -->
+				<view v-if="workSiteLoading" class="loading-tip">
+					<text class="loading-text">加载中...</text>
 				</view>
-			</view>
+				
+				<view v-if="workSiteNoMore" class="no-more-tip">
+					<text class="no-more-text">没有更多数据了</text>
+				</view>
+			</scroll-view>
 			
 			<!-- 勘察概览 TAB -->
 			<view v-if="activeTab === 'surveyOverview'" class="tab-content">
@@ -77,8 +115,13 @@
 </template>
 
 <script>
+import InfoCard from './InfoCard.vue'
+
 export default {
 	name: 'StatisticsPanel',
+	components: {
+		InfoCard
+	},
 	props: {
 		show: {
 			type: Boolean,
@@ -113,7 +156,23 @@ export default {
 				{ key: 'workSiteInfo', name: '工点信息' },
 				{ key: 'surveyOverview', name: '勘察概览' },
 				{ key: 'equipment', name: '现场设备' }
-			]
+			],
+			
+			// 线路数据
+			allRoutes: [], // 所有线路数据
+			displayedRoutes: [], // 当前显示的线路
+			routePage: 1, // 当前页码
+			routePageSize: 10, // 每页数量
+			routeLoading: false, // 加载状态
+			routeNoMore: false, // 是否没有更多数据
+			
+			// 工点数据
+			allWorkSites: [], // 所有工点数据
+			displayedWorkSites: [], // 当前显示的工点
+			workSitePage: 1, // 当前页码
+			workSitePageSize: 10, // 每页数量
+			workSiteLoading: false, // 加载状态
+			workSiteNoMore: false // 是否没有更多数据
 		}
 	},
 	computed: {
@@ -134,7 +193,132 @@ export default {
 			return this.currentRouteName
 		}
 	},
+	mounted() {
+		this.initMockData()
+		this.loadInitialData()
+	},
 	methods: {
+		// 初始化模拟数据
+		initMockData() {
+			// 生成模拟线路数据
+			this.allRoutes = Array.from({ length: 35 }, (_, index) => ({
+				id: `route_${index + 1}`,
+				name: `线路${index + 1}号`,
+				progress: Math.floor(Math.random() * 100),
+				drillData: {
+					week: Math.floor(Math.random() * 20),
+					month: Math.floor(Math.random() * 80),
+					year: Math.floor(Math.random() * 300),
+					total: Math.floor(Math.random() * 1000)
+				},
+				depthData: {
+					week: Math.floor(Math.random() * 500),
+					month: Math.floor(Math.random() * 2000),
+					year: Math.floor(Math.random() * 8000),
+					total: Math.floor(Math.random() * 30000)
+				}
+			}))
+			
+			// 生成模拟工点数据
+			this.allWorkSites = Array.from({ length: 28 }, (_, index) => ({
+				id: `worksite_${index + 1}`,
+				name: `工点${index + 1}`,
+				progress: Math.floor(Math.random() * 100),
+				drillData: {
+					week: Math.floor(Math.random() * 15),
+					month: Math.floor(Math.random() * 60),
+					year: Math.floor(Math.random() * 250),
+					total: Math.floor(Math.random() * 800)
+				},
+				depthData: {
+					week: Math.floor(Math.random() * 300),
+					month: Math.floor(Math.random() * 1200),
+					year: Math.floor(Math.random() * 5000),
+					total: Math.floor(Math.random() * 20000)
+				}
+			}))
+		},
+		
+		// 加载初始数据
+		loadInitialData() {
+			this.loadRoutes()
+			this.loadWorkSites()
+		},
+		
+		// 加载线路数据
+		loadRoutes() {
+			const start = (this.routePage - 1) * this.routePageSize
+			const end = start + this.routePageSize
+			const newRoutes = this.allRoutes.slice(start, end)
+			
+			if (this.routePage === 1) {
+				this.displayedRoutes = newRoutes
+			} else {
+				this.displayedRoutes.push(...newRoutes)
+			}
+			
+			this.routeNoMore = end >= this.allRoutes.length
+		},
+		
+		// 加载工点数据
+		loadWorkSites() {
+			const start = (this.workSitePage - 1) * this.workSitePageSize
+			const end = start + this.workSitePageSize
+			const newWorkSites = this.allWorkSites.slice(start, end)
+			
+			if (this.workSitePage === 1) {
+				this.displayedWorkSites = newWorkSites
+			} else {
+				this.displayedWorkSites.push(...newWorkSites)
+			}
+			
+			this.workSiteNoMore = end >= this.allWorkSites.length
+		},
+		
+		// 加载更多线路
+		loadMoreRoutes() {
+			if (this.routeLoading || this.routeNoMore) return
+			
+			this.routeLoading = true
+			
+			// 模拟网络延迟
+			setTimeout(() => {
+				this.routePage++
+				this.loadRoutes()
+				this.routeLoading = false
+			}, 500)
+		},
+		
+		// 加载更多工点
+		loadMoreWorkSites() {
+			if (this.workSiteLoading || this.workSiteNoMore) return
+			
+			this.workSiteLoading = true
+			
+			// 模拟网络延迟
+			setTimeout(() => {
+				this.workSitePage++
+				this.loadWorkSites()
+				this.workSiteLoading = false
+			}, 500)
+		},
+		
+		// 显示线路名提示框
+		showRouteNameTip() {
+			if (this.currentRouteName.length > 10) {
+				this.showTip = true
+				// 3秒后自动隐藏
+				setTimeout(() => {
+					this.showTip = false
+				}, 3000)
+			}
+		},
+		
+		// 隐藏提示框
+		hideTip() {
+			this.showTip = false
+		},
+		
 		// 拖拽相关方法
 		onDragStart(e) {
 			this.isDragging = true
@@ -171,15 +355,6 @@ export default {
 			} else {
 				this.panelHeight = 50 // 默认
 			}
-		},
-		
-		// 窗口控制方法
-		minimizePanel() {
-			this.panelHeight = 20
-		},
-		
-		maximizePanel() {
-			this.panelHeight = this.panelHeight === 90 ? 50 : 90
 		},
 		
 		// 标签页切换
@@ -372,11 +547,12 @@ export default {
 .panel-content {
 	flex: 1;
 	padding: 24rpx;
-	overflow-y: auto;
+	overflow: hidden;
 }
 
 .tab-content {
 	height: 100%;
+	padding-bottom: 20rpx;
 }
 
 .content-placeholder {
@@ -393,6 +569,36 @@ export default {
 .placeholder-text {
 	font-size: 28rpx;
 	color: #9ca3af;
+}
+
+/* 加载提示 */
+.loading-tip {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 32rpx;
+}
+
+.loading-text {
+	font-size: 26rpx;
+	color: #64748b;
+}
+
+.no-more-tip {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24rpx;
+}
+
+.no-more-text {
+	font-size: 24rpx;
+	color: #9ca3af;
+}
+
+/* 滚动视图样式 */
+scroll-view {
+	height: 100%;
 }
 
 /* 滚动条样式 */
