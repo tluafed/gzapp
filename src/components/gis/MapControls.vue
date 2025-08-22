@@ -201,25 +201,26 @@ export default {
 	right: 20rpx;
 	width: 80rpx;
 	height: 80rpx;
-	background: rgba(255, 255, 255, 0.95);
-	border: 2rpx solid #007AFF;
-	border-radius: 12rpx;
+	background: #ffffff;
+	border: 1rpx solid #d1d5db;
+	border-radius: 8rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.3);
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 	transition: all 0.2s ease;
 }
 
 .layer-btn:active {
 	transform: scale(0.95);
-	background: rgba(0, 122, 255, 0.1);
+	background: #f9fafb;
 }
 
 .layer-icon {
-	font-size: 36rpx;
+	font-size: 32rpx;
 	line-height: 1;
+	color: #4b5563;
 }
 
 /* 复位和定位按钮 - 右侧中部位置 */
@@ -229,32 +230,37 @@ export default {
 	right: 20rpx;
 	display: flex;
 	flex-direction: column;
-	gap: 24rpx;
+	gap: 16rpx;
 }
 
 .control-btn {
 	width: 80rpx;
 	height: 80rpx;
-	background: rgba(255, 255, 255, 0.95);
-	border: 2rpx solid #007AFF;
-	border-radius: 12rpx;
+	background: #ffffff;
+	border: 1rpx solid #d1d5db;
+	border-radius: 8rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.3);
+	box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
 	transition: all 0.2s ease;
 }
 
 .control-btn:active {
 	transform: scale(0.95);
-	background: rgba(0, 122, 255, 0.1);
+	background: #f9fafb;
 }
 
 .control-icon {
-	font-size: 36rpx;
+	font-size: 32rpx;
 	line-height: 1;
-	color: #007AFF;
+	color: #4b5563;
+}
+
+/* 定位按钮图标特殊样式 */
+.location-btn .control-icon {
+	font-size: 40rpx;
 }
 
 /* 图层侧边栏样式 */
