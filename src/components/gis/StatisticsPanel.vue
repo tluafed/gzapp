@@ -187,6 +187,12 @@ export default {
 			this.$emit('modeChange', { mode: 'workSite', routeName })
 		},
 		
+		// 切换到工点统计模式（父组件调用的方法名）
+		switchToWorkSiteMode(routeName) {
+			this.switchToWorkSite(routeName)
+			console.log('切换到工点统计模式:', routeName)
+		},
+		
 		backToRoute() {
 			this.currentMode = 'route'
 			this.currentRouteName = ''

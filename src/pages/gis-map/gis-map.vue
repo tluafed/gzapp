@@ -22,12 +22,12 @@
 			<!-- 地图背景 -->
 			<view class="map-background">
 				<!-- 地铁线路1 -->
-				<view class="metro-line line-1"></view>
-				<text class="line-name name-1">十四号线</text>
+				<view class="metro-line line-1" @click="handleLineClick('十四号线')"></view>
+				<text class="line-name name-1" @click="handleLineClick('十四号线')">十四号线</text>
 				
 				<!-- 地铁线路2 -->
-				<view class="metro-line line-2"></view>
-				<text class="line-name name-2">广花城际线</text>
+				<view class="metro-line line-2" @click="handleLineClick('广花城际线')"></view>
+				<text class="line-name name-2" @click="handleLineClick('广花城际线')">广花城际线</text>
 				
 				<!-- 地铁站点 -->
 				<view class="metro-station station-1" @click="showWorkSiteInfo('马务站')">
@@ -74,6 +74,7 @@
 		<!-- 统计窗口 -->
 		<StatisticsPanel 
 			:show="showStatisticsPanel"
+			ref="statisticsPanel"
 			@modeChange="handleStatisticsModeChange"
 		/>
 	</view>
@@ -266,6 +267,13 @@
 			},
 			handleStatisticsModeChange(data) {
 				console.log('统计窗口模式变化:', data);
+			},
+			handleLineClick(lineName) {
+				console.log('点击线路:', lineName);
+				// 通过 $refs 调用统计窗口组件的方法
+				if (this.$refs.statisticsPanel) {
+					this.$refs.statisticsPanel.switchToWorkSiteMode(lineName);
+				}
 			},
 			handleMapReset() {
 				console.log('地图复位');
