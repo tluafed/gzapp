@@ -17,22 +17,105 @@
 		
 		<!-- 图层侧边栏 -->
 		<view 
-			v-if="showLayerSidebar" 
+			v-show="showLayerSidebar" 
 			class="layer-mask" 
 			@click="closeLayer"
 		></view>
 		<view 
 			class="layer-sidebar" 
 			:class="{ 'layer-sidebar-show': showLayerSidebar }"
+			:style="{ right: showLayerSidebar ? '0rpx' : '-600rpx' }"
 		>
 			<view class="layer-header">
-				<text class="layer-title">图层管理</text>
+				<text class="layer-title">图层控制</text>
 				<view class="layer-close" @click="closeLayer">
 					<text class="close-icon">×</text>
 				</view>
 			</view>
 			<view class="layer-content">
-				<text class="empty-text">图层内容待完善...</text>
+				<!-- 线路图例 -->
+				<view class="layer-section">
+					<view class="section-header">
+						<text class="section-title">线路图例</text>
+						<switch 
+							:checked="layerSettings.routes.enabled" 
+							@change="toggleLayerSetting('routes')"
+							color="#007AFF"
+						/>
+					</view>
+					<view class="legend-list">
+						<view class="legend-item">
+							<view class="legend-line route-line"></view>
+							<text class="legend-text">在建</text>
+						</view>
+					</view>
+				</view>
+
+				<!-- 工点图例 -->
+				<view class="layer-section">
+					<view class="section-header">
+						<text class="section-title">工点图例</text>
+						<switch 
+							:checked="layerSettings.workSites.enabled" 
+							@change="toggleLayerSetting('workSites')"
+							color="#007AFF"
+						/>
+					</view>
+					<view class="legend-list">
+						<view class="legend-item">
+							<view class="legend-icon worksite-icon"></view>
+							<text class="legend-text">工点</text>
+						</view>
+					</view>
+				</view>
+
+				<!-- 钻孔图例 -->
+				<view class="layer-section">
+					<view class="section-header">
+						<text class="section-title">钻孔图例</text>
+						<switch 
+							:checked="layerSettings.drillHoles.enabled" 
+							@change="toggleLayerSetting('drillHoles')"
+							color="#007AFF"
+						/>
+					</view>
+					<view class="legend-list">
+						<view class="legend-item">
+							<view class="legend-dot drill-unfinished"></view>
+							<text class="legend-text">未开孔</text>
+						</view>
+						<view class="legend-item">
+							<view class="legend-dot drill-progress"></view>
+							<text class="legend-text">施工中</text>
+						</view>
+						<view class="legend-item">
+							<view class="legend-dot drill-finished"></view>
+							<text class="legend-text">已完成</text>
+						</view>
+					</view>
+				</view>
+
+				<!-- 机台图例 -->
+				<view class="layer-section">
+					<view class="section-header">
+						<text class="section-title">机台图例</text>
+						<switch 
+							:checked="layerSettings.machines.enabled" 
+							@change="toggleLayerSetting('machines')"
+							color="#007AFF"
+						/>
+					</view>
+					<view class="legend-list">
+						<view class="legend-item">
+							<view class="legend-machine machine-idle"></view>
+							<text class="legend-text">已进场</text>
+						</view>
+						<view class="legend-item">
+							<view class="legend-machine machine-working"></view>
+							<text class="legend-text">施工中</text>
+						</view>
+					</view>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -43,18 +126,41 @@ export default {
 	name: 'MapControls',
 	data() {
 		return {
-			showLayerSidebar: false
+			showLayerSidebar: false,
+			layerSettings: {
+				routes: {
+					enabled: true
+				},
+				workSites: {
+					enabled: true
+				},
+				drillHoles: {
+					enabled: true
+				},
+				machines: {
+					enabled: true
+				}
+			}
 		}
 	},
 	methods: {
 		// 图层控制方法
 		toggleLayer() {
 			this.showLayerSidebar = !this.showLayerSidebar;
+			console.log('图层侧边栏状态:', this.showLayerSidebar);
 			this.$emit('layerToggle', this.showLayerSidebar);
 		},
 		closeLayer() {
 			this.showLayerSidebar = false;
 			this.$emit('layerToggle', false);
+		},
+		toggleLayerSetting(layerType) {
+			this.layerSettings[layerType].enabled = !this.layerSettings[layerType].enabled;
+			this.$emit('layerSettingChange', {
+				type: layerType,
+				enabled: this.layerSettings[layerType].enabled
+			});
+			console.log(`${layerType} 图层状态: ${this.layerSettings[layerType].enabled}`);
 		},
 		// 地图控制方法
 		resetMap() {
@@ -160,14 +266,14 @@ export default {
 	height: 100vh;
 	background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 	box-shadow: -4rpx 0 20rpx rgba(0, 0, 0, 0.15);
-	z-index: 1000;
+	z-index: 1001;
 	transition: right 0.3s ease;
 	display: flex;
 	flex-direction: column;
 }
 
-.layer-sidebar-show {
-	right: 0;
+.layer-sidebar.layer-sidebar-show {
+	right: 0 !important;
 }
 
 .layer-header {
@@ -222,16 +328,148 @@ export default {
 
 .layer-content {
 	flex: 1;
-	padding: 40rpx 32rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	padding: 24rpx 32rpx;
+	overflow-y: auto;
 }
 
-.empty-text {
+/* 图层控制面板样式 */
+.layer-section {
+	margin-bottom: 32rpx;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 12rpx;
+	padding: 24rpx;
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+	border: 1rpx solid rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(10rpx);
+}
+
+.layer-section:last-child {
+	margin-bottom: 0;
+}
+
+.section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20rpx;
+	padding-bottom: 16rpx;
+	border-bottom: 1rpx solid #e2e8f0;
+}
+
+.section-title {
 	font-size: 28rpx;
-	color: #9ca3af;
-	text-align: center;
+	font-weight: 600;
+	color: #1e293b;
+}
+
+.legend-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16rpx;
+}
+
+.legend-item {
+	display: flex;
+	align-items: center;
+	gap: 16rpx;
+	padding: 12rpx 16rpx;
+	background: #f8fafc;
+	border-radius: 8rpx;
+	border: 1rpx solid #e2e8f0;
+}
+
+.legend-text {
+	font-size: 26rpx;
+	color: #475569;
+	font-weight: 500;
+}
+
+/* 线路图例样式 */
+.legend-line {
+	width: 60rpx;
+	height: 8rpx;
+	border-radius: 4rpx;
+}
+
+.route-line {
+	background: linear-gradient(90deg, #00CCFF 0%, #0099CC 100%);
+	box-shadow: 0 0 8rpx rgba(0, 204, 255, 0.4);
+}
+
+/* 工点图例样式 */
+.legend-icon {
+	width: 32rpx;
+	height: 32rpx;
+	border-radius: 6rpx;
+	position: relative;
+}
+
+.worksite-icon {
+	background-color: #ffffff;
+	border: 3rpx solid #ff0000;
+}
+
+.worksite-icon::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 16rpx;
+	height: 16rpx;
+	background-color: #ff0000;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+}
+
+/* 钻孔图例样式 */
+.legend-dot {
+	width: 24rpx;
+	height: 24rpx;
+	border-radius: 50%;
+	border: 2rpx solid #ffffff;
+	box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.2);
+}
+
+.drill-unfinished {
+	background-color: #94a3b8;
+}
+
+.drill-progress {
+	background-color: #ff8800;
+}
+
+.drill-finished {
+	background-color: #22c55e;
+}
+
+/* 机台图例样式 */
+.legend-machine {
+	width: 28rpx;
+	height: 28rpx;
+	border-radius: 4rpx;
+	border: 2rpx solid #ffffff;
+	position: relative;
+	box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.2);
+}
+
+.machine-idle {
+	background-color: #3b82f6;
+}
+
+.machine-working {
+	background-color: #f59e0b;
+}
+
+.legend-machine::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 8rpx;
+	height: 8rpx;
+	background-color: #ffffff;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
 }
 
 /* 图层遮罩 */
@@ -242,14 +480,13 @@ export default {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.3);
-	z-index: 999;
+	z-index: 1000;
 }
 
 /* 响应式设计 */
 @media (max-width: 750rpx) {
 	.layer-sidebar {
 		width: 500rpx;
-		right: -500rpx;
 	}
 	
 	.control-buttons {
