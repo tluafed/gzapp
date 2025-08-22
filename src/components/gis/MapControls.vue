@@ -116,14 +116,14 @@ export default {
 	line-height: 1;
 }
 
-/* 复位和定位按钮 - 右侧靠上位置 */
+/* 复位和定位按钮 - 右侧中部位置 */
 .control-buttons {
 	position: absolute;
-	top: 120rpx;
+	top: 300rpx;
 	right: 20rpx;
 	display: flex;
 	flex-direction: column;
-	gap: 16rpx;
+	gap: 24rpx;
 }
 
 .control-btn {
@@ -253,7 +253,7 @@ export default {
 	}
 	
 	.control-buttons {
-		top: 110rpx;
+		top: 600rpx;
 	}
 	
 	.layer-btn,
