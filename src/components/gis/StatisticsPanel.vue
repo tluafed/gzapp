@@ -13,21 +13,21 @@
 		<!-- 窗口头部 - 仅在工点统计模式显示 -->
 		<view v-if="currentMode === 'workSite'" class="panel-header">
 			<view class="header-content">
-				<view class="back-btn" @click="backToRoute">
-					<text class="back-icon">←</text>
-				</view>
-				<text class="header-title">{{ currentRouteName }}</text>
+				<text 
+					class="header-title" 
+					@click="showRouteNameTip"
+				>{{ displayRouteName }}</text>
 			</view>
 			
-			<!-- 窗口控制按钮 -->
-			<view class="window-controls">
-				<view class="control-btn" @click="minimizePanel">
-					<text class="control-icon">−</text>
-				</view>
-				<view class="control-btn" @click="maximizePanel">
-					<text class="control-icon">□</text>
-				</view>
+			<!-- 关闭按钮 -->
+			<view class="close-btn" @click="backToRoute">
+				<text class="close-icon">×</text>
 			</view>
+		</view>
+		
+		<!-- 线路名提示框 -->
+		<view v-if="showTip" class="route-tip" @click="hideTip">
+			<text class="tip-text">{{ currentRouteName }}</text>
 		</view>
 		
 		<!-- 标签页导航 -->
@@ -96,6 +96,7 @@ export default {
 			// 显示模式：route(线路统计) | workSite(工点统计)
 			currentMode: 'route',
 			currentRouteName: '',
+			showTip: false, // 控制线路名提示框显示
 			
 			// 当前激活的标签页
 			activeTab: 'routeInfo',
@@ -124,6 +125,13 @@ export default {
 		},
 		currentTabs() {
 			return this.currentMode === 'route' ? this.routeTabs : this.workSiteTabs
+		},
+		// 显示的线路名称（超过10个字符时截断）
+		displayRouteName() {
+			if (this.currentRouteName.length > 10) {
+				return this.currentRouteName.substring(0, 10) + '...'
+			}
+			return this.currentRouteName
 		}
 	},
 	methods: {
@@ -254,7 +262,18 @@ export default {
 	flex: 1;
 }
 
-.back-btn {
+.header-title {
+	color: #1e293b;
+	font-size: 32rpx;
+	font-weight: 600;
+	cursor: pointer;
+	max-width: 500rpx;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.close-btn {
 	width: 60rpx;
 	height: 60rpx;
 	display: flex;
@@ -262,54 +281,54 @@ export default {
 	justify-content: center;
 	border-radius: 50%;
 	background-color: #f1f5f9;
-	margin-right: 16rpx;
 	cursor: pointer;
 	transition: all 0.2s ease;
 }
 
-.back-btn:active {
+.close-btn:active {
 	background-color: #e2e8f0;
 	transform: scale(0.95);
 }
 
-.back-icon {
+.close-icon {
 	color: #64748b;
-	font-size: 32rpx;
-	font-weight: bold;
+	font-size: 36rpx;
+	font-weight: normal;
 }
 
-.header-title {
-	color: #1e293b;
-	font-size: 32rpx;
-	font-weight: 600;
-}
-
-.window-controls {
-	display: flex;
-	gap: 12rpx;
-}
-
-.control-btn {
-	width: 48rpx;
-	height: 48rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+/* 线路名提示框 */
+.route-tip {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: rgba(0, 0, 0, 0.8);
+	color: #ffffff;
+	padding: 16rpx 24rpx;
 	border-radius: 8rpx;
-	background-color: #f1f5f9;
-	cursor: pointer;
-	transition: all 0.2s ease;
+	font-size: 28rpx;
+	z-index: 10000;
+	max-width: 80%;
+	text-align: center;
+	backdrop-filter: blur(10rpx);
+	animation: fadeIn 0.3s ease;
 }
 
-.control-btn:active {
-	background-color: #e2e8f0;
-	transform: scale(0.95);
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+	}
 }
 
-.control-icon {
-	color: #64748b;
-	font-size: 24rpx;
-	font-weight: bold;
+.tip-text {
+	color: #ffffff;
+	font-size: 28rpx;
+	line-height: 1.4;
 }
 
 /* 标签页导航 */
