@@ -114,12 +114,12 @@ export default {
 	display: flex;
 	align-items: center;
 	gap: 8rpx;
-	flex: 1;
+	width: 120rpx;
 	margin-left: 16rpx;
 }
 
 .progress-bar {
-	flex: 1;
+	width: 80rpx;
 	height: 6rpx;
 	background-color: #e5e7eb;
 	border-radius: 3rpx;
