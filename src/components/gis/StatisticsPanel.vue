@@ -98,11 +98,15 @@
 			</scroll-view>
 			
 			<!-- 勘察概览 TAB -->
-			<view v-if="activeTab === 'surveyOverview'" class="tab-content">
-				<view class="content-placeholder">
-					<text class="placeholder-text">勘察概览内容</text>
-				</view>
-			</view>
+			<scroll-view 
+				v-if="activeTab === 'surveyOverview'" 
+				class="tab-content"
+				scroll-y="true"
+			>
+				<SurveyOverview 
+					:data="currentMode === 'route' ? routeSurveyData : workSiteSurveyData"
+				/>
+			</scroll-view>
 			
 			<!-- 现场设备 TAB -->
 			<view v-if="activeTab === 'equipment'" class="tab-content">
@@ -116,11 +120,13 @@
 
 <script>
 import InfoCard from './InfoCard.vue'
+import SurveyOverview from './SurveyOverview.vue'
 
 export default {
 	name: 'StatisticsPanel',
 	components: {
-		InfoCard
+		InfoCard,
+		SurveyOverview
 	},
 	props: {
 		show: {
@@ -172,7 +178,59 @@ export default {
 			workSitePage: 1, // 当前页码
 			workSitePageSize: 10, // 每页数量
 			workSiteLoading: false, // 加载状态
-			workSiteNoMore: false // 是否没有更多数据
+			workSiteNoMore: false, // 是否没有更多数据
+			
+			// 勘察概览数据 - 线路级别
+			routeSurveyData: {
+				routeCount: 7,
+				sectionCount: 18,
+				workSiteCount: 127,
+				constructionSiteCount: 41,
+				drillHoles: {
+					week: 48,
+					month: 186,
+					year: 3394,
+					total: 30232
+				},
+				footage: {
+					week: 1286,
+					month: 5124,
+					year: 96022,
+					total: 845326
+				},
+				drillCategories: {
+					planned: 40418,
+					completed: 30232,
+					pending: 8506,
+					inProgress: 1840
+				}
+			},
+			
+			// 勘察概览数据 - 工点级别
+			workSiteSurveyData: {
+				routeCount: 1,
+				sectionCount: 3,
+				workSiteCount: 24,
+				constructionSiteCount: 8,
+				drillHoles: {
+					week: 12,
+					month: 48,
+					year: 586,
+					total: 4218
+				},
+				footage: {
+					week: 320,
+					month: 1280,
+					year: 15420,
+					total: 124680
+				},
+				drillCategories: {
+					planned: 5200,
+					completed: 4218,
+					pending: 782,
+					inProgress: 200
+				}
+			}
 		}
 	},
 	computed: {
