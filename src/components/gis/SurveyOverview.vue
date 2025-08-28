@@ -6,52 +6,56 @@
 			<text class="title-text">勘察概览</text>
 		</view>
 		
-		<!-- 四个统计卡片 -->
-		<view class="stats-cards">
-			<!-- 勘察线路数量 -->
-			<view class="stat-card">
-				<view class="icon-container blue">
-					<text class="icon iconfont icon-subway"></text>
-				</view>
-				<view class="stat-content">
-					<text class="stat-value">{{ data.routeCount }}条</text>
-					<text class="stat-label">勘察线路数量</text>
-				</view>
+<!-- 四个统计卡片 -->
+<view class="stats-cards">
+	<view class="stats-row">
+		<!-- 勘察线路数量 -->
+		<view class="stat-card">
+			<view class="icon-container blue">
+				<text class="icon iconfont icon-subway"></text>
 			</view>
-			
-			<!-- 标段数量 -->
-			<view class="stat-card">
-				<view class="icon-container green">
-					<text class="icon iconfont icon-grid"></text>
-				</view>
-				<view class="stat-content">
-					<text class="stat-value">{{ data.sectionCount }}个</text>
-					<text class="stat-label">标段数量</text>
-				</view>
-			</view>
-			
-			<!-- 勘察工点数量 -->
-			<view class="stat-card">
-				<view class="icon-container orange">
-					<text class="icon iconfont icon-location"></text>
-				</view>
-				<view class="stat-content">
-					<text class="stat-value">{{ data.workSiteCount }}个</text>
-					<text class="stat-label">勘察工点数量</text>
-				</view>
-			</view>
-			
-			<!-- 施工中工点数量 -->
-			<view class="stat-card">
-				<view class="icon-container purple">
-					<text class="icon iconfont icon-wrench"></text>
-				</view>
-				<view class="stat-content">
-					<text class="stat-value">{{ data.constructionSiteCount }}个</text>
-					<text class="stat-label">施工中工点数量</text>
-				</view>
+			<view class="stat-content">
+				<text class="stat-value">{{ data.routeCount }}条</text>
+				<text class="stat-label">勘察线路数量</text>
 			</view>
 		</view>
+		
+		<!-- 标段数量 -->
+		<view class="stat-card">
+			<view class="icon-container green">
+				<text class="icon iconfont icon-grid"></text>
+			</view>
+			<view class="stat-content">
+				<text class="stat-value">{{ data.sectionCount }}个</text>
+				<text class="stat-label">标段数量</text>
+			</view>
+		</view>
+	</view>
+	
+	<view class="stats-row">
+		<!-- 勘察工点数量 -->
+		<view class="stat-card">
+			<view class="icon-container orange">
+				<text class="icon iconfont icon-location"></text>
+			</view>
+			<view class="stat-content">
+				<text class="stat-value">{{ data.workSiteCount }}个</text>
+				<text class="stat-label">勘察工点数量</text>
+			</view>
+		</view>
+		
+		<!-- 施工中工点数量 -->
+		<view class="stat-card">
+			<view class="icon-container purple">
+				<text class="icon iconfont icon-wrench"></text>
+			</view>
+			<view class="stat-content">
+				<text class="stat-value">{{ data.constructionSiteCount }}个</text>
+				<text class="stat-label">施工中工点数量</text>
+			</view>
+		</view>
+	</view>
+</view>
 		
 		<!-- 累计完成工作量 -->
 		<view class="section-title">
@@ -93,31 +97,55 @@
 			<text class="title-text">钻孔分类</text>
 		</view>
 		
-		<view class="drill-categories">
-			<!-- 布置钻孔数 -->
-			<view class="category-card blue">
+<view class="drill-categories">
+	<view class="categories-row">
+		<!-- 布置钻孔数 -->
+		<view class="category-card blue">
+			<view class="category-icon">
+				<text class="icon iconfont icon-flag"></text>
+			</view>
+			<view class="category-content">
 				<text class="category-value">{{ data.drillCategories.planned }}个</text>
 				<text class="category-label">布置钻孔数</text>
 			</view>
-			
-			<!-- 完成钻孔数 -->
-			<view class="category-card green">
+		</view>
+		
+		<!-- 完成钻孔数 -->
+		<view class="category-card green">
+			<view class="category-icon">
+				<text class="icon iconfont icon-check-circle"></text>
+			</view>
+			<view class="category-content">
 				<text class="category-value">{{ data.drillCategories.completed }}个</text>
 				<text class="category-label">完成钻孔数</text>
 			</view>
-			
-			<!-- 未施工钻孔数 -->
-			<view class="category-card orange">
+		</view>
+	</view>
+	
+	<view class="categories-row">
+		<!-- 未施工钻孔数 -->
+		<view class="category-card orange">
+			<view class="category-icon">
+				<text class="icon iconfont icon-clock"></text>
+			</view>
+			<view class="category-content">
 				<text class="category-value">{{ data.drillCategories.pending }}个</text>
 				<text class="category-label">未施工钻孔数</text>
 			</view>
-			
-			<!-- 施工中钻孔数 -->
-			<view class="category-card purple">
+		</view>
+		
+		<!-- 施工中钻孔数 -->
+		<view class="category-card purple">
+			<view class="category-icon">
+				<text class="icon iconfont icon-wrench"></text>
+			</view>
+			<view class="category-content">
 				<text class="category-value">{{ data.drillCategories.inProgress }}个</text>
 				<text class="category-label">施工中钻孔数</text>
 			</view>
 		</view>
+	</view>
+</view>
 	</view>
 </template>
 
@@ -191,14 +219,19 @@ export default {
 /* 统计卡片样式 */
 .stats-cards {
 	display: flex;
-	flex-wrap: wrap;
+	flex-direction: column;
 	gap: 16rpx;
 	margin-bottom: 24rpx;
 }
 
+.stats-row {
+	display: flex;
+	gap: 16rpx;
+	width: 100%;
+}
+
 .stat-card {
 	flex: 1;
-	min-width: calc(50% - 16rpx);
 	background-color: #ffffff;
 	border-radius: 8rpx;
 	padding: 16rpx;
@@ -206,6 +239,7 @@ export default {
 	align-items: center;
 	box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.05);
 	border: 1rpx solid #f1f5f9;
+	box-sizing: border-box;
 }
 
 .icon-container {
@@ -310,21 +344,40 @@ export default {
 /* 钻孔分类样式 */
 .drill-categories {
 	display: flex;
-	flex-wrap: wrap;
+	flex-direction: column;
 	gap: 16rpx;
 	margin-bottom: 24rpx;
 }
 
+.categories-row {
+	display: flex;
+	gap: 16rpx;
+	width: 100%;
+}
+
 .category-card {
 	flex: 1;
-	min-width: calc(50% - 16rpx);
 	border-radius: 8rpx;
 	padding: 24rpx 16rpx;
 	display: flex;
-	flex-direction: column;
+	align-items: center;
+	position: relative;
+}
+
+.category-icon {
+	width: 60rpx;
+	height: 60rpx;
+	display: flex;
 	align-items: center;
 	justify-content: center;
+	margin-right: 16rpx;
 }
+
+.category-content {
+	display: flex;
+	flex-direction: column;
+}
+
 
 .category-card.blue {
 	background-color: #3b82f6;
@@ -347,11 +400,16 @@ export default {
 	font-weight: 600;
 	color: #ffffff;
 	line-height: 1.2;
-	margin-bottom: 8rpx;
 }
 
 .category-label {
 	font-size: 26rpx;
 	color: rgba(255, 255, 255, 0.9);
+	margin-top: 4rpx;
+}
+
+.category-card .icon {
+	color: #ffffff;
+	font-size: 40rpx;
 }
 </style>
