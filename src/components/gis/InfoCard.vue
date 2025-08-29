@@ -27,7 +27,7 @@
 			
 			<!-- 钻孔行 -->
 			<view class="table-row">
-				<text class="row-label">钻孔</text>
+				<text class="row-label">钻孔(个)</text>
 				<text class="data-cell">{{ drillData.week }}</text>
 				<text class="data-cell">{{ drillData.month }}</text>
 				<text class="data-cell">{{ drillData.year }}</text>
@@ -36,7 +36,7 @@
 			
 			<!-- 进尺行 -->
 			<view class="table-row">
-				<text class="row-label">进尺</text>
+				<text class="row-label">进尺(米)</text>
 				<text class="data-cell">{{ depthData.week }}</text>
 				<text class="data-cell">{{ depthData.month }}</text>
 				<text class="data-cell">{{ depthData.year }}</text>
@@ -163,7 +163,7 @@ export default {
 }
 
 .header-cell.empty {
-	flex: 0.8;
+	flex: 1;
 }
 
 .table-row {
@@ -178,7 +178,7 @@ export default {
 }
 
 .row-label {
-	flex: 0.8;
+	flex: 1;
 	font-size: 24rpx;
 	color: #374151;
 	font-weight: 500;
