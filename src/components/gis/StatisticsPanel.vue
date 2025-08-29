@@ -109,11 +109,17 @@
 			</scroll-view>
 			
 			<!-- 现场设备 TAB -->
-			<view v-if="activeTab === 'equipment'" class="tab-content">
-				<view class="content-placeholder">
-					<text class="placeholder-text">现场设备内容</text>
-				</view>
-			</view>
+			<scroll-view 
+				v-if="activeTab === 'equipment'" 
+				class="tab-content"
+				scroll-y="true"
+			>
+				<FieldEquipment 
+					:isRouteLevel="currentMode === 'route'"
+					:equipmentData="currentMode === 'route' ? routeEquipmentData : workSiteEquipmentData"
+					:last7DaysData="currentMode === 'route' ? routeLast7DaysData : workSiteLast7DaysData"
+				/>
+			</scroll-view>
 		</view>
 	</view>
 </template>
@@ -121,12 +127,14 @@
 <script>
 import InfoCard from './InfoCard.vue'
 import SurveyOverview from './SurveyOverview.vue'
+import FieldEquipment from './FieldEquipment.vue'
 
 export default {
 	name: 'StatisticsPanel',
 	components: {
 		InfoCard,
-		SurveyOverview
+		SurveyOverview,
+		FieldEquipment
 	},
 	props: {
 		show: {
@@ -230,7 +238,51 @@ export default {
 					pending: 782,
 					inProgress: 200
 				}
-			}
+			},
+			
+			// 现场设备数据 - 线路级别
+			routeEquipmentData: [
+				{ name: '十四号线', count: 8 },
+				{ name: '广花城际线', count: 6 },
+				{ name: '十八号线', count: 5 },
+				{ name: '二十二号线', count: 4 },
+				{ name: '十一号线', count: 3 },
+				{ name: '十三号线', count: 2 },
+				{ name: '二十一号线', count: 1 },
+				{ name: '八号线', count: 1 }
+			],
+			
+			// 现场设备数据 - 工点级别
+			workSiteEquipmentData: [
+				{ name: '马务站', count: 3 },
+				{ name: '新市墟站-马务区间', count: 2 },
+				{ name: '机场站', count: 2 },
+				{ name: '白云机场北站', count: 1 },
+				{ name: '高增站', count: 1 },
+				{ name: '人和站', count: 1 }
+			],
+			
+			// 近7天工作量数据 - 线路级别
+			routeLast7DaysData: [
+				{ date: '12-01', completedDrills: 12, equipmentCount: 8 },
+				{ date: '12-02', completedDrills: 15, equipmentCount: 8 },
+				{ date: '12-03', completedDrills: 8, equipmentCount: 7 },
+				{ date: '12-04', completedDrills: 18, equipmentCount: 8 },
+				{ date: '12-05', completedDrills: 14, equipmentCount: 8 },
+				{ date: '12-06', completedDrills: 16, equipmentCount: 8 },
+				{ date: '12-07', completedDrills: 13, equipmentCount: 8 }
+			],
+			
+			// 近7天工作量数据 - 工点级别
+			workSiteLast7DaysData: [
+				{ date: '12-01', completedDrills: 3, equipmentCount: 3 },
+				{ date: '12-02', completedDrills: 4, equipmentCount: 3 },
+				{ date: '12-03', completedDrills: 2, equipmentCount: 2 },
+				{ date: '12-04', completedDrills: 5, equipmentCount: 3 },
+				{ date: '12-05', completedDrills: 3, equipmentCount: 3 },
+				{ date: '12-06', completedDrills: 4, equipmentCount: 3 },
+				{ date: '12-07', completedDrills: 3, equipmentCount: 3 }
+			]
 		}
 	},
 	computed: {

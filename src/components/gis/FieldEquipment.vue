@@ -141,6 +141,7 @@ export default {
 <style scoped>
 .field-equipment {
 	padding: 0 8rpx;
+	background-color: transparent;
 }
 
 /* 标题样式 */
