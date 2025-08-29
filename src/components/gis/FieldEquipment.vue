@@ -46,17 +46,20 @@
 						:key="index" 
 						class="chart-column"
 					>
-						<!-- 完成钻孔柱 -->
-						<view 
-							class="bar completed-bar" 
-							:style="{ height: getBarHeight(day.completedDrills) }"
-						></view>
-						
-						<!-- 投入机台柱 -->
-						<view 
-							class="bar equipment-bar" 
-							:style="{ height: getBarHeight(day.equipmentCount) }"
-						></view>
+						<!-- 双柱状图容器 -->
+						<view class="bars-container">
+							<!-- 完成钻孔柱 -->
+							<view 
+								class="bar completed-bar" 
+								:style="{ height: getBarHeight(day.completedDrills) }"
+							></view>
+							
+							<!-- 投入机台柱 -->
+							<view 
+								class="bar equipment-bar" 
+								:style="{ height: getBarHeight(day.equipmentCount) }"
+							></view>
+						</view>
 						
 						<!-- X轴标签 -->
 						<text class="x-axis-label">{{ day.date }}</text>
@@ -276,15 +279,22 @@ export default {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 80rpx;
+	width: 100rpx;
 	height: 100%;
 	position: relative;
 }
 
+.bars-container {
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	height: 100%;
+	gap: 8rpx;
+}
+
 .bar {
-	width: 30rpx;
+	width: 24rpx;
 	border-radius: 4rpx 4rpx 0 0;
-	margin: 0 2rpx;
 }
 
 .completed-bar {
@@ -300,6 +310,8 @@ export default {
 	bottom: -40rpx;
 	font-size: 22rpx;
 	color: #64748b;
+	text-align: center;
+	width: 100%;
 }
 
 .chart-legend {
