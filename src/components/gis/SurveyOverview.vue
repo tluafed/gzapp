@@ -74,20 +74,20 @@
 			
 			<!-- 钻孔行 -->
 			<view class="table-row">
-				<text class="row-label">钻孔</text>
-				<text class="data-cell">{{ data.drillHoles.week }}个</text>
-				<text class="data-cell">{{ data.drillHoles.month }}个</text>
-				<text class="data-cell">{{ data.drillHoles.year }}个</text>
-				<text class="data-cell">{{ data.drillHoles.total }}个</text>
+				<text class="row-label">钻孔(个)</text>
+				<text class="data-cell">{{ data.drillHoles.week }}</text>
+				<text class="data-cell">{{ data.drillHoles.month }}</text>
+				<text class="data-cell">{{ data.drillHoles.year }}</text>
+				<text class="data-cell">{{ data.drillHoles.total }}</text>
 			</view>
 			
 			<!-- 进尺行 -->
 			<view class="table-row">
-				<text class="row-label">进尺</text>
-				<text class="data-cell">{{ data.footage.week }}米</text>
-				<text class="data-cell">{{ data.footage.month }}米</text>
-				<text class="data-cell">{{ data.footage.year }}米</text>
-				<text class="data-cell">{{ data.footage.total }}米</text>
+				<text class="row-label">进尺(米)</text>
+				<text class="data-cell">{{ data.footage.week }}</text>
+				<text class="data-cell">{{ data.footage.month }}</text>
+				<text class="data-cell">{{ data.footage.year }}</text>
+				<text class="data-cell">{{ data.footage.total }}</text>
 			</view>
 		</view>
 		
@@ -316,7 +316,7 @@ export default {
 }
 
 .header-cell.empty {
-	flex: 0.8;
+	flex: 1;
 }
 
 .table-row {
@@ -327,7 +327,7 @@ export default {
 }
 
 .row-label {
-	flex: 0.8;
+	flex: 1;
 	font-size: 26rpx;
 	color: #334155;
 	font-weight: 500;
