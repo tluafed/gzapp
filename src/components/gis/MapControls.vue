@@ -191,7 +191,7 @@ export default {
 <style scoped>
 .map-controls {
 	position: relative;
-	z-index: 200;
+	z-index: 1000;
 }
 
 /* 图层按钮 - 右上角 */
@@ -272,7 +272,7 @@ export default {
 	height: 100vh;
 	background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 	box-shadow: -4rpx 0 20rpx rgba(0, 0, 0, 0.15);
-	z-index: 1001;
+	z-index: 2000;
 	transition: right 0.3s ease;
 	display: flex;
 	flex-direction: column;
@@ -486,7 +486,7 @@ export default {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.3);
-	z-index: 1000;
+	z-index: 1500;
 }
 
 /* 响应式设计 */
