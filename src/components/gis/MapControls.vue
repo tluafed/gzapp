@@ -191,7 +191,7 @@ export default {
 <style scoped>
 .map-controls {
 	position: relative;
-	z-index: 1000;
+	z-index: 300;
 }
 
 /* 图层按钮 - 右上角 */
@@ -226,7 +226,7 @@ export default {
 /* 复位和定位按钮 - 右侧中部位置 */
 .control-buttons {
 	position: absolute;
-	top: 300rpx;
+	top: 400rpx;
 	right: 20rpx;
 	display: flex;
 	flex-direction: column;

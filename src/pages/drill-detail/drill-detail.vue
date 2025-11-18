@@ -19,6 +19,12 @@
         <!-- 根据业务类型显示不同内容 -->
         <video-monitor 
           v-if="currentBusinessType === 'video'"
+          :borehole-id="currentBoreholeId"
+          :monitors="videoMonitors"
+          :loading="videoMonitorsLoading"
+          @refresh-request="loadVideoMonitors"
+          @play-video="handleMonitorPlay"
+          @export-video="handleVideoExport"
         />
         <column-chart
           v-else-if="currentBusinessType === 'chart'"
@@ -422,6 +428,9 @@ export default {
       showSubPopup: false,
       subPopupTitle: '',
       currentBusinessType: '',
+      currentBoreholeId: 'GK01',
+      videoMonitorsLoading: false,
+      videoMonitors: [],
       
       // 标签页状态
       startCheckActiveTab: 'form',
@@ -482,6 +491,9 @@ export default {
       return buttons;
     }
   },
+  created() {
+    this.loadVideoMonitors()
+  },
   methods: {
     goBack() {
       uni.navigateBack()
@@ -493,6 +505,10 @@ export default {
       
       // 显示弹窗
       this.showSubPopup = true
+
+      if (type === 'video' && !this.videoMonitors.length) {
+        this.loadVideoMonitors()
+      }
     },
     
     // 设置弹窗信息
@@ -727,6 +743,31 @@ export default {
         title: `切换为${role === 'technician' ? '技术员' : role === 'auditor' ? '审核员' : '其他'}`,
         icon: 'none'
       });
+    },
+
+    // 加载视频监控绑定数据（模拟）
+    loadVideoMonitors() {
+      this.videoMonitorsLoading = true
+      setTimeout(() => {
+        this.videoMonitors = [
+          { id: 'monitor-a', name: '监控A', deviceId: 'dev-001', deviceName: '塔吊摄像头', status: 'online' },
+          { id: 'monitor-b', name: '监控B', deviceId: '', deviceName: '', status: 'idle' },
+          { id: 'monitor-c', name: '监控C', deviceId: 'dev-003', deviceName: '围挡摄像头', status: 'offline' }
+        ]
+        this.videoMonitorsLoading = false
+      }, 400)
+    },
+
+    handleMonitorPlay(monitor) {
+      console.log('play monitor', monitor)
+    },
+
+    handleVideoExport(payload) {
+      console.log('export video', payload)
+      uni.showToast({
+        title: '已创建导出任务',
+        icon: 'success'
+      })
     }
   }
 }
